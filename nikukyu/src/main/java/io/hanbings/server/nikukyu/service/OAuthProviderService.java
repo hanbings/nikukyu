@@ -20,6 +20,7 @@ public class OAuthProviderService {
     public static Request.Proxy proxy;
     public static Map<String, OAuth<? extends Access, ? extends Access.Wrong>> providers = new ConcurrentHashMap<>();
 
+    @SuppressWarnings("SwitchStatementWithTooFewBranches")
     public static void init(Config config, OAuthConfig oauth) {
         // init oauth service
         OAuthProviderService.proxy = new Request.Proxy(

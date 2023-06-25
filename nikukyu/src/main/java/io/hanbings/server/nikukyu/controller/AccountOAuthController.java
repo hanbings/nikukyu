@@ -1,9 +1,11 @@
 package io.hanbings.server.nikukyu.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import io.hanbings.server.nikukyu.service.AccountService;
+import io.hanbings.server.nikukyu.service.TokenService;
+import lombok.RequiredArgsConstructor;
 
-@RestController
-@RequestMapping("/api/v0")
+@RequiredArgsConstructor
 public class AccountOAuthController {
+    final TokenService tokens;
+    final AccountService accounts;
 }

@@ -4,6 +4,7 @@ import io.hanbings.server.nikukyu.data.OAuth;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface OAuthRepository extends MongoRepository<OAuth, UUID> {
@@ -14,5 +15,5 @@ public interface OAuthRepository extends MongoRepository<OAuth, UUID> {
     OAuth findByOuid(UUID ouid);
 
     @SuppressWarnings("SpellCheckingInspection")
-    OAuth findByAuid(UUID auid);
+    List<OAuth> findByAuid(UUID auid);
 }

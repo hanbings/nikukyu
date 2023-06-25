@@ -4,6 +4,7 @@ import io.hanbings.server.nikukyu.data.AccountAuthorization;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
+import java.util.List;
 import java.util.UUID;
 
 
@@ -11,8 +12,8 @@ public interface AccountAuthorizationRepository extends MongoRepository<AccountA
     @Override
     <S extends AccountAuthorization> @NotNull S save(@NotNull S entity);
 
-    AccountAuthorization findByOpenid(String openid);
+    List<AccountAuthorization> findByOpenid(String openid);
 
     @SuppressWarnings("SpellCheckingInspection")
-    AccountAuthorization findByAuid(UUID auid);
+    List<AccountAuthorization> findByAuid(UUID auid);
 }

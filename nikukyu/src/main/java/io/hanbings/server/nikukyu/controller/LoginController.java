@@ -13,8 +13,7 @@ import io.hanbings.server.nikukyu.data.AccountAuthorization;
 import io.hanbings.server.nikukyu.model.Message;
 import io.hanbings.server.nikukyu.model.Token;
 import io.hanbings.server.nikukyu.model.VerifyCode;
-import io.hanbings.server.nikukyu.repository.AccountAuthorizationRepository;
-import io.hanbings.server.nikukyu.repository.AccountRepository;
+import io.hanbings.server.nikukyu.service.AccountService;
 import io.hanbings.server.nikukyu.service.MailService;
 import io.hanbings.server.nikukyu.service.OAuthProviderService;
 import io.hanbings.server.nikukyu.service.TokenService;
@@ -37,15 +36,14 @@ public class LoginController {
     // 缓存验证码与 Token 的对应关系 (验证码只能使用一次) Token - VerifyCode
     static Map<String, VerifyCode> verifies = new ConcurrentHashMap<>();
     final Config config;
-    final AccountRepository accounts;
-    final AccountAuthorizationRepository authorizations;
     final MailService mails;
     final TokenService tokens;
-    final OAuthProviderService oauths;
+    final AccountService accounts;
+    final OAuthProviderService providers;
 
     @GetMapping("/login/oauth/{provider}/authorize")
     public Message<?> getOAuthAuthorize(@PathVariable String provider) {
-        return Message.success(Map.of("provider", oauths.authorize(provider)));
+        return Message.success(Map.of("provider", providers.authorize(provider)));
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -56,7 +54,7 @@ public class LoginController {
             @RequestParam("state") String state
     ) {
         // 获取 OAuth 信息
-        OAuth<? extends Access, ? extends Access.Wrong> client = oauths.provider(provider);
+        OAuth<? extends Access, ? extends Access.Wrong> client = providers.provider(provider);
 
         // 获取 Token
         @SuppressWarnings("rawtypes")
@@ -80,7 +78,7 @@ public class LoginController {
         String email = ((Identify) identify.data()).email();
 
         // 获取当前的 openid 是否已经绑定了账号
-        AccountAuthorization authorization = authorizations.findByOpenid(oepnid);
+        AccountAuthorization authorization = accounts.getAccountAuthorizationWithOpenid(oepnid);
 
         // OAuth 未被注册但邮箱已被占用
         if (authorization == null && email != null) {
@@ -90,7 +88,7 @@ public class LoginController {
         // 如果已经存入系统则直接返回 Token
         if (authorization != null) {
             // 如果存在则从 authorizations 中获取 auid
-            Account account = accounts.findByAuid(authorization.auid());
+            Account account = accounts.getAccountWithAuid(authorization.auid());
 
             // 创建 token
             Token token = tokens.signature(
@@ -103,7 +101,7 @@ public class LoginController {
         }
 
         // 如果还没存在则创建一个新的 AccountAuthorization 然后返回一个仅有发送 email 权限的 token 要求用户验证
-        authorization = authorizations.save(new AccountAuthorization(
+        authorization = accounts.createAccountAuthorization(new AccountAuthorization(
                 UUID.randomUUID(),
                 System.currentTimeMillis(),
                 null,
@@ -195,8 +193,8 @@ public class LoginController {
         openids.remove(bearer);
 
         // 存储
-        accounts.save(account);
-        authorizations.save(authorization);
+        accounts.createAccount(account);
+        accounts.createAccountAuthorization(authorization);
 
         // 签发 Token
         return Message.success(
