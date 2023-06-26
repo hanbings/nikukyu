@@ -13,4 +13,7 @@ public interface OAuthClientRepository extends MongoRepository<OAuthClient, UUID
 
     @SuppressWarnings("SpellCheckingInspection")
     List<OAuthClient> findByOuid(UUID ouid);
+
+    @SuppressWarnings("SpellCheckingInspection")
+    OAuthClient findByOcid(UUID ocid);
 }
