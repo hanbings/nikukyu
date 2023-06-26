@@ -11,6 +11,7 @@ public record Authorize(
         Account account,
         OAuth oauth,
         OAuthClient client,
-        List<AccessType> access
+        List<AccessType> access,
+        String state
 ) {
 }

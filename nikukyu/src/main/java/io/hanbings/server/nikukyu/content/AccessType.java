@@ -73,9 +73,16 @@ public enum AccessType {
         return result;
     }
 
-    public static List<String> parse(List<AccessType> access) {
-        return new ArrayList<>() {{
-            access.forEach(e -> add(e.name().toLowerCase(Locale.ROOT)));
-        }};
+    public static String parse(List<AccessType> access) {
+        if (access.size() == 0) return "";
+
+        StringBuilder builder = new StringBuilder();
+
+        access.forEach(a -> {
+            builder.append(a.toString().toLowerCase(Locale.ROOT));
+            builder.append(", ");
+        });
+
+        return builder.substring(0, builder.length() - 2);
     }
 }

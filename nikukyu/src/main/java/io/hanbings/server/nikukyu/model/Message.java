@@ -56,7 +56,14 @@ public class Message<T> {
         public static final int FORBIDDEN = 403;
         public static final int NOT_FOUND = 404;
         public static final int SERVER_ERROR = 500;
-        public static final int MAIL_EXIST = 20000;
-        public static final int MAIL_VERIFY_INVALID = 20001;
+        public static final int MAIL_EXIST = 20200;
+        public static final int MAIL_VERIFY_INVALID = 20201;
+        public static final int OAUTH_CLIENT_REDIRECT_URI_NOT_MATCH = 20202;
+        public static final int OAUTH_CLIENT_REDIRECT_URI_INVALID = 20203;
+        public static final int OAUTH_CLIENT_ID_INVALID = 20204;
+        public static final int OAUTH_CLIENT_SCOPE_INVALID = 20205;
+        public static final int OAUTH_AUTHORIZE_CODE_INVALID = 20206;
+        public static final int OAUTH_CLIENT_SECRET_INVALID = 20207;
+        public static final int OAUTH_STATE_INVALID = 20208;
     }
 }

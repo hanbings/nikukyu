@@ -25,7 +25,7 @@ public class AccountLogController {
     @GetMapping("/account/log")
     @NikukyuTokenCheck(access = {AccessType.ACCOUNT_LOG_READ})
     public Message<?> logs(@RequestHeader("Authorization") String token) {
-        Token t = tokens.get(token);
+        Token t = tokens.get(token.substring(7));
         List<AccountLog> log = accounts.getAccountLogsWithAuid(t.belong());
 
         return Message.success(log);

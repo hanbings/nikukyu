@@ -25,7 +25,7 @@ public class OAuthClientController {
     @GetMapping("/oauth")
     @NikukyuTokenCheck(access = {AccessType.OAUTH_CLIENT_READ})
     public Message<?> info(@RequestHeader("Authorization") String token) {
-        Token t = tokens.get(token);
+        Token t = tokens.get(token.substring(7));
         List<OAuth> oauth = oauths.getOAuthWithAuid(t.belong());
 
         return Message.success(oauth);
@@ -34,7 +34,7 @@ public class OAuthClientController {
     @PostMapping("/oauth")
     @NikukyuTokenCheck(access = {AccessType.OAUTH_CLIENT_WRITE})
     public Message<?> oauth(@RequestHeader("Authorization") String token) {
-        Token t = tokens.get(token);
+        Token t = tokens.get(token.substring(7));
         List<OAuth> oauth = oauths.getOAuthWithAuid(t.belong());
 
         return Message.success(oauth);
@@ -46,7 +46,7 @@ public class OAuthClientController {
             @PathVariable String ouid,
             @RequestHeader("Authorization") String token
     ) {
-        Token t = tokens.get(token);
+        Token t = tokens.get(token.substring(7));
         List<OAuth> oauth = oauths.getOAuthWithAuid(t.belong());
 
         return Message.success(oauth);
@@ -55,7 +55,7 @@ public class OAuthClientController {
     @PostMapping("/oauth/token")
     @NikukyuTokenCheck(access = {AccessType.OAUTH_TOKEN})
     public Message<?> token(@RequestHeader("Authorization") String token) {
-        Token t = tokens.get(token);
+        Token t = tokens.get(token.substring(7));
         List<OAuth> oauth = oauths.getOAuthWithAuid(t.belong());
 
         return Message.success(oauth);

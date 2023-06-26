@@ -22,7 +22,7 @@ public class AccountAuthorizationController {
     @GetMapping("/account/authorization")
     @NikukyuTokenCheck(access = {AccessType.ACCOUNT_AUTHORIZATION_READ})
     public Message<?> authorizations(@RequestHeader("Authorization") String token) {
-        Token t = tokens.get(token);
+        Token t = tokens.get(token.substring(7));
 
         return Message.success(accounts.getAccountAuthorizationsWithAuid(t.belong()));
     }

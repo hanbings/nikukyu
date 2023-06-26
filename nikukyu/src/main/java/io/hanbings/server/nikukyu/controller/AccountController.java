@@ -21,7 +21,7 @@ public class AccountController {
     @GetMapping("/account")
     @NikukyuTokenCheck(access = {AccessType.ACCOUNT_READ})
     public Message<?> account(@RequestHeader("Authorization") String token) {
-        Token t = tokens.get(token);
+        Token t = tokens.get(token.substring(7));
         Account account = accounts.getAccountWithAuid(t.belong());
 
         return Message.success(account);
@@ -34,7 +34,7 @@ public class AccountController {
             @PathVariable String auid,
             @RequestHeader("Authorization") String token
     ) {
-        Token t = tokens.get(token);
+        Token t = tokens.get(token.substring(7));
         Account account = accounts.getAccountWithAuid(t.belong());
 
         return Message.success(account);
@@ -46,7 +46,7 @@ public class AccountController {
             @PathVariable String auid,
             @RequestHeader("Authorization") String token
     ) {
-        Token t = tokens.get(token);
+        Token t = tokens.get(token.substring(7));
         Account account = accounts.getAccountWithAuid(t.belong());
 
         return Message.success(account);
@@ -58,7 +58,7 @@ public class AccountController {
             @PathVariable String auid,
             @RequestHeader("Authorization") String token
     ) {
-        Token t = tokens.get(token);
+        Token t = tokens.get(token.substring(7));
         Account account = accounts.getAccountWithAuid(t.belong());
 
         return Message.success(account);

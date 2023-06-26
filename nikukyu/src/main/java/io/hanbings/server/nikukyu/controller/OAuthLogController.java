@@ -6,7 +6,6 @@ import io.hanbings.server.nikukyu.data.OAuth;
 import io.hanbings.server.nikukyu.data.OAuthLog;
 import io.hanbings.server.nikukyu.model.Message;
 import io.hanbings.server.nikukyu.model.Token;
-import io.hanbings.server.nikukyu.service.AccountService;
 import io.hanbings.server.nikukyu.service.OAuthService;
 import io.hanbings.server.nikukyu.service.TokenService;
 import lombok.RequiredArgsConstructor;
@@ -23,13 +22,12 @@ import java.util.List;
 @SuppressWarnings("SpellCheckingInspection")
 public class OAuthLogController {
     final TokenService tokens;
-    final AccountService accounts;
     final OAuthService oauths;
 
     @GetMapping("/oauth/log")
     @NikukyuTokenCheck(access = {AccessType.ACCOUNT_LOG_READ})
     public Message<?> logs(@RequestHeader("Authorization") String token) {
-        Token t = tokens.get(token);
+        Token t = tokens.get(token.substring(7));
         List<OAuth> oauth = oauths.getOAuthWithAuid(t.belong());
         List<OAuthLog> log = oauth.stream()
                 .map(OAuth::ouid)
