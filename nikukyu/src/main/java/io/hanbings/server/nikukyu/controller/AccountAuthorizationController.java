@@ -7,22 +7,26 @@ import io.hanbings.server.nikukyu.model.Token;
 import io.hanbings.server.nikukyu.service.AccountService;
 import io.hanbings.server.nikukyu.service.TokenService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v0")
+@SuppressWarnings("SpellCheckingInspection")
 public class AccountAuthorizationController {
     final TokenService tokens;
     final AccountService accounts;
 
-    @GetMapping("/account/authorization")
+    @GetMapping("/account/{auid}/authorization")
     @NikukyuTokenCheck(access = {AccessType.ACCOUNT_AUTHORIZATION_READ})
-    public Message<?> authorizations(@RequestHeader("Authorization") String token) {
+    public Message<?> authorizations(
+            @PathVariable String auid,
+            @RequestHeader("Authorization") String token
+    ) {
         Token t = tokens.get(token.substring(7));
+        if (Objects.equals(t.belong().toString(), auid)) return Message.unauthorized(null);
 
         return Message.success(accounts.getAccountAuthorizationsWithAuid(t.belong()));
     }

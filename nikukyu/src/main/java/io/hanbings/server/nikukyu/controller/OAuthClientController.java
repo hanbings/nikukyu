@@ -22,27 +22,10 @@ public class OAuthClientController {
     final AccountService accounts;
     final OAuthService oauths;
 
-    @GetMapping("/oauth")
+
+    @GetMapping("/oauth/{ouid}/client")
     @NikukyuTokenCheck(access = {AccessType.OAUTH_CLIENT_READ})
-    public Message<?> info(@RequestHeader("Authorization") String token) {
-        Token t = tokens.get(token.substring(7));
-        List<OAuth> oauth = oauths.getOAuthWithAuid(t.belong());
-
-        return Message.success(oauth);
-    }
-
-    @PostMapping("/oauth")
-    @NikukyuTokenCheck(access = {AccessType.OAUTH_CLIENT_WRITE})
-    public Message<?> oauth(@RequestHeader("Authorization") String token) {
-        Token t = tokens.get(token.substring(7));
-        List<OAuth> oauth = oauths.getOAuthWithAuid(t.belong());
-
-        return Message.success(oauth);
-    }
-
-    @PostMapping("/oauth/{ouid}")
-    @NikukyuTokenCheck(access = {AccessType.OAUTH_CLIENT_WRITE})
-    public Message<?> oauth(
+    public Message<?> list(
             @PathVariable String ouid,
             @RequestHeader("Authorization") String token
     ) {
@@ -52,9 +35,38 @@ public class OAuthClientController {
         return Message.success(oauth);
     }
 
-    @PostMapping("/oauth/token")
-    @NikukyuTokenCheck(access = {AccessType.OAUTH_TOKEN})
-    public Message<?> token(@RequestHeader("Authorization") String token) {
+    @PostMapping("/oauth/{ouid}/client")
+    @NikukyuTokenCheck(access = {AccessType.OAUTH_CLIENT_WRITE})
+    public Message<?> create(
+            @PathVariable String ouid,
+            @RequestHeader("Authorization") String token
+    ) {
+        Token t = tokens.get(token.substring(7));
+        List<OAuth> oauth = oauths.getOAuthWithAuid(t.belong());
+
+        return Message.success(oauth);
+    }
+
+    @GetMapping("/oauth/{ouid}/client/{ocid}")
+    @NikukyuTokenCheck(access = {AccessType.OAUTH_CLIENT_READ})
+    public Message<?> read(
+            @PathVariable String ouid,
+            @PathVariable String ocid,
+            @RequestHeader("Authorization") String token
+    ) {
+        Token t = tokens.get(token.substring(7));
+        List<OAuth> oauth = oauths.getOAuthWithAuid(t.belong());
+
+        return Message.success(oauth);
+    }
+
+    @PutMapping("/oauth/{ouid}/client/{ocid}")
+    @NikukyuTokenCheck(access = {AccessType.OAUTH_CLIENT_WRITE})
+    public Message<?> change(
+            @PathVariable String ouid,
+            @PathVariable String ocid,
+            @RequestHeader("Authorization") String token
+    ) {
         Token t = tokens.get(token.substring(7));
         List<OAuth> oauth = oauths.getOAuthWithAuid(t.belong());
 

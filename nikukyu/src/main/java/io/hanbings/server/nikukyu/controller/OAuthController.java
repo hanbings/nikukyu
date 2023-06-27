@@ -53,12 +53,20 @@ public class OAuthController {
         if (oauth == null) return Message.serverError(null);
 
         // 检验 redirect_uri 是否合法
-        // FIXME
         try {
             URL url = new URL(redirectUri);
-            boolean matched = oauth.redirect().stream().noneMatch(s -> s.equals(url.getHost()));
-            if (matched)
+            // 转为 List<URL> 然后比较 getHost
+            List<URL> urls = new ArrayList<>();
+
+            for (String s : oauth.redirect()) {
+                urls.add(new URL(s));
+            }
+
+            boolean matched = urls.stream().anyMatch(u -> u.getHost().equals(url.getHost()));
+
+            if (matched) {
                 return new Message<>(Message.ReturnCode.OAUTH_CLIENT_REDIRECT_URI_NOT_MATCH, "redirect_uri 匹配错误 请联系应用开发者", null);
+            }
         } catch (Exception e) {
             return new Message<>(Message.ReturnCode.OAUTH_CLIENT_REDIRECT_URI_INVALID, "redirect_uri 错误 请联系应用开发者", null);
         }
@@ -144,5 +152,47 @@ public class OAuthController {
             put("scope", AccessType.parse(authorize.access()));
             if (state != null) put("state", state);
         }};
+    }
+
+    @GetMapping("/oauth")
+    @NikukyuTokenCheck(access = {AccessType.OAUTH_READ})
+    public Message<?> list(@RequestHeader("Authorization") String token) {
+        Token t = tokens.get(token.substring(7));
+        List<OAuth> oauth = oauths.getOAuthWithAuid(t.belong());
+
+        return Message.success(oauth);
+    }
+
+    @PostMapping("/oauth")
+    @NikukyuTokenCheck(access = {AccessType.OAUTH_WRITE})
+    public Message<?> create(@RequestHeader("Authorization") String token) {
+        Token t = tokens.get(token.substring(7));
+        List<OAuth> oauth = oauths.getOAuthWithAuid(t.belong());
+
+        return Message.success(oauth);
+    }
+
+    @GetMapping("/oauth/{ouid}")
+    @NikukyuTokenCheck(access = {AccessType.OAUTH_WRITE})
+    public Message<?> read(
+            @PathVariable String ouid,
+            @RequestHeader("Authorization") String token
+    ) {
+        Token t = tokens.get(token.substring(7));
+        List<OAuth> oauth = oauths.getOAuthWithAuid(t.belong());
+
+        return Message.success(oauth);
+    }
+
+    @PutMapping("/oauth/{ouid}")
+    @NikukyuTokenCheck(access = {AccessType.OAUTH_WRITE})
+    public Message<?> change(
+            @PathVariable String ouid,
+            @RequestHeader("Authorization") String token
+    ) {
+        Token t = tokens.get(token.substring(7));
+        List<OAuth> oauth = oauths.getOAuthWithAuid(t.belong());
+
+        return Message.success(oauth);
     }
 }
