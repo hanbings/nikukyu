@@ -1,4 +1,4 @@
-package io.hanbings.server.nikukyu.model;
+package io.hanbings.server.nikukyu.data;
 
 import io.hanbings.server.nikukyu.content.AccessType;
 

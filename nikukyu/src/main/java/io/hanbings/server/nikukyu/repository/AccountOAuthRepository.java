@@ -1,7 +1,7 @@
 package io.hanbings.server.nikukyu.repository;
 
-import io.hanbings.server.nikukyu.data.AccountAuthorization;
-import io.hanbings.server.nikukyu.data.AccountOAuth;
+import io.hanbings.server.nikukyu.model.AccountAuthorization;
+import io.hanbings.server.nikukyu.model.AccountOAuth;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.mongodb.repository.MongoRepository;
 

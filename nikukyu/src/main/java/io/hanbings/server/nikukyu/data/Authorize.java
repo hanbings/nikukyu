@@ -1,9 +1,9 @@
-package io.hanbings.server.nikukyu.model;
+package io.hanbings.server.nikukyu.data;
 
 import io.hanbings.server.nikukyu.content.AccessType;
-import io.hanbings.server.nikukyu.data.Account;
-import io.hanbings.server.nikukyu.data.OAuth;
-import io.hanbings.server.nikukyu.data.OAuthClient;
+import io.hanbings.server.nikukyu.model.Account;
+import io.hanbings.server.nikukyu.model.OAuth;
+import io.hanbings.server.nikukyu.model.OAuthClient;
 
 import java.util.List;
 

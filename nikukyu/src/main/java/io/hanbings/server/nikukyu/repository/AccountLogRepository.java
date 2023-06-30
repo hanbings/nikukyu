@@ -1,6 +1,6 @@
 package io.hanbings.server.nikukyu.repository;
 
-import io.hanbings.server.nikukyu.data.AccountLog;
+import io.hanbings.server.nikukyu.model.AccountLog;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.mongodb.repository.MongoRepository;
 

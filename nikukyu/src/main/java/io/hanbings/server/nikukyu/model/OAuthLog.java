@@ -1,4 +1,4 @@
-package io.hanbings.server.nikukyu.data;
+package io.hanbings.server.nikukyu.model;
 
 import io.hanbings.server.nikukyu.content.OAuthLogType;
 import org.jetbrains.annotations.NotNull;

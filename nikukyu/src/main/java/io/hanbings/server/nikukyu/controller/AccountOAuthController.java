@@ -2,8 +2,8 @@ package io.hanbings.server.nikukyu.controller;
 
 import io.hanbings.server.nikukyu.annotation.NikukyuTokenCheck;
 import io.hanbings.server.nikukyu.content.AccessType;
-import io.hanbings.server.nikukyu.model.Message;
-import io.hanbings.server.nikukyu.model.Token;
+import io.hanbings.server.nikukyu.data.Message;
+import io.hanbings.server.nikukyu.data.Token;
 import io.hanbings.server.nikukyu.service.AccountService;
 import io.hanbings.server.nikukyu.service.TokenService;
 import lombok.RequiredArgsConstructor;

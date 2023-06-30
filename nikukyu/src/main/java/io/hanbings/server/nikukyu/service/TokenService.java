@@ -1,7 +1,7 @@
 package io.hanbings.server.nikukyu.service;
 
 import io.hanbings.server.nikukyu.content.AccessType;
-import io.hanbings.server.nikukyu.model.Token;
+import io.hanbings.server.nikukyu.data.Token;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

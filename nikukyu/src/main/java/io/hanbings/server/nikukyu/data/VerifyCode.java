@@ -1,4 +1,4 @@
-package io.hanbings.server.nikukyu.model;
+package io.hanbings.server.nikukyu.data;
 
 public record VerifyCode(
         String code,

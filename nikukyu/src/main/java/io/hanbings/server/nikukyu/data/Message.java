@@ -1,4 +1,4 @@
-package io.hanbings.server.nikukyu.model;
+package io.hanbings.server.nikukyu.data;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;

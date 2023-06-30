@@ -1,4 +1,4 @@
-package io.hanbings.server.nikukyu.data;
+package io.hanbings.server.nikukyu.model;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.annotation.Id;

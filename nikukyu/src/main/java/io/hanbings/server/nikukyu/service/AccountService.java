@@ -1,9 +1,9 @@
 package io.hanbings.server.nikukyu.service;
 
-import io.hanbings.server.nikukyu.data.Account;
-import io.hanbings.server.nikukyu.data.AccountAuthorization;
-import io.hanbings.server.nikukyu.data.AccountLog;
-import io.hanbings.server.nikukyu.data.AccountOAuth;
+import io.hanbings.server.nikukyu.model.Account;
+import io.hanbings.server.nikukyu.model.AccountAuthorization;
+import io.hanbings.server.nikukyu.model.AccountLog;
+import io.hanbings.server.nikukyu.model.AccountOAuth;
 import io.hanbings.server.nikukyu.repository.AccountAuthorizationRepository;
 import io.hanbings.server.nikukyu.repository.AccountLogRepository;
 import io.hanbings.server.nikukyu.repository.AccountOAuthRepository;

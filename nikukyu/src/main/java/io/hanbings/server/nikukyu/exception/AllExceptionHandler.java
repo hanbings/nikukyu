@@ -1,6 +1,6 @@
 package io.hanbings.server.nikukyu.exception;
 
-import io.hanbings.server.nikukyu.model.Message;
+import io.hanbings.server.nikukyu.data.Message;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;

@@ -1,9 +1,9 @@
 package io.hanbings.server.nikukyu.service;
 
 
-import io.hanbings.server.nikukyu.data.OAuth;
-import io.hanbings.server.nikukyu.data.OAuthClient;
-import io.hanbings.server.nikukyu.data.OAuthLog;
+import io.hanbings.server.nikukyu.model.OAuth;
+import io.hanbings.server.nikukyu.model.OAuthClient;
+import io.hanbings.server.nikukyu.model.OAuthLog;
 import io.hanbings.server.nikukyu.repository.OAuthClientRepository;
 import io.hanbings.server.nikukyu.repository.OAuthLogRepository;
 import io.hanbings.server.nikukyu.repository.OAuthRepository;

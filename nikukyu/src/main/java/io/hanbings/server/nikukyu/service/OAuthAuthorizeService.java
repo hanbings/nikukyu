@@ -1,6 +1,6 @@
 package io.hanbings.server.nikukyu.service;
 
-import io.hanbings.server.nikukyu.model.Authorize;
+import io.hanbings.server.nikukyu.data.Authorize;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;

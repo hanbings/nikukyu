@@ -1,7 +1,7 @@
 package io.hanbings.server.nikukyu.annotation;
 
 import io.hanbings.server.nikukyu.content.AccessType;
-import io.hanbings.server.nikukyu.model.Message;
+import io.hanbings.server.nikukyu.data.Message;
 import io.hanbings.server.nikukyu.service.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
