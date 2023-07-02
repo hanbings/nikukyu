@@ -62,6 +62,9 @@ public @interface NikukyuTokenCheck {
             // 检查 Token 权限
             if (!tokens.check(token, access)) return Message.Messages.UNAUTHORIZED;
 
+            // 检查 Token 有效期
+            if (tokens.get(token).expire() < System.currentTimeMillis()) return Message.Messages.UNAUTHORIZED;
+
             return (Message<?>) point.proceed();
         }
 

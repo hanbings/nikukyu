@@ -1,8 +1,10 @@
 package io.hanbings.server.nikukyu.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import io.hanbings.server.nikukyu.annotation.NikukyuTokenCheck;
 import io.hanbings.server.nikukyu.content.AccessType;
 import io.hanbings.server.nikukyu.data.Message;
+import io.hanbings.server.nikukyu.data.Permission;
 import io.hanbings.server.nikukyu.data.Token;
 import io.hanbings.server.nikukyu.model.OAuth;
 import io.hanbings.server.nikukyu.service.AccountService;
@@ -24,6 +26,7 @@ public class OAuthClientController {
 
 
     @GetMapping("/oauth/{ouid}/client")
+    @SaCheckPermission(Permission.OAUTH_CLIENT_READ)
     @NikukyuTokenCheck(access = {AccessType.OAUTH_CLIENT_READ})
     public Message<?> list(
             @PathVariable String ouid,
@@ -36,6 +39,7 @@ public class OAuthClientController {
     }
 
     @PostMapping("/oauth/{ouid}/client")
+    @SaCheckPermission(Permission.OAUTH_CLIENT_WRITE)
     @NikukyuTokenCheck(access = {AccessType.OAUTH_CLIENT_WRITE})
     public Message<?> create(
             @PathVariable String ouid,
@@ -48,6 +52,7 @@ public class OAuthClientController {
     }
 
     @GetMapping("/oauth/{ouid}/client/{ocid}")
+    @SaCheckPermission(Permission.OAUTH_CLIENT_READ)
     @NikukyuTokenCheck(access = {AccessType.OAUTH_CLIENT_READ})
     public Message<?> read(
             @PathVariable String ouid,
@@ -61,6 +66,7 @@ public class OAuthClientController {
     }
 
     @PutMapping("/oauth/{ouid}/client/{ocid}")
+    @SaCheckPermission(Permission.OAUTH_CLIENT_WRITE)
     @NikukyuTokenCheck(access = {AccessType.OAUTH_CLIENT_WRITE})
     public Message<?> change(
             @PathVariable String ouid,

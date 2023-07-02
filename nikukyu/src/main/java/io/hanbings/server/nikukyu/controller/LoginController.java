@@ -1,5 +1,6 @@
 package io.hanbings.server.nikukyu.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import io.hanbings.flows.common.OAuth;
 import io.hanbings.flows.common.interfaces.Access;
 import io.hanbings.flows.common.interfaces.Callback;
@@ -9,6 +10,7 @@ import io.hanbings.server.nikukyu.annotation.NikukyuTokenCheck;
 import io.hanbings.server.nikukyu.config.Config;
 import io.hanbings.server.nikukyu.content.AccessType;
 import io.hanbings.server.nikukyu.data.Message;
+import io.hanbings.server.nikukyu.data.Permission;
 import io.hanbings.server.nikukyu.data.Token;
 import io.hanbings.server.nikukyu.data.VerifyCode;
 import io.hanbings.server.nikukyu.model.Account;
@@ -123,6 +125,7 @@ public class LoginController {
     }
 
     @PostMapping("/login/verify/email")
+    @SaCheckPermission(Permission.OAUTH_EMAIL_VERIFY)
     @NikukyuTokenCheck(access = {AccessType.OAUTH_EMAIL_VERIFY})
     public Message<?> verifyEmail(
             @RequestParam("email") String email,
@@ -145,7 +148,8 @@ public class LoginController {
     }
 
     @PostMapping("/login/oauth/token")
-    @NikukyuTokenCheck(access = {AccessType.OAUTH_EMAIL_VERIFY})
+    @SaCheckPermission(Permission.EMAIL_VERIFY)
+    @NikukyuTokenCheck(access = {AccessType.EMAIL_VERIFY})
     public Message<?> getToken(
             @RequestParam(name = "email", required = false) String email,
             @RequestParam(name = "code", required = false) String code,

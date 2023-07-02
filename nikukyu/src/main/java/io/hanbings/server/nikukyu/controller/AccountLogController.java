@@ -1,8 +1,10 @@
 package io.hanbings.server.nikukyu.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import io.hanbings.server.nikukyu.annotation.NikukyuTokenCheck;
 import io.hanbings.server.nikukyu.content.AccessType;
 import io.hanbings.server.nikukyu.data.Message;
+import io.hanbings.server.nikukyu.data.Permission;
 import io.hanbings.server.nikukyu.data.Token;
 import io.hanbings.server.nikukyu.model.AccountLog;
 import io.hanbings.server.nikukyu.service.AccountService;
@@ -22,6 +24,7 @@ public class AccountLogController {
     final AccountService accounts;
 
     @GetMapping("/account/{auid}/log")
+    @SaCheckPermission(Permission.ACCOUNT_LOG_READ)
     @NikukyuTokenCheck(access = {AccessType.ACCOUNT_LOG_READ})
     public Message<?> list(
             @PathVariable String auid,
@@ -36,6 +39,7 @@ public class AccountLogController {
     }
 
     @GetMapping("/account/{auid}/log/{alid}")
+    @SaCheckPermission(Permission.ACCOUNT_LOG_READ)
     @NikukyuTokenCheck(access = {AccessType.ACCOUNT_LOG_READ})
     public Message<?> read(
             @PathVariable String auid,

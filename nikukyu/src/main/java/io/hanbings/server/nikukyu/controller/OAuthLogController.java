@@ -1,8 +1,10 @@
 package io.hanbings.server.nikukyu.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import io.hanbings.server.nikukyu.annotation.NikukyuTokenCheck;
 import io.hanbings.server.nikukyu.content.AccessType;
 import io.hanbings.server.nikukyu.data.Message;
+import io.hanbings.server.nikukyu.data.Permission;
 import io.hanbings.server.nikukyu.data.Token;
 import io.hanbings.server.nikukyu.service.OAuthService;
 import io.hanbings.server.nikukyu.service.TokenService;
@@ -18,6 +20,7 @@ public class OAuthLogController {
     final OAuthService oauths;
 
     @GetMapping("/oauth/{ouid}/log")
+    @SaCheckPermission(Permission.ACCOUNT_LOG_READ)
     @NikukyuTokenCheck(access = {AccessType.ACCOUNT_LOG_READ})
     public Message<?> list(
             @PathVariable String ouid,
@@ -30,6 +33,7 @@ public class OAuthLogController {
     }
 
     @GetMapping("/oauth/{ouid}/log/{olid}")
+    @SaCheckPermission(Permission.ACCOUNT_LOG_READ)
     @NikukyuTokenCheck(access = {AccessType.ACCOUNT_LOG_READ})
     public Message<?> read(
             @PathVariable String ouid,
