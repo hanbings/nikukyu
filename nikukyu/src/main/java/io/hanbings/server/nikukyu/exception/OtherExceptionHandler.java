@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Slf4j
 @ControllerAdvice
-public class AllExceptionHandler {
+public class OtherExceptionHandler {
 
     @ResponseBody
     @ExceptionHandler(Exception.class)
     public Message<?> exceptionHandler(Exception e) {
         log.info("exception: {}", e.getMessage());
-        return Message.Messages.SERVER_ERROR;
+        return Message.Messages.NOT_FOUND;
     }
 }
