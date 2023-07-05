@@ -1,10 +1,8 @@
 package io.hanbings.server.nikukyu.controller;
 
-import cn.dev33.satoken.annotation.SaCheckPermission;
 import io.hanbings.server.nikukyu.annotation.NikukyuTokenCheck;
 import io.hanbings.server.nikukyu.content.AccessType;
 import io.hanbings.server.nikukyu.data.Message;
-import io.hanbings.server.nikukyu.data.Permission;
 import io.hanbings.server.nikukyu.data.Token;
 import io.hanbings.server.nikukyu.service.AccountService;
 import io.hanbings.server.nikukyu.service.TokenService;
@@ -22,7 +20,6 @@ public class AccountAuthorizationController {
     final AccountService accounts;
 
     @GetMapping("/account/{auid}/authorization")
-    @SaCheckPermission(Permission.ACCOUNT_AUTHORIZATION_READ)
     @NikukyuTokenCheck(access = {AccessType.ACCOUNT_AUTHORIZATION_READ})
     public Message<?> authorizations(
             @PathVariable String auid,
