@@ -14,6 +14,7 @@ import io.hanbings.server.nikukyu.data.VerifyCode;
 import io.hanbings.server.nikukyu.model.Account;
 import io.hanbings.server.nikukyu.model.AccountAuthorization;
 import io.hanbings.server.nikukyu.service.AccountService;
+import io.hanbings.server.nikukyu.service.LoginService;
 import io.hanbings.server.nikukyu.service.MailService;
 import io.hanbings.server.nikukyu.service.TokenService;
 import io.hanbings.server.nikukyu.utils.RandomUtils;
@@ -34,14 +35,16 @@ public class LoginController {
     static Map<String, AccountAuthorization> openids = new ConcurrentHashMap<>();
     // 缓存验证码与 Token 的对应关系 (验证码只能使用一次) Token - VerifyCode
     static Map<String, VerifyCode> verifies = new ConcurrentHashMap<>();
+
     final Config config;
     final MailService mails;
     final TokenService tokens;
     final AccountService accounts;
+    final LoginService logins;
 
     @GetMapping("/login/oauth/{provider}/authorize")
     public Message<?> getOAuthAuthorize(@PathVariable String provider) {
-        return Message.success(Map.of("provider", accounts.getOAuthLoginAccountAuthorize(provider)));
+        return Message.success(Map.of("provider", logins.getOAuthLoginAccountAuthorize(provider)));
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -52,7 +55,7 @@ public class LoginController {
             @RequestParam("state") String state
     ) {
         // 获取 OAuth 信息
-        OAuth<? extends Access, ? extends Access.Wrong> client = accounts.getOAuthProviders(provider);
+        OAuth<? extends Access, ? extends Access.Wrong> client = logins.getOAuthProviders(provider);
 
         // 获取 Token
         @SuppressWarnings("rawtypes")
