@@ -15,7 +15,6 @@ import io.hanbings.server.nikukyu.model.Account;
 import io.hanbings.server.nikukyu.model.AccountAuthorization;
 import io.hanbings.server.nikukyu.service.AccountService;
 import io.hanbings.server.nikukyu.service.MailService;
-import io.hanbings.server.nikukyu.service.OAuthProviderService;
 import io.hanbings.server.nikukyu.service.TokenService;
 import io.hanbings.server.nikukyu.utils.RandomUtils;
 import lombok.RequiredArgsConstructor;
@@ -39,11 +38,10 @@ public class LoginController {
     final MailService mails;
     final TokenService tokens;
     final AccountService accounts;
-    final OAuthProviderService providers;
 
     @GetMapping("/login/oauth/{provider}/authorize")
     public Message<?> getOAuthAuthorize(@PathVariable String provider) {
-        return Message.success(Map.of("provider", providers.authorize(provider)));
+        return Message.success(Map.of("provider", accounts.getOAuthLoginAccountAuthorize(provider)));
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -54,7 +52,7 @@ public class LoginController {
             @RequestParam("state") String state
     ) {
         // 获取 OAuth 信息
-        OAuth<? extends Access, ? extends Access.Wrong> client = providers.provider(provider);
+        OAuth<? extends Access, ? extends Access.Wrong> client = accounts.getOAuthProviders(provider);
 
         // 获取 Token
         @SuppressWarnings("rawtypes")
@@ -136,7 +134,7 @@ public class LoginController {
         );
 
         // 发送邮件
-        mails.send(email, "验证码", verify.code());
+        mails.sendVerifyMail(email, verify.code());
 
         // 放入缓存
         verifies.put(token.substring(token.indexOf("Bearer ") + 7), verify);

@@ -1,6 +1,7 @@
 package io.hanbings.server.nikukyu.service;
 
 
+import io.hanbings.server.nikukyu.data.Authorize;
 import io.hanbings.server.nikukyu.model.OAuth;
 import io.hanbings.server.nikukyu.model.OAuthClient;
 import io.hanbings.server.nikukyu.model.OAuthLog;
@@ -10,14 +11,25 @@ import io.hanbings.server.nikukyu.repository.OAuthRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @SuppressWarnings("SpellCheckingInspection")
 public class OAuthService {
+    static Map<String, Authorize> authorizes = new ConcurrentHashMap<>();
     OAuthClientRepository clients;
     OAuthLogRepository logs;
     OAuthRepository oauths;
+
+    public Authorize createOAuthAuthorizationFlow(String code, Authorize authorize) {
+        return authorizes.put(code, authorize);
+    }
+
+    public Authorize getOAuthAuthorizationFlow(String code) {
+        return authorizes.remove(code);
+    }
 
     // OAuth Client
     public OAuthClient createOAuthClient(OAuthClient client) {

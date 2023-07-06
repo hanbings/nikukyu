@@ -11,4 +11,5 @@ import org.springframework.context.annotation.Configuration;
 public class Config {
     String api;
     String site;
+    String name;
 }

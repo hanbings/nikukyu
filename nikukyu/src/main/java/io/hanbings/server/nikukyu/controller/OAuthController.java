@@ -10,7 +10,6 @@ import io.hanbings.server.nikukyu.model.AccountOAuth;
 import io.hanbings.server.nikukyu.model.OAuth;
 import io.hanbings.server.nikukyu.model.OAuthClient;
 import io.hanbings.server.nikukyu.service.AccountService;
-import io.hanbings.server.nikukyu.service.OAuthAuthorizeService;
 import io.hanbings.server.nikukyu.service.OAuthService;
 import io.hanbings.server.nikukyu.service.TokenService;
 import io.hanbings.server.nikukyu.utils.RandomUtils;
@@ -28,7 +27,6 @@ public class OAuthController {
     final TokenService tokens;
     final AccountService accounts;
     final OAuthService oauths;
-    final OAuthAuthorizeService authorizes;
 
     @PostMapping("/oauth/authorize")
     @NikukyuTokenCheck(access = {AccessType.OAUTH_AUTHORIZE})
@@ -90,7 +88,7 @@ public class OAuthController {
         String code = RandomUtils.uuid();
 
         // 保存授权码
-        authorizes.create(code, authorize);
+        oauths.createOAuthAuthorizationFlow(code, authorize);
 
         return Message.success(
                 new HashMap<>() {{
@@ -107,7 +105,7 @@ public class OAuthController {
             @RequestParam("code") String code,
             @RequestParam("state") String state
     ) {
-        Authorize authorize = authorizes.get(code);
+        Authorize authorize = oauths.getOAuthAuthorizationFlow(code);
 
         if (authorize == null) {
             return new HashMap<>() {{
@@ -152,47 +150,5 @@ public class OAuthController {
             put("scope", AccessType.parse(authorize.access()));
             if (state != null) put("state", state);
         }};
-    }
-
-    @GetMapping("/oauth")
-    @NikukyuTokenCheck(access = {AccessType.OAUTH_READ})
-    public Message<?> list(@RequestHeader("Authorization") String token) {
-        Token t = tokens.get(token.substring(7));
-        List<OAuth> oauth = oauths.getOAuthWithAuid(t.belong());
-
-        return Message.success(oauth);
-    }
-
-    @PostMapping("/oauth")
-    @NikukyuTokenCheck(access = {AccessType.OAUTH_WRITE})
-    public Message<?> create(@RequestHeader("Authorization") String token) {
-        Token t = tokens.get(token.substring(7));
-        List<OAuth> oauth = oauths.getOAuthWithAuid(t.belong());
-
-        return Message.success(oauth);
-    }
-
-    @GetMapping("/oauth/{ouid}")
-    @NikukyuTokenCheck(access = {AccessType.OAUTH_WRITE})
-    public Message<?> read(
-            @PathVariable String ouid,
-            @RequestHeader("Authorization") String token
-    ) {
-        Token t = tokens.get(token.substring(7));
-        List<OAuth> oauth = oauths.getOAuthWithAuid(t.belong());
-
-        return Message.success(oauth);
-    }
-
-    @PutMapping("/oauth/{ouid}")
-    @NikukyuTokenCheck(access = {AccessType.OAUTH_WRITE})
-    public Message<?> change(
-            @PathVariable String ouid,
-            @RequestHeader("Authorization") String token
-    ) {
-        Token t = tokens.get(token.substring(7));
-        List<OAuth> oauth = oauths.getOAuthWithAuid(t.belong());
-
-        return Message.success(oauth);
     }
 }

@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class MailService {
-    public void send(String to, String subject, String content) {
+    public void sendVerifyMail(String to, String code) {
 
     }
 }

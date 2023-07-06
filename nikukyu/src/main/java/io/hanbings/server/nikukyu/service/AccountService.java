@@ -1,5 +1,11 @@
 package io.hanbings.server.nikukyu.service;
 
+import io.hanbings.flows.common.OAuth;
+import io.hanbings.flows.common.interfaces.Access;
+import io.hanbings.flows.common.interfaces.Request;
+import io.hanbings.flows.github.GithubOAuth;
+import io.hanbings.server.nikukyu.config.Config;
+import io.hanbings.server.nikukyu.config.OAuthConfig;
 import io.hanbings.server.nikukyu.model.Account;
 import io.hanbings.server.nikukyu.model.AccountAuthorization;
 import io.hanbings.server.nikukyu.model.AccountLog;
@@ -10,16 +16,71 @@ import io.hanbings.server.nikukyu.repository.AccountOAuthRepository;
 import io.hanbings.server.nikukyu.repository.AccountRepository;
 import org.springframework.stereotype.Service;
 
+import java.net.Proxy;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @SuppressWarnings("SpellCheckingInspection")
 public class AccountService {
+    static Request.Proxy proxy;
+    static Map<String, OAuth<? extends Access, ? extends Access.Wrong>> providers = new ConcurrentHashMap<>();
     AccountAuthorizationRepository authorizations;
     AccountLogRepository logs;
     AccountOAuthRepository oauths;
     AccountRepository accounts;
+
+    @SuppressWarnings("SwitchStatementWithTooFewBranches")
+    public AccountService(
+            Config config,
+            OAuthConfig oauth,
+            AccountAuthorizationRepository authorizations,
+            AccountRepository accounts,
+            AccountOAuthRepository oauths,
+            AccountLogRepository logs
+    ) {
+        this.authorizations = authorizations;
+        this.logs = logs;
+        this.oauths = oauths;
+        this.accounts = accounts;
+
+        // init oauth service
+        AccountService.proxy = new Request.Proxy(
+                Proxy.Type.HTTP,
+                oauth.proxy().host(),
+                Integer.parseInt(oauth.proxy().port()),
+                oauth.proxy().username(),
+                oauth.proxy().password()
+        );
+
+        oauth.providers().forEach((type, provider) -> {
+            if (provider.enable()) {
+                switch (type) {
+                    case GITHUB -> AccountService.providers.put(type.toString(), new GithubOAuth(
+                            provider.clientId(),
+                            provider.clientSecret(),
+                            String.format("%s/login/oauth/%s/callback", config.getSite(), type),
+                            List.of("read:user", "user:email"),
+                            Map.of()
+                    ));
+                }
+            }
+
+            if (provider.proxy()) {
+                AccountService.providers.get(provider.toString()).proxy(() -> AccountService.proxy);
+            }
+        });
+    }
+
+    public String getOAuthLoginAccountAuthorize(String provider) {
+        return providers.get(provider).authorize();
+    }
+
+    public OAuth<? extends Access, ? extends Access.Wrong> getOAuthProviders(String provider) {
+        return providers.get(provider);
+    }
 
     // Account Authorization
     public AccountAuthorization createAccountAuthorization(AccountAuthorization authorization) {
