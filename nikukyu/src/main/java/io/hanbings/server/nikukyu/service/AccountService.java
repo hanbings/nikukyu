@@ -18,10 +18,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @SuppressWarnings("SpellCheckingInspection")
 public class AccountService {
-    final AccountAuthorizationRepository authorizationRepository;
+    final AccountRepository accountRepository;
     final AccountLogRepository accountLogRepository;
     final AccountOAuthRepository accountOAuthRepository;
-    final AccountRepository accountRepository;
+    final AccountAuthorizationRepository authorizationRepository;
 
     // Account Authorization
     public AccountAuthorization createAccountAuthorization(AccountAuthorization authorization) {

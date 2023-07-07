@@ -16,6 +16,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Arrays;
 import java.util.UUID;
 
 @Target({ElementType.METHOD})
@@ -25,7 +26,11 @@ public @interface NikukyuTokenCheck {
     // 检查 Token 所需的权限
     AccessType[] access();
 
+    // 检查 Token 所需的账户 AUID 从 PathVariable 中获取
     boolean checkAccount() default true;
+
+    // 符合其中一个权限即可通过检查
+    boolean checkAccessOr() default false;
 
     @Aspect
     @Component
@@ -67,7 +72,17 @@ public @interface NikukyuTokenCheck {
             AccessType[] access = annotation.access();
 
             // 检查 Token 权限
-            if (!tokens.checkAccess(token, access)) throw new ControllerException(Message.Messages.UNAUTHORIZED);
+            if (annotation.checkAccessOr()) {
+                boolean target = Arrays
+                        .stream(access)
+                        .anyMatch(accessType -> tokens.checkAccess(token, new AccessType[]{accessType}));
+
+                if (!target) throw new ControllerException(Message.Messages.UNAUTHORIZED);
+            } else {
+                if (!tokens.checkAccess(token, access)) {
+                    throw new ControllerException(Message.Messages.UNAUTHORIZED);
+                }
+            }
 
             // 检查 Token 有效期
             if (tokens.get(token).expire() < System.currentTimeMillis()) {

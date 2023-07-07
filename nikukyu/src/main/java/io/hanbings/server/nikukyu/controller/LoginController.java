@@ -24,20 +24,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v0")
 @SuppressWarnings("SpellCheckingInspection")
 public class LoginController {
-    // 缓存 OAuth Openid 信息与 Token 的对应关系 Token - AccountAuthorization
-    static Map<String, AccountAuthorization> openids = new ConcurrentHashMap<>();
-
-    // 缓存验证码与 Token 的对应关系 (验证码只能使用一次) Token - VerifyCode
-    static Map<String, MailVerifyFlow> verifies = new ConcurrentHashMap<>();
-
     final Config config;
     final MailService mailService;
     final TokenService tokenService;
@@ -51,12 +45,20 @@ public class LoginController {
 
     @SuppressWarnings("ConstantConditions")
     @PostMapping("/login/oauth/{provider}/callback")
-    public Message<?> postOAuthCallback(@PathVariable String provider, @RequestParam("code") String code, @RequestParam("state") String state) {
+    public Message<?> postOAuthCallback(
+            @PathVariable String provider,
+            @RequestParam("code") String code,
+            @RequestParam("state") String state
+    ) {
         // 获取 OAuth 信息
         OAuth<? extends Access, ? extends Access.Wrong> client = loginService.getOAuthProviders(provider);
 
         // 获取 Token
-        @SuppressWarnings("rawtypes") Callback callback = client.token(code, state, String.format("%s/login/oauth/%s/callback", config.getSite(), provider));
+        @SuppressWarnings("rawtypes") Callback callback = client.token(
+                code,
+                state,
+                String.format("%s/login/oauth/%s/callback", config.getSite(), provider)
+        );
         if (callback == null) throw new ControllerException(Message.Messages.BAD_REQUEST);
         if (callback.data() == null && !callback.success())
             throw new ControllerException(Message.badRequest(((Access.Wrong) callback.wrong()).error()));
@@ -91,81 +93,167 @@ public class LoginController {
             Account account = accountService.getAccountWithAuid(authorization.auid());
 
             // 创建 token
-            Token token = tokenService.signature(account.auid(), System.currentTimeMillis() + TokenService.Expire.WEEK, AccessType.all());
+            Token token = tokenService.signature(
+                    account.auid(),
+                    System.currentTimeMillis() + TokenService.Expire.WEEK,
+                    AccessType.all()
+            );
 
             return Message.success(Map.of("token", token.token()));
         }
 
         // 如果还没存在则创建一个新的 AccountAuthorization 然后返回一个仅有发送 email 权限的 token 要求用户验证
-        authorization = accountService.createAccountAuthorization(new AccountAuthorization(UUID.randomUUID(), System.currentTimeMillis(), null, provider, oepnid));
+        authorization = accountService.createAccountAuthorization(
+                new AccountAuthorization(UUID.randomUUID(),
+                        System.currentTimeMillis(),
+                        null,
+                        provider,
+                        oepnid
+                )
+        );
 
         // 创建 token
-        Token token = tokenService.signature(null, System.currentTimeMillis() + TokenService.Expire.MINUTE * 10, List.of(AccessType.OAUTH_EMAIL_VERIFY));
+        Token token = tokenService.signature(
+                null,
+                System.currentTimeMillis() + TokenService.Expire.MINUTE * 10,
+                List.of(AccessType.OAUTH_EMAIL_VERIFY)
+        );
 
-        // 放入缓存
-        openids.put(token.token(), authorization);
+        @SuppressWarnings("unused") MailVerifyFlow flow =
+                loginService.createMailVerifyFlow(token, email, authorization);
 
         return Message.success(Map.of("token", token));
     }
 
-    @PostMapping("/login/verify/email")
-    @NikukyuTokenCheck(access = {AccessType.OAUTH_EMAIL_VERIFY})
+    @GetMapping("/login/verify/token")
+    public Message<?> token() {
+        return Message.success(
+                Map.of(
+                        "token",
+                        tokenService.signature(
+                                null,
+                                System.currentTimeMillis() + TokenService.Expire.MINUTE * 5,
+                                List.of(AccessType.EMAIL_VERIFY)
+                        ).token()
+                )
+        );
+    }
+
+    @PostMapping("/login/email/verify")
+    @NikukyuTokenCheck(
+            access = {AccessType.OAUTH_EMAIL_VERIFY, AccessType.EMAIL_VERIFY},
+            checkAccount = false,
+            checkAccessOr = true
+    )
     public Message<?> verifyEmail(@RequestParam("email") String email, @RequestHeader("Authorization") String token) {
-        // 裁剪 Token
-        MailVerifyFlow verify = new MailVerifyFlow(RandomUtils.strings(6), System.currentTimeMillis() + TokenService.Expire.MINUTE * 5, email);
+        MailVerifyFlow flow = loginService.getVerifyFlow(tokenService.parse(token));
+
+        // 检查参数
+        if (flow == null) {
+            flow = loginService.createMailVerifyFlow(
+                    tokenService.parse(token),
+                    email,
+                    null
+            );
+        }
+
+        // 对照 email
+        if (!Objects.equals(email, flow.email())) {
+            loginService.createMailVerifyFlow(
+                    tokenService.parse(token),
+                    email,
+                    flow.accountAuthorization()
+            );
+        }
 
         // 发送邮件
-        mailService.sendVerifyMail(email, verify.code());
-
-        // 放入缓存
-        verifies.put(token.substring(token.indexOf("Bearer ") + 7), verify);
+        mailService.sendVerifyMail(flow.email(), flow.code());
 
         return Message.Messages.SUCCESS;
     }
 
-    @PostMapping("/login/oauth/token")
-    @NikukyuTokenCheck(access = {AccessType.OAUTH_EMAIL_VERIFY})
-    public Message<?> getToken(@RequestParam(name = "email", required = false) String email, @RequestParam(name = "code", required = false) String code, @RequestHeader("Authorization") String token) {
-        String bearer = token.substring(token.indexOf("Bearer ") + 7);
+    @PostMapping("/login/token")
+    @NikukyuTokenCheck(
+            access = {AccessType.OAUTH_EMAIL_VERIFY, AccessType.EMAIL_VERIFY},
+            checkAccount = false,
+            checkAccessOr = true
+    )
+    public Message<?> getToken(
+            @RequestParam(name = "email", required = false) String email,
+            @RequestParam(name = "code", required = false) String code,
+            @RequestHeader("Authorization") String bearer
+    ) {
+        Token token = tokenService.parse(bearer);
 
         // 查询
-        MailVerifyFlow verify = verifies.get(bearer);
-
-        // 清除 VerifyCode 缓存
-        verifies.remove(bearer);
+        MailVerifyFlow flow = loginService.getVerifyFlow(token);
 
         // 验证不存在
-        if (verify == null) {
-            throw new ControllerException(Message.ReturnCode.MAIL_VERIFY_INVALID, "验证不存在", Map.of("token", bearer));
+        if (flow == null) {
+            throw new ControllerException(
+                    Message.ReturnCode.MAIL_VERIFY_INVALID,
+                    "验证不存在",
+                    Map.of("token", token.token())
+            );
         }
         // 查询是否超时
-        if (verify.expire() < System.currentTimeMillis()) {
-            throw new ControllerException(Message.ReturnCode.MAIL_VERIFY_INVALID, "验证码已过期", Map.of("token", bearer));
+        if (flow.expire() < System.currentTimeMillis()) {
+            throw new ControllerException(
+                    Message.ReturnCode.MAIL_VERIFY_INVALID,
+                    "验证码已过期",
+                    Map.of("token", token.token())
+            );
         }
 
         // 验证码是否正确
-        if (!verify.code().equals(code)) {
-            throw new ControllerException(Message.ReturnCode.MAIL_VERIFY_INVALID, "验证码错误", Map.of("token", bearer));
+        if (!flow.code().equals(code)) {
+            throw new ControllerException(
+                    Message.ReturnCode.MAIL_VERIFY_INVALID,
+                    "验证码错误",
+                    Map.of("token", token.token())
+            );
         }
 
         // 验证成功
         // 创建 Account
-        Account account = new Account(UUID.randomUUID(), System.currentTimeMillis(), true, RandomUtils.strings(8), "", "", "", "", email);
-
-        // 获取 Authorization
-        AccountAuthorization temp = openids.get(bearer);
-
-        // 更新 Authorization
-        AccountAuthorization authorization = new AccountAuthorization(temp.auid(), temp.create(), account.auid(), temp.provider(), temp.openid());
-
-        // 清除 Authorization 缓存
-        openids.remove(bearer);
+        Account account = new Account(
+                UUID.randomUUID(),
+                System.currentTimeMillis(),
+                true,
+                RandomUtils.strings(8),
+                "", "", "", "",
+                email
+        );
 
         // 存储
         accountService.createAccount(account);
-        accountService.createAccountAuthorization(authorization);
+
+        if (flow.accountAuthorization() != null) {
+            // 获取 Authorization
+            AccountAuthorization temp = flow.accountAuthorization();
+
+            // 更新 Authorization
+            AccountAuthorization authorization = new AccountAuthorization(
+                    temp.auid(),
+                    temp.create(),
+                    account.auid(),
+                    temp.provider(),
+                    temp.openid()
+            );
+
+            accountService.createAccountAuthorization(authorization);
+        }
 
         // 签发 Token
-        return Message.success(Map.of("token", tokenService.signature(account.auid(), System.currentTimeMillis() + TokenService.Expire.WEEK, AccessType.all()).token()));
+        return Message.success(
+                Map.of(
+                        "token",
+                        tokenService.signature(
+                                account.auid(),
+                                System.currentTimeMillis() + TokenService.Expire.WEEK,
+                                AccessType.all()
+                        ).token()
+                )
+        );
     }
 }

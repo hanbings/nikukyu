@@ -17,9 +17,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @SuppressWarnings("SpellCheckingInspection")
 public class OAuthService {
-    final OAuthClientRepository oAuthClientRepository;
-    final OAuthLogRepository oAuthLogRepository;
     final OAuthRepository oAuthRepository;
+    final OAuthLogRepository oAuthLogRepository;
+    final OAuthClientRepository oAuthClientRepository;
 
     // OAuth Client
     public OAuthClient createOAuthClient(OAuthClient client) {

@@ -31,7 +31,7 @@ public class AuthorizeController {
     final AuthorizeService authorizeService;
 
     @PostMapping("/oauth/authorize")
-    @NikukyuTokenCheck(access = {AccessType.OAUTH_AUTHORIZE})
+    @NikukyuTokenCheck(access = {AccessType.OAUTH_AUTHORIZE}, checkAccount = false)
     public Message<?> authorize(
             @RequestParam("scope") String scope,
             @RequestParam("state") String state,
@@ -129,7 +129,8 @@ public class AuthorizeController {
         }
 
         // 检查 state
-        if ((state == null && oAuthAuthorizeFlow.state() == null) || Objects.equals(state, oAuthAuthorizeFlow.state())) {
+        if ((state == null && oAuthAuthorizeFlow.state() == null) ||
+                Objects.equals(state, oAuthAuthorizeFlow.state())) {
             return new HashMap<>() {{
                 put("error_code", String.valueOf(Message.ReturnCode.OAUTH_STATE_INVALID));
                 put("error_message", "state 无效");
@@ -138,7 +139,8 @@ public class AuthorizeController {
         }
 
         // 检查 client 与 secret
-        if (!(Objects.equals(oAuthAuthorizeFlow.client().ouid(), UUID.fromString(clientId)) && Objects.equals(oAuthAuthorizeFlow.client().secret(), clientSecret))) {
+        if (!(Objects.equals(oAuthAuthorizeFlow.client().ouid(), UUID.fromString(clientId)) &&
+                Objects.equals(oAuthAuthorizeFlow.client().secret(), clientSecret))) {
             return new HashMap<>() {{
                 put("error_code", String.valueOf(Message.ReturnCode.OAUTH_CLIENT_SECRET_INVALID));
                 put("error_message", "secret 匹配失败");
@@ -154,7 +156,11 @@ public class AuthorizeController {
                 oAuthAuthorizeFlow.access()
         ));
 
-        Token access = tokenService.signature(oAuthAuthorizeFlow.account().auid(), TokenService.Expire.WEEK, oAuthAuthorizeFlow.access());
+        Token access = tokenService.signature(
+                oAuthAuthorizeFlow.account().auid(),
+                TokenService.Expire.WEEK,
+                oAuthAuthorizeFlow.access()
+        );
 
         return new HashMap<>() {{
             put("access_token", access.token());
