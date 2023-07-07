@@ -2,8 +2,8 @@ package io.hanbings.server.nikukyu.controller;
 
 import io.hanbings.server.nikukyu.annotation.NikukyuTokenCheck;
 import io.hanbings.server.nikukyu.content.AccessType;
-import io.hanbings.server.nikukyu.data.Authorize;
 import io.hanbings.server.nikukyu.data.Message;
+import io.hanbings.server.nikukyu.data.OAuthAuthorizeFlow;
 import io.hanbings.server.nikukyu.data.Token;
 import io.hanbings.server.nikukyu.exception.ControllerException;
 import io.hanbings.server.nikukyu.model.Account;
@@ -15,7 +15,6 @@ import io.hanbings.server.nikukyu.service.AuthorizeService;
 import io.hanbings.server.nikukyu.service.OAuthService;
 import io.hanbings.server.nikukyu.service.TokenService;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URL;
@@ -31,7 +30,6 @@ public class AuthorizeController {
     final OAuthService oAuthService;
     final AuthorizeService authorizeService;
 
-    @SneakyThrows
     @PostMapping("/oauth/authorize")
     @NikukyuTokenCheck(access = {AccessType.OAUTH_AUTHORIZE})
     public Message<?> authorize(
@@ -120,9 +118,9 @@ public class AuthorizeController {
             @RequestParam("code") String code,
             @RequestParam("state") String state
     ) {
-        Authorize authorize = authorizeService.getOAuthAuthorizationFlow(code);
+        OAuthAuthorizeFlow oAuthAuthorizeFlow = authorizeService.getOAuthAuthorizationFlow(code);
 
-        if (authorize == null) {
+        if (oAuthAuthorizeFlow == null) {
             return new HashMap<>() {{
                 put("error_code", String.valueOf(Message.ReturnCode.OAUTH_AUTHORIZE_CODE_INVALID));
                 put("error_message", "授权码无效");
@@ -131,7 +129,7 @@ public class AuthorizeController {
         }
 
         // 检查 state
-        if ((state == null && authorize.state() == null) || Objects.equals(state, authorize.state())) {
+        if ((state == null && oAuthAuthorizeFlow.state() == null) || Objects.equals(state, oAuthAuthorizeFlow.state())) {
             return new HashMap<>() {{
                 put("error_code", String.valueOf(Message.ReturnCode.OAUTH_STATE_INVALID));
                 put("error_message", "state 无效");
@@ -140,7 +138,7 @@ public class AuthorizeController {
         }
 
         // 检查 client 与 secret
-        if (!(Objects.equals(authorize.client().ouid(), UUID.fromString(clientId)) && Objects.equals(authorize.client().secret(), clientSecret))) {
+        if (!(Objects.equals(oAuthAuthorizeFlow.client().ouid(), UUID.fromString(clientId)) && Objects.equals(oAuthAuthorizeFlow.client().secret(), clientSecret))) {
             return new HashMap<>() {{
                 put("error_code", String.valueOf(Message.ReturnCode.OAUTH_CLIENT_SECRET_INVALID));
                 put("error_message", "secret 匹配失败");
@@ -151,18 +149,18 @@ public class AuthorizeController {
         accountService.createAccountOAuth(new AccountOAuth(
                 UUID.randomUUID(),
                 System.currentTimeMillis(),
-                authorize.account().auid(),
-                authorize.oauth().ouid(),
-                authorize.access()
+                oAuthAuthorizeFlow.account().auid(),
+                oAuthAuthorizeFlow.oauth().ouid(),
+                oAuthAuthorizeFlow.access()
         ));
 
-        Token access = tokenService.signature(authorize.account().auid(), TokenService.Expire.WEEK, authorize.access());
+        Token access = tokenService.signature(oAuthAuthorizeFlow.account().auid(), TokenService.Expire.WEEK, oAuthAuthorizeFlow.access());
 
         return new HashMap<>() {{
             put("access_token", access.token());
             put("expire_in", String.valueOf(access.expire()));
             put("token_type", "Bearer");
-            put("scope", AccessType.parse(authorize.access()));
+            put("scope", AccessType.parse(oAuthAuthorizeFlow.access()));
             if (state != null) put("state", state);
         }};
     }

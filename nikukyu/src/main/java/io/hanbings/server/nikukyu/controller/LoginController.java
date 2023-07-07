@@ -8,9 +8,10 @@ import io.hanbings.flows.common.interfaces.Identify;
 import io.hanbings.server.nikukyu.annotation.NikukyuTokenCheck;
 import io.hanbings.server.nikukyu.config.Config;
 import io.hanbings.server.nikukyu.content.AccessType;
+import io.hanbings.server.nikukyu.data.MailVerifyFlow;
 import io.hanbings.server.nikukyu.data.Message;
 import io.hanbings.server.nikukyu.data.Token;
-import io.hanbings.server.nikukyu.data.VerifyCode;
+import io.hanbings.server.nikukyu.exception.ControllerException;
 import io.hanbings.server.nikukyu.model.Account;
 import io.hanbings.server.nikukyu.model.AccountAuthorization;
 import io.hanbings.server.nikukyu.service.AccountService;
@@ -33,14 +34,15 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LoginController {
     // 缓存 OAuth Openid 信息与 Token 的对应关系 Token - AccountAuthorization
     static Map<String, AccountAuthorization> openids = new ConcurrentHashMap<>();
+
     // 缓存验证码与 Token 的对应关系 (验证码只能使用一次) Token - VerifyCode
-    static Map<String, VerifyCode> verifies = new ConcurrentHashMap<>();
+    static Map<String, MailVerifyFlow> verifies = new ConcurrentHashMap<>();
 
     final Config config;
     final MailService mailService;
     final TokenService tokenService;
-    final AccountService accountService;
     final LoginService loginService;
+    final AccountService accountService;
 
     @GetMapping("/login/oauth/{provider}/authorize")
     public Message<?> getOAuthAuthorize(@PathVariable String provider) {
@@ -49,30 +51,27 @@ public class LoginController {
 
     @SuppressWarnings("ConstantConditions")
     @PostMapping("/login/oauth/{provider}/callback")
-    public Message<?> postOAuthCallback(
-            @PathVariable String provider,
-            @RequestParam("code") String code,
-            @RequestParam("state") String state
-    ) {
+    public Message<?> postOAuthCallback(@PathVariable String provider, @RequestParam("code") String code, @RequestParam("state") String state) {
         // 获取 OAuth 信息
         OAuth<? extends Access, ? extends Access.Wrong> client = loginService.getOAuthProviders(provider);
 
         // 获取 Token
-        @SuppressWarnings("rawtypes")
-        Callback callback = client.token(code, state, String.format("%s/login/oauth/%s/callback", config.getSite(), provider));
-        if (callback == null) return Message.Messages.BAD_REQUEST;
+        @SuppressWarnings("rawtypes") Callback callback = client.token(code, state, String.format("%s/login/oauth/%s/callback", config.getSite(), provider));
+        if (callback == null) throw new ControllerException(Message.Messages.BAD_REQUEST);
         if (callback.data() == null && !callback.success())
-            return Message.badRequest(((Access.Wrong) callback.wrong()).error());
-        if (callback.data() == null) return Message.Messages.BAD_REQUEST;
+            throw new ControllerException(Message.badRequest(((Access.Wrong) callback.wrong()).error()));
+        if (callback.data() == null) throw new ControllerException(Message.Messages.BAD_REQUEST);
 
         // 获取用户信息
-        if (!(client instanceof @SuppressWarnings("rawtypes")Identifiable identifiable))
-            return Message.Messages.BAD_REQUEST;
-        @SuppressWarnings("rawtypes")
-        Callback identify = identifiable.identify(callback.token());
-        if (identify == null) return Message.Messages.BAD_REQUEST;
-        if (identify.data() == null && !identify.success()) return Message.badRequest(identify.wrong());
-        if (identify.data() == null) return Message.Messages.BAD_REQUEST;
+        if (!(client instanceof @SuppressWarnings("rawtypes")Identifiable identifiable)) {
+            throw new ControllerException(Message.Messages.BAD_REQUEST);
+        }
+
+        @SuppressWarnings("rawtypes") Callback identify = identifiable.identify(callback.token());
+        if (identify == null) throw new ControllerException(Message.Messages.BAD_REQUEST);
+        if (identify.data() == null && !identify.success())
+            throw new ControllerException(Message.badRequest(identify.wrong()));
+        if (identify.data() == null) throw new ControllerException(Message.Messages.BAD_REQUEST);
 
         // 邮箱
         String oepnid = ((Identify) identify.data()).openid();
@@ -83,7 +82,7 @@ public class LoginController {
 
         // OAuth 未被注册但邮箱已被占用
         if (authorization == null && email != null) {
-            return new Message<>(Message.ReturnCode.MAIL_EXIST, "该邮箱地址已被注册", Map.of("email", email));
+            throw new ControllerException(Message.ReturnCode.MAIL_EXIST, "该邮箱地址已被注册", Map.of("email", email));
         }
 
         // 如果已经存入系统则直接返回 Token
@@ -92,30 +91,16 @@ public class LoginController {
             Account account = accountService.getAccountWithAuid(authorization.auid());
 
             // 创建 token
-            Token token = tokenService.signature(
-                    account.auid(),
-                    System.currentTimeMillis() + TokenService.Expire.WEEK,
-                    AccessType.all()
-            );
+            Token token = tokenService.signature(account.auid(), System.currentTimeMillis() + TokenService.Expire.WEEK, AccessType.all());
 
             return Message.success(Map.of("token", token.token()));
         }
 
         // 如果还没存在则创建一个新的 AccountAuthorization 然后返回一个仅有发送 email 权限的 token 要求用户验证
-        authorization = accountService.createAccountAuthorization(new AccountAuthorization(
-                UUID.randomUUID(),
-                System.currentTimeMillis(),
-                null,
-                provider,
-                oepnid
-        ));
+        authorization = accountService.createAccountAuthorization(new AccountAuthorization(UUID.randomUUID(), System.currentTimeMillis(), null, provider, oepnid));
 
         // 创建 token
-        Token token = tokenService.signature(
-                null,
-                System.currentTimeMillis() + TokenService.Expire.MINUTE * 10,
-                List.of(AccessType.OAUTH_EMAIL_VERIFY)
-        );
+        Token token = tokenService.signature(null, System.currentTimeMillis() + TokenService.Expire.MINUTE * 10, List.of(AccessType.OAUTH_EMAIL_VERIFY));
 
         // 放入缓存
         openids.put(token.token(), authorization);
@@ -125,16 +110,9 @@ public class LoginController {
 
     @PostMapping("/login/verify/email")
     @NikukyuTokenCheck(access = {AccessType.OAUTH_EMAIL_VERIFY})
-    public Message<?> verifyEmail(
-            @RequestParam("email") String email,
-            @RequestHeader("Authorization") String token
-    ) {
+    public Message<?> verifyEmail(@RequestParam("email") String email, @RequestHeader("Authorization") String token) {
         // 裁剪 Token
-        VerifyCode verify = new VerifyCode(
-                RandomUtils.strings(6),
-                System.currentTimeMillis() + TokenService.Expire.MINUTE * 5,
-                email
-        );
+        MailVerifyFlow verify = new MailVerifyFlow(RandomUtils.strings(6), System.currentTimeMillis() + TokenService.Expire.MINUTE * 5, email);
 
         // 发送邮件
         mailService.sendVerifyMail(email, verify.code());
@@ -147,48 +125,38 @@ public class LoginController {
 
     @PostMapping("/login/oauth/token")
     @NikukyuTokenCheck(access = {AccessType.OAUTH_EMAIL_VERIFY})
-    public Message<?> getToken(
-            @RequestParam(name = "email", required = false) String email,
-            @RequestParam(name = "code", required = false) String code,
-            @RequestHeader("Authorization") String token
-    ) {
+    public Message<?> getToken(@RequestParam(name = "email", required = false) String email, @RequestParam(name = "code", required = false) String code, @RequestHeader("Authorization") String token) {
         String bearer = token.substring(token.indexOf("Bearer ") + 7);
 
         // 查询
-        VerifyCode verify = verifies.get(bearer);
+        MailVerifyFlow verify = verifies.get(bearer);
 
         // 清除 VerifyCode 缓存
         verifies.remove(bearer);
 
         // 验证不存在
-        if (verify == null) return new Message<>(Message.ReturnCode.MAIL_VERIFY_INVALID, "验证不存在", null);
+        if (verify == null) {
+            throw new ControllerException(Message.ReturnCode.MAIL_VERIFY_INVALID, "验证不存在", Map.of("token", bearer));
+        }
         // 查询是否超时
-        if (verify.expire() < System.currentTimeMillis())
-            return new Message<>(Message.ReturnCode.MAIL_VERIFY_INVALID, "验证码已过期", null);
+        if (verify.expire() < System.currentTimeMillis()) {
+            throw new ControllerException(Message.ReturnCode.MAIL_VERIFY_INVALID, "验证码已过期", Map.of("token", bearer));
+        }
+
         // 验证码是否正确
-        if (!verify.code().equals(code))
-            return new Message<>(Message.ReturnCode.MAIL_VERIFY_INVALID, "验证码错误", null);
+        if (!verify.code().equals(code)) {
+            throw new ControllerException(Message.ReturnCode.MAIL_VERIFY_INVALID, "验证码错误", Map.of("token", bearer));
+        }
 
         // 验证成功
         // 创建 Account
-        Account account = new Account(
-                UUID.randomUUID(),
-                System.currentTimeMillis(),
-                true,
-                RandomUtils.strings(8), "", "", "", "", email
-        );
+        Account account = new Account(UUID.randomUUID(), System.currentTimeMillis(), true, RandomUtils.strings(8), "", "", "", "", email);
 
         // 获取 Authorization
         AccountAuthorization temp = openids.get(bearer);
 
         // 更新 Authorization
-        AccountAuthorization authorization = new AccountAuthorization(
-                temp.auid(),
-                temp.create(),
-                account.auid(),
-                temp.provider(),
-                temp.openid()
-        );
+        AccountAuthorization authorization = new AccountAuthorization(temp.auid(), temp.create(), account.auid(), temp.provider(), temp.openid());
 
         // 清除 Authorization 缓存
         openids.remove(bearer);
@@ -198,15 +166,6 @@ public class LoginController {
         accountService.createAccountAuthorization(authorization);
 
         // 签发 Token
-        return Message.success(
-                Map.of(
-                        "token",
-                        tokenService.signature(
-                                account.auid(),
-                                System.currentTimeMillis() + TokenService.Expire.WEEK,
-                                AccessType.all()
-                        ).token()
-                )
-        );
+        return Message.success(Map.of("token", tokenService.signature(account.auid(), System.currentTimeMillis() + TokenService.Expire.WEEK, AccessType.all()).token()));
     }
 }

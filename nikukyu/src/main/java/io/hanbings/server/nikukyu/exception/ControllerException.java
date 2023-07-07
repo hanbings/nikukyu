@@ -4,7 +4,7 @@ import io.hanbings.server.nikukyu.data.Message;
 import lombok.Getter;
 
 @Getter
-public class ControllerException extends Exception {
+public class ControllerException extends RuntimeException {
     final int code;
     final String message;
     final Object data;

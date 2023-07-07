@@ -7,7 +7,7 @@ import io.hanbings.server.nikukyu.model.OAuthClient;
 
 import java.util.List;
 
-public record Authorize(
+public record OAuthAuthorizeFlow(
         Account account,
         OAuth oauth,
         OAuthClient client,
