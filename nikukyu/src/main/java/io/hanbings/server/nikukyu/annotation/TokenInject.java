@@ -1,7 +1,7 @@
 package io.hanbings.server.nikukyu.annotation;
 
 import io.hanbings.server.nikukyu.data.Message;
-import io.hanbings.server.nikukyu.exception.RequestUnauthorizedException;
+import io.hanbings.server.nikukyu.exception.ControllerException;
 import io.hanbings.server.nikukyu.service.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -38,15 +38,15 @@ public @interface TokenInject {
             }
 
             // 检查 Token
-            if (request == null) throw new RequestUnauthorizedException("Request Not Have Token");
+            if (request == null) throw new ControllerException(Message.Messages.UNAUTHORIZED);
 
             // 获取 Header 中的 Token
             String header = request.getHeader("Authorization");
-            if (header == null) throw new RequestUnauthorizedException("Request Not Have Token");
+            if (header == null) throw new ControllerException(Message.Messages.UNAUTHORIZED);
 
             // 裁取 Token
             String token = header.substring(header.indexOf("Bearer ") + 7);
-            if (token.isEmpty()) throw new RequestUnauthorizedException("Request Not Have Token");
+            if (token.isEmpty()) throw new ControllerException(Message.Messages.UNAUTHORIZED);
 
             // 注入
             point.getArgs()[0] = tokens.get(token);

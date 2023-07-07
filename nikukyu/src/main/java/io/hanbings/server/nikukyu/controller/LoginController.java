@@ -37,14 +37,14 @@ public class LoginController {
     static Map<String, VerifyCode> verifies = new ConcurrentHashMap<>();
 
     final Config config;
-    final MailService mails;
-    final TokenService tokens;
-    final AccountService accounts;
-    final LoginService logins;
+    final MailService mailService;
+    final TokenService tokenService;
+    final AccountService accountService;
+    final LoginService loginService;
 
     @GetMapping("/login/oauth/{provider}/authorize")
     public Message<?> getOAuthAuthorize(@PathVariable String provider) {
-        return Message.success(Map.of("provider", logins.getOAuthLoginAccountAuthorize(provider)));
+        return Message.success(Map.of("provider", loginService.getOAuthLoginAccountAuthorize(provider)));
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -55,7 +55,7 @@ public class LoginController {
             @RequestParam("state") String state
     ) {
         // 获取 OAuth 信息
-        OAuth<? extends Access, ? extends Access.Wrong> client = logins.getOAuthProviders(provider);
+        OAuth<? extends Access, ? extends Access.Wrong> client = loginService.getOAuthProviders(provider);
 
         // 获取 Token
         @SuppressWarnings("rawtypes")
@@ -79,7 +79,7 @@ public class LoginController {
         String email = ((Identify) identify.data()).email();
 
         // 获取当前的 openid 是否已经绑定了账号
-        AccountAuthorization authorization = accounts.getAccountAuthorizationWithOpenid(oepnid);
+        AccountAuthorization authorization = accountService.getAccountAuthorizationWithOpenid(oepnid);
 
         // OAuth 未被注册但邮箱已被占用
         if (authorization == null && email != null) {
@@ -89,10 +89,10 @@ public class LoginController {
         // 如果已经存入系统则直接返回 Token
         if (authorization != null) {
             // 如果存在则从 authorizations 中获取 auid
-            Account account = accounts.getAccountWithAuid(authorization.auid());
+            Account account = accountService.getAccountWithAuid(authorization.auid());
 
             // 创建 token
-            Token token = tokens.signature(
+            Token token = tokenService.signature(
                     account.auid(),
                     System.currentTimeMillis() + TokenService.Expire.WEEK,
                     AccessType.all()
@@ -102,7 +102,7 @@ public class LoginController {
         }
 
         // 如果还没存在则创建一个新的 AccountAuthorization 然后返回一个仅有发送 email 权限的 token 要求用户验证
-        authorization = accounts.createAccountAuthorization(new AccountAuthorization(
+        authorization = accountService.createAccountAuthorization(new AccountAuthorization(
                 UUID.randomUUID(),
                 System.currentTimeMillis(),
                 null,
@@ -111,7 +111,7 @@ public class LoginController {
         ));
 
         // 创建 token
-        Token token = tokens.signature(
+        Token token = tokenService.signature(
                 null,
                 System.currentTimeMillis() + TokenService.Expire.MINUTE * 10,
                 List.of(AccessType.OAUTH_EMAIL_VERIFY)
@@ -137,7 +137,7 @@ public class LoginController {
         );
 
         // 发送邮件
-        mails.sendVerifyMail(email, verify.code());
+        mailService.sendVerifyMail(email, verify.code());
 
         // 放入缓存
         verifies.put(token.substring(token.indexOf("Bearer ") + 7), verify);
@@ -194,14 +194,14 @@ public class LoginController {
         openids.remove(bearer);
 
         // 存储
-        accounts.createAccount(account);
-        accounts.createAccountAuthorization(authorization);
+        accountService.createAccount(account);
+        accountService.createAccountAuthorization(authorization);
 
         // 签发 Token
         return Message.success(
                 Map.of(
                         "token",
-                        tokens.signature(
+                        tokenService.signature(
                                 account.auid(),
                                 System.currentTimeMillis() + TokenService.Expire.WEEK,
                                 AccessType.all()

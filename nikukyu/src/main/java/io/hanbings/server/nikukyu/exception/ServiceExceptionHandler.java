@@ -12,7 +12,8 @@ public class ServiceExceptionHandler {
     @ResponseBody
     @ExceptionHandler(ServiceException.class)
     public Message<?> exceptionHandler(ServiceException e) {
-        log.warn("exception: {}", e.getMessage());
-        return Message.Messages.SERVER_ERROR;
+        log.warn("service exception: {}", e.getMessage());
+
+        return new Message<>(e.getCode(), e.getMessage(), e.getData());
     }
 }

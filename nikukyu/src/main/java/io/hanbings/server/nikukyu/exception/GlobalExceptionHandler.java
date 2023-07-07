@@ -8,11 +8,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Slf4j
 @ControllerAdvice
-public class RequestParamsExceptionHandler {
+public class GlobalExceptionHandler {
+
     @ResponseBody
-    @ExceptionHandler(RequestParamsException.class)
-    public Message<?> exceptionHandler(RequestParamsException e) {
+    @ExceptionHandler(Exception.class)
+    public Message<?> exceptionHandler(Exception e) {
         log.info("exception: {}", e.getMessage());
-        return Message.Messages.BAD_REQUEST;
+        return Message.Messages.NOT_FOUND;
     }
 }

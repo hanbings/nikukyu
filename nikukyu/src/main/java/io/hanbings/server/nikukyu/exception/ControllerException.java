@@ -4,12 +4,12 @@ import io.hanbings.server.nikukyu.data.Message;
 import lombok.Getter;
 
 @Getter
-public class ServiceException extends Exception {
+public class ControllerException extends Exception {
     final int code;
     final String message;
     final Object data;
 
-    public <T> ServiceException(int code, String message, T data) {
+    public <T> ControllerException(int code, String message, T data) {
         super(message);
 
         this.code = code;
@@ -17,7 +17,7 @@ public class ServiceException extends Exception {
         this.data = data;
     }
 
-    public <T> ServiceException(Message<T> message) {
+    public <T> ControllerException(Message<T> message) {
         super(message.getMessage());
 
         this.code = message.getCode();

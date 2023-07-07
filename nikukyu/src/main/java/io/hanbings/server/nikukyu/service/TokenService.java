@@ -4,6 +4,7 @@ import io.hanbings.server.nikukyu.content.AccessType;
 import io.hanbings.server.nikukyu.data.Token;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -27,19 +28,25 @@ public class TokenService {
         return token;
     }
 
+    public Token parse(String header) {
+        String authorization = header.substring(7);
+
+        return tokens.get(authorization);
+    }
+
     public Token get(String token) {
-        return null;
+        return tokens.get(token);
     }
 
-    public boolean revoke(String token) {
-        return false;
+    public void revoke(String token) {
+        tokens.remove(token);
     }
 
-    public boolean check(String token, AccessType[] access) {
-        // 检查 Token 是否在有效期内
+    public boolean checkAccess(String token, AccessType[] access) {
         // 检查 Token 是否有权限
+        Token t = tokens.get(token);
 
-        return true;
+        return new HashSet<>(t.access()).containsAll(List.of(access));
     }
 
     public static class Expire {

@@ -2,7 +2,7 @@ package io.hanbings.server.nikukyu.annotation;
 
 import io.hanbings.server.nikukyu.content.AccessType;
 import io.hanbings.server.nikukyu.data.Message;
-import io.hanbings.server.nikukyu.exception.RequestUnauthorizedException;
+import io.hanbings.server.nikukyu.exception.ControllerException;
 import io.hanbings.server.nikukyu.service.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +34,7 @@ public @interface NikukyuTokenCheck {
         final TokenService tokens;
 
         @SuppressWarnings("DuplicatedCode")
-        @Around("@annotation(io.hanbings.server.nikukyu.annotation.NikukyuTokenCheck)  && args(auid)")
+        @Around("@annotation(io.hanbings.server.nikukyu.annotation.NikukyuTokenCheck) && args(auid)")
         public Message<?> check(ProceedingJoinPoint point, @PathVariable String auid) throws Throwable {
             // 获取 HttpServletRequest 对象
             Object[] args = point.getArgs();
@@ -47,15 +47,15 @@ public @interface NikukyuTokenCheck {
             }
 
             // 检查 Token
-            if (request == null) throw new RequestUnauthorizedException("Request Not Have Token");
+            if (request == null) throw new ControllerException(Message.Messages.UNAUTHORIZED);
 
             // 获取 Header 中的 Token
             String header = request.getHeader("Authorization");
-            if (header == null) throw new RequestUnauthorizedException("Request Not Have Token");
+            if (header == null) throw new ControllerException(Message.Messages.UNAUTHORIZED);
 
             // 裁取 Token
             String token = header.substring(header.indexOf("Bearer ") + 7);
-            if (token.isEmpty()) throw new RequestUnauthorizedException("Request Not Have Token");
+            if (token.isEmpty()) throw new ControllerException(Message.Messages.UNAUTHORIZED);
 
             // 获取注解所规定的权限
             NikukyuTokenCheck annotation = point
@@ -67,16 +67,17 @@ public @interface NikukyuTokenCheck {
             AccessType[] access = annotation.access();
 
             // 检查 Token 权限
-            if (!tokens.check(token, access)) throw new RequestUnauthorizedException("Token Not Have Access");
+            if (!tokens.checkAccess(token, access)) throw new ControllerException(Message.Messages.UNAUTHORIZED);
 
             // 检查 Token 有效期
-            if (tokens.get(token).expire() < System.currentTimeMillis())
-                throw new RequestUnauthorizedException("Token Expired");
+            if (tokens.get(token).expire() < System.currentTimeMillis()) {
+                throw new ControllerException(Message.Messages.UNAUTHORIZED);
+            }
 
             // 检查 Token 所属用户
             if (annotation.checkAccount()) {
                 if (!tokens.get(token).belong().equals(UUID.fromString(auid)))
-                    throw new RequestUnauthorizedException("Token Not Belong To This Account");
+                    throw new ControllerException(Message.Messages.UNAUTHORIZED);
             }
 
             return (Message<?>) point.proceed();

@@ -17,46 +17,46 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @SuppressWarnings("SpellCheckingInspection")
 public class OAuthService {
-    final OAuthClientRepository clients;
-    final OAuthLogRepository logs;
-    final OAuthRepository oauths;
+    final OAuthClientRepository oAuthClientRepository;
+    final OAuthLogRepository oAuthLogRepository;
+    final OAuthRepository oAuthRepository;
 
     // OAuth Client
     public OAuthClient createOAuthClient(OAuthClient client) {
-        return clients.save(client);
+        return oAuthClientRepository.save(client);
     }
 
     public OAuthClient getOAuthClientWithOuid(UUID ouid) {
-        return clients.findByOuid(ouid).get(0);
+        return oAuthClientRepository.findByOuid(ouid).get(0);
     }
 
     public List<OAuthClient> getOAuthClientsWithOuid(UUID ouid) {
-        return clients.findByOuid(ouid);
+        return oAuthClientRepository.findByOuid(ouid);
     }
 
     public OAuthClient getOAuthClientWithOcid(UUID ocid) {
-        return clients.findByOcid(ocid);
+        return oAuthClientRepository.findByOcid(ocid);
     }
 
     // OAuth Log
     public OAuthLog createOAuthLog(OAuthLog log) {
-        return logs.save(log);
+        return oAuthLogRepository.save(log);
     }
 
     public List<OAuthLog> getOAuthLogsWithOuid(UUID ouid) {
-        return logs.findByOuid(ouid);
+        return oAuthLogRepository.findByOuid(ouid);
     }
 
     // OAuth
     public OAuth createOAuth(OAuth oauth) {
-        return oauths.save(oauth);
+        return oAuthRepository.save(oauth);
     }
 
     public OAuth getOAuthWithOuid(UUID ouid) {
-        return oauths.findByOuid(ouid);
+        return oAuthRepository.findByOuid(ouid);
     }
 
     public List<OAuth> getOAuthWithAuid(UUID auid) {
-        return oauths.findByAuid(auid);
+        return oAuthRepository.findByAuid(auid);
     }
 }

@@ -18,65 +18,65 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @SuppressWarnings("SpellCheckingInspection")
 public class AccountService {
-    final AccountAuthorizationRepository authorizations;
-    final AccountLogRepository logs;
-    final AccountOAuthRepository oauths;
-    final AccountRepository accounts;
+    final AccountAuthorizationRepository authorizationRepository;
+    final AccountLogRepository accountLogRepository;
+    final AccountOAuthRepository accountOAuthRepository;
+    final AccountRepository accountRepository;
 
     // Account Authorization
     public AccountAuthorization createAccountAuthorization(AccountAuthorization authorization) {
-        return authorizations.save(authorization);
+        return authorizationRepository.save(authorization);
     }
 
     public AccountAuthorization getAccountAuthorizationWithOpenid(String openid) {
-        return authorizations.findByOpenid(openid).get(0);
+        return authorizationRepository.findByOpenid(openid).get(0);
     }
 
     public List<AccountAuthorization> getAccountAuthorizationsWithAuid(UUID auid) {
-        return authorizations.findByAuid(auid);
+        return authorizationRepository.findByAuid(auid);
     }
 
     public AccountAuthorization getAccountAuthorizationWithAuid(UUID auid) {
-        return authorizations.findByAuid(auid).get(0);
+        return authorizationRepository.findByAuid(auid).get(0);
     }
 
     public List<AccountAuthorization> getAccountAuthorizationsWithOpenid(String openid) {
-        return authorizations.findByOpenid(openid);
+        return authorizationRepository.findByOpenid(openid);
     }
 
     // Account Log
     public AccountLog createAccountLog(AccountLog log) {
-        return logs.save(log);
+        return accountLogRepository.save(log);
     }
 
     public List<AccountLog> getAccountLogsWithAuid(UUID auid) {
-        return logs.findByAuid(auid);
+        return accountLogRepository.findByAuid(auid);
     }
 
     // Account OAuth
     public AccountOAuth createAccountOAuth(AccountOAuth oauth) {
-        return oauths.save(oauth);
+        return accountOAuthRepository.save(oauth);
     }
 
     public List<AccountAuthorization> getAccountOAuthsWithAuid(UUID auid) {
-        return oauths.findByAuid(auid);
+        return accountOAuthRepository.findByAuid(auid);
     }
 
     // Account
     @SuppressWarnings("UnusedReturnValue")
     public Account createAccount(Account account) {
-        return accounts.save(account);
+        return accountRepository.save(account);
     }
 
     public Account getAccountWithAuid(UUID auid) {
-        return accounts.findByAuid(auid);
+        return accountRepository.findByAuid(auid);
     }
 
     public Account getAccountWithEmail(String email) {
-        return accounts.findByEmail(email);
+        return accountRepository.findByEmail(email);
     }
 
     public Account getAccountWithId(String id) {
-        return accounts.findById(id);
+        return accountRepository.findById(id);
     }
 }

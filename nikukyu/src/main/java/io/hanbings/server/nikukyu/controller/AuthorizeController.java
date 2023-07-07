@@ -5,6 +5,7 @@ import io.hanbings.server.nikukyu.content.AccessType;
 import io.hanbings.server.nikukyu.data.Authorize;
 import io.hanbings.server.nikukyu.data.Message;
 import io.hanbings.server.nikukyu.data.Token;
+import io.hanbings.server.nikukyu.exception.ControllerException;
 import io.hanbings.server.nikukyu.model.Account;
 import io.hanbings.server.nikukyu.model.AccountOAuth;
 import io.hanbings.server.nikukyu.model.OAuth;
@@ -13,8 +14,8 @@ import io.hanbings.server.nikukyu.service.AccountService;
 import io.hanbings.server.nikukyu.service.AuthorizeService;
 import io.hanbings.server.nikukyu.service.OAuthService;
 import io.hanbings.server.nikukyu.service.TokenService;
-import io.hanbings.server.nikukyu.utils.RandomUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URL;
@@ -25,11 +26,12 @@ import java.util.*;
 @RequestMapping("/api/v0")
 @SuppressWarnings("SpellCheckingInspection")
 public class AuthorizeController {
-    final TokenService tokens;
-    final AccountService accounts;
-    final OAuthService oauths;
-    final AuthorizeService authorizes;
+    final TokenService tokenService;
+    final AccountService accountService;
+    final OAuthService oAuthService;
+    final AuthorizeService authorizeService;
 
+    @SneakyThrows
     @PostMapping("/oauth/authorize")
     @NikukyuTokenCheck(access = {AccessType.OAUTH_AUTHORIZE})
     public Message<?> authorize(
@@ -40,17 +42,27 @@ public class AuthorizeController {
             // @RequestParam("response_type") String responseType,
             @RequestHeader("Authorization") String token
     ) {
-        Token t = tokens.get(token.substring(7));
-        Account account = accounts.getAccountWithAuid(t.belong());
+        Token t = tokenService.get(token.substring(7));
+        Account account = accountService.getAccountWithAuid(t.belong());
 
         // 根据 client_id 获取 oauth client 信息
-        OAuthClient client = oauths.getOAuthClientWithOcid(UUID.fromString(clientId));
-        if (client == null)
-            return new Message<>(Message.ReturnCode.OAUTH_CLIENT_ID_INVALID, "client_id 无效 请联系应用开发者", null);
+        OAuthClient client = oAuthService.getOAuthClientWithOcid(UUID.fromString(clientId));
+        if (client == null) {
+            throw new ControllerException(
+                    Message.ReturnCode.OAUTH_CLIENT_ID_INVALID,
+                    "client_id 无效 请联系应用开发者", null
+            );
+        }
 
         // 获取 oauth 信息
-        OAuth oauth = oauths.getOAuthWithOuid(client.ouid());
-        if (oauth == null) return Message.serverError(null);
+        OAuth oauth = oAuthService.getOAuthWithOuid(client.ouid());
+        if (oauth == null) {
+            throw new ControllerException(
+                    Message.ReturnCode.OAUTH_CLIENT_ID_INVALID,
+                    "client_id 无效 请联系应用开发者",
+                    null
+            );
+        }
 
         // 检验 redirect_uri 是否合法
         try {
@@ -65,32 +77,33 @@ public class AuthorizeController {
             boolean matched = urls.stream().anyMatch(u -> u.getHost().equals(url.getHost()));
 
             if (matched) {
-                return new Message<>(Message.ReturnCode.OAUTH_CLIENT_REDIRECT_URI_NOT_MATCH, "redirect_uri 匹配错误 请联系应用开发者", null);
+                throw new ControllerException(
+                        Message.ReturnCode.OAUTH_CLIENT_REDIRECT_URI_NOT_MATCH,
+                        "redirect_uri 匹配错误 请联系应用开发者",
+                        null
+                );
             }
         } catch (Exception e) {
-            return new Message<>(Message.ReturnCode.OAUTH_CLIENT_REDIRECT_URI_INVALID, "redirect_uri 错误 请联系应用开发者", null);
+            throw new ControllerException(
+                    Message.ReturnCode.OAUTH_CLIENT_REDIRECT_URI_INVALID,
+                    "redirect_uri 匹配错误 请联系应用开发者",
+                    null
+            );
         }
 
         // scpoe 检查
         List<AccessType> access = AccessType.parse(scope);
         if (access == null) access = oauth.access();
-        if (new HashSet<>(oauth.access()).containsAll(access))
-            return new Message<>(Message.ReturnCode.OAUTH_CLIENT_SCOPE_INVALID, "scope 范围错误 请联系应用开发者", null);
-
-        // 鉴权临时缓存
-        Authorize authorize = new Authorize(
-                account,
-                oauth,
-                client,
-                access,
-                state
-        );
-
-        // 创建授权码
-        String code = RandomUtils.uuid();
+        if (new HashSet<>(oauth.access()).containsAll(access)) {
+            throw new ControllerException(
+                    Message.ReturnCode.OAUTH_CLIENT_SCOPE_INVALID,
+                    "scope 范围错误 请联系应用开发者",
+                    null
+            );
+        }
 
         // 保存授权码
-        authorizes.createOAuthAuthorizationFlow(code, authorize);
+        String code = authorizeService.createOAuthAuthorizationFlow(account, oauth, client, access, state);
 
         return Message.success(
                 new HashMap<>() {{
@@ -107,7 +120,7 @@ public class AuthorizeController {
             @RequestParam("code") String code,
             @RequestParam("state") String state
     ) {
-        Authorize authorize = authorizes.getOAuthAuthorizationFlow(code);
+        Authorize authorize = authorizeService.getOAuthAuthorizationFlow(code);
 
         if (authorize == null) {
             return new HashMap<>() {{
@@ -135,7 +148,7 @@ public class AuthorizeController {
             }};
         }
 
-        accounts.createAccountOAuth(new AccountOAuth(
+        accountService.createAccountOAuth(new AccountOAuth(
                 UUID.randomUUID(),
                 System.currentTimeMillis(),
                 authorize.account().auid(),
@@ -143,7 +156,7 @@ public class AuthorizeController {
                 authorize.access()
         ));
 
-        Token access = tokens.signature(authorize.account().auid(), TokenService.Expire.WEEK, authorize.access());
+        Token access = tokenService.signature(authorize.account().auid(), TokenService.Expire.WEEK, authorize.access());
 
         return new HashMap<>() {{
             put("access_token", access.token());
