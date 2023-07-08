@@ -1,6 +1,7 @@
 package io.hanbings.server.nikukyu.service;
 
 
+import io.hanbings.server.nikukyu.content.AccessType;
 import io.hanbings.server.nikukyu.model.OAuth;
 import io.hanbings.server.nikukyu.model.OAuthClient;
 import io.hanbings.server.nikukyu.model.OAuthLog;
@@ -48,8 +49,34 @@ public class OAuthService {
     }
 
     // OAuth
-    public OAuth createOAuth(OAuth oauth) {
-        return oAuthRepository.save(oauth);
+    public OAuth createOAuth(
+            UUID auid,
+            List<String> redirect,
+            List<AccessType> access,
+            String avatar,
+            String name,
+            String description,
+            String homepage,
+            String background,
+            String theme,
+            String policy,
+            String tos
+    ) {
+        return oAuthRepository.save(new OAuth(
+                UUID.randomUUID(),
+                System.currentTimeMillis(),
+                auid,
+                redirect,
+                access,
+                avatar,
+                name,
+                description,
+                homepage,
+                background,
+                theme,
+                policy,
+                tos
+        ));
     }
 
     public OAuth getOAuthWithOuid(UUID ouid) {

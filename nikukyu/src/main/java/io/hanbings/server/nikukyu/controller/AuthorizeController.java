@@ -10,10 +10,7 @@ import io.hanbings.server.nikukyu.model.Account;
 import io.hanbings.server.nikukyu.model.AccountOAuth;
 import io.hanbings.server.nikukyu.model.OAuth;
 import io.hanbings.server.nikukyu.model.OAuthClient;
-import io.hanbings.server.nikukyu.service.AccountService;
-import io.hanbings.server.nikukyu.service.AuthorizeService;
-import io.hanbings.server.nikukyu.service.OAuthService;
-import io.hanbings.server.nikukyu.service.TokenService;
+import io.hanbings.server.nikukyu.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,12 +23,13 @@ import java.util.*;
 @SuppressWarnings("SpellCheckingInspection")
 public class AuthorizeController {
     final TokenService tokenService;
-    final AccountService accountService;
     final OAuthService oAuthService;
+    final AccountService accountService;
+    final LocationService locationService;
     final AuthorizeService authorizeService;
 
     @PostMapping("/oauth/authorize")
-    @NikukyuTokenCheck(access = {AccessType.OAUTH_AUTHORIZE}, checkAccount = false)
+    @NikukyuTokenCheck(access = {AccessType.OAUTH_AUTHORIZE})
     public Message<?> authorize(
             @RequestParam("scope") String scope,
             @RequestParam("state") String state,
@@ -148,13 +146,12 @@ public class AuthorizeController {
             }};
         }
 
-        accountService.createAccountOAuth(new AccountOAuth(
-                UUID.randomUUID(),
-                System.currentTimeMillis(),
+
+        @SuppressWarnings("unused") AccountOAuth oAuth = accountService.createAccountOAuth(
                 oAuthAuthorizeFlow.account().auid(),
                 oAuthAuthorizeFlow.oauth().ouid(),
                 oAuthAuthorizeFlow.access()
-        ));
+        );
 
         Token access = tokenService.signature(
                 oAuthAuthorizeFlow.account().auid(),

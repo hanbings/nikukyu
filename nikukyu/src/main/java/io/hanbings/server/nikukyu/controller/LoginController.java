@@ -14,10 +14,7 @@ import io.hanbings.server.nikukyu.data.Token;
 import io.hanbings.server.nikukyu.exception.ControllerException;
 import io.hanbings.server.nikukyu.model.Account;
 import io.hanbings.server.nikukyu.model.AccountAuthorization;
-import io.hanbings.server.nikukyu.service.AccountService;
-import io.hanbings.server.nikukyu.service.LoginService;
-import io.hanbings.server.nikukyu.service.MailService;
-import io.hanbings.server.nikukyu.service.TokenService;
+import io.hanbings.server.nikukyu.service.*;
 import io.hanbings.server.nikukyu.utils.RandomUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +34,7 @@ public class LoginController {
     final TokenService tokenService;
     final LoginService loginService;
     final AccountService accountService;
+    final LocationService locationService;
 
     @GetMapping("/login/oauth/{provider}/authorize")
     public Message<?> getOAuthAuthorize(@PathVariable String provider) {
@@ -103,14 +101,7 @@ public class LoginController {
         }
 
         // 如果还没存在则创建一个新的 AccountAuthorization 然后返回一个仅有发送 email 权限的 token 要求用户验证
-        authorization = accountService.createAccountAuthorization(
-                new AccountAuthorization(UUID.randomUUID(),
-                        System.currentTimeMillis(),
-                        null,
-                        provider,
-                        oepnid
-                )
-        );
+        authorization = new AccountAuthorization(UUID.randomUUID(), System.currentTimeMillis(), null, provider, oepnid);
 
         // 创建 token
         Token token = tokenService.signature(
@@ -142,7 +133,6 @@ public class LoginController {
     @PostMapping("/login/email/verify")
     @NikukyuTokenCheck(
             access = {AccessType.OAUTH_EMAIL_VERIFY, AccessType.EMAIL_VERIFY},
-            checkAccount = false,
             checkAccessOr = true
     )
     public Message<?> verifyEmail(@RequestParam("email") String email, @RequestHeader("Authorization") String token) {
@@ -150,20 +140,12 @@ public class LoginController {
 
         // 检查参数
         if (flow == null) {
-            flow = loginService.createMailVerifyFlow(
-                    tokenService.parse(token),
-                    email,
-                    null
-            );
+            flow = loginService.createMailVerifyFlow(tokenService.parse(token), email, null);
         }
 
         // 对照 email
         if (!Objects.equals(email, flow.email())) {
-            loginService.createMailVerifyFlow(
-                    tokenService.parse(token),
-                    email,
-                    flow.accountAuthorization()
-            );
+            loginService.createMailVerifyFlow(tokenService.parse(token), email, flow.accountAuthorization());
         }
 
         // 发送邮件
@@ -175,7 +157,6 @@ public class LoginController {
     @PostMapping("/login/token")
     @NikukyuTokenCheck(
             access = {AccessType.OAUTH_EMAIL_VERIFY, AccessType.EMAIL_VERIFY},
-            checkAccount = false,
             checkAccessOr = true
     )
     public Message<?> getToken(
@@ -216,32 +197,20 @@ public class LoginController {
 
         // 验证成功
         // 创建 Account
-        Account account = new Account(
-                UUID.randomUUID(),
-                System.currentTimeMillis(),
-                true,
-                RandomUtils.strings(8),
-                "", "", "", "",
-                email
+        Account account = accountService.createAccount(
+                true, RandomUtils.strings(8), "", "", "", "", email
         );
-
-        // 存储
-        accountService.createAccount(account);
 
         if (flow.accountAuthorization() != null) {
             // 获取 Authorization
             AccountAuthorization temp = flow.accountAuthorization();
 
             // 更新 Authorization
-            AccountAuthorization authorization = new AccountAuthorization(
-                    temp.auid(),
-                    temp.create(),
+            @SuppressWarnings("unused") AccountAuthorization authorization = accountService.createAccountAuthorization(
                     account.auid(),
                     temp.provider(),
                     temp.openid()
             );
-
-            accountService.createAccountAuthorization(authorization);
         }
 
         // 签发 Token

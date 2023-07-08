@@ -1,5 +1,6 @@
 package io.hanbings.server.nikukyu.service;
 
+import io.hanbings.server.nikukyu.content.AccessType;
 import io.hanbings.server.nikukyu.model.Account;
 import io.hanbings.server.nikukyu.model.AccountAuthorization;
 import io.hanbings.server.nikukyu.model.AccountLog;
@@ -24,8 +25,8 @@ public class AccountService {
     final AccountAuthorizationRepository authorizationRepository;
 
     // Account Authorization
-    public AccountAuthorization createAccountAuthorization(AccountAuthorization authorization) {
-        return authorizationRepository.save(authorization);
+    public AccountAuthorization createAccountAuthorization(UUID auid, String provider, String openid) {
+        return authorizationRepository.save(new AccountAuthorization(UUID.randomUUID(), System.currentTimeMillis(), auid, provider, openid));
     }
 
     public AccountAuthorization getAccountAuthorizationWithOpenid(String openid) {
@@ -54,8 +55,8 @@ public class AccountService {
     }
 
     // Account OAuth
-    public AccountOAuth createAccountOAuth(AccountOAuth oauth) {
-        return accountOAuthRepository.save(oauth);
+    public AccountOAuth createAccountOAuth(UUID auid, UUID ouid, List<AccessType> access) {
+        return accountOAuthRepository.save(new AccountOAuth(UUID.randomUUID(), System.currentTimeMillis(), auid, ouid, access));
     }
 
     public List<AccountAuthorization> getAccountOAuthsWithAuid(UUID auid) {
@@ -63,9 +64,8 @@ public class AccountService {
     }
 
     // Account
-    @SuppressWarnings("UnusedReturnValue")
-    public Account createAccount(Account account) {
-        return accountRepository.save(account);
+    public Account createAccount(boolean verified, String id, String nick, String avatar, String background, String color, String email) {
+        return accountRepository.save(new Account(UUID.randomUUID(), System.currentTimeMillis(), verified, id, nick, avatar, background, color, email));
     }
 
     public Account getAccountWithAuid(UUID auid) {

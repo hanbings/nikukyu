@@ -3,6 +3,10 @@ package io.hanbings.server.nikukyu.annotation;
 import io.hanbings.server.nikukyu.content.AccessType;
 import io.hanbings.server.nikukyu.data.Message;
 import io.hanbings.server.nikukyu.exception.ControllerException;
+import io.hanbings.server.nikukyu.model.Account;
+import io.hanbings.server.nikukyu.model.OAuth;
+import io.hanbings.server.nikukyu.service.AccountService;
+import io.hanbings.server.nikukyu.service.OAuthService;
 import io.hanbings.server.nikukyu.service.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +21,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.UUID;
 
 @Target({ElementType.METHOD})
@@ -27,7 +32,10 @@ public @interface NikukyuTokenCheck {
     AccessType[] access();
 
     // 检查 Token 所需的账户 AUID 从 PathVariable 中获取
-    boolean checkAccount() default true;
+    boolean checkAccount() default false;
+
+    // 检查 OAuth 的请求中所属的账户 OUID 从 RequestBody 中获取
+    boolean checkOAuth() default false;
 
     // 符合其中一个权限即可通过检查
     boolean checkAccessOr() default false;
@@ -37,10 +45,19 @@ public @interface NikukyuTokenCheck {
     @RequiredArgsConstructor
     class NikukyuTokenChecker {
         final TokenService tokens;
+        final OAuthService oAuthService;
+        final AccountService accountService;
 
         @SuppressWarnings("DuplicatedCode")
-        @Around("@annotation(io.hanbings.server.nikukyu.annotation.NikukyuTokenCheck) && args(auid)")
-        public Message<?> check(ProceedingJoinPoint point, @PathVariable String auid) throws Throwable {
+        @Around(
+                value = "@annotation(io.hanbings.server.nikukyu.annotation.NikukyuTokenCheck) && args(auid, ouid)",
+                argNames = "point,auid,ouid"
+        )
+        public Message<?> check(
+                ProceedingJoinPoint point,
+                @PathVariable(required = false) String auid,
+                @PathVariable(required = false) String ouid
+        ) throws Throwable {
             // 获取 HttpServletRequest 对象
             Object[] args = point.getArgs();
             HttpServletRequest request = null;
@@ -91,8 +108,19 @@ public @interface NikukyuTokenCheck {
 
             // 检查 Token 所属用户
             if (annotation.checkAccount()) {
-                if (!tokens.get(token).belong().equals(UUID.fromString(auid)))
+                if (!tokens.get(token).belong().equals(UUID.fromString(auid))) {
                     throw new ControllerException(Message.Messages.UNAUTHORIZED);
+                }
+            }
+
+            // 检查 OAuth 的所属用户
+            if (annotation.checkOAuth()) {
+                Account account = accountService.getAccountWithAuid(UUID.fromString(auid));
+                OAuth oAuth = oAuthService.getOAuthWithOuid(UUID.fromString(ouid));
+
+                if (Objects.equals(account.auid(), oAuth.auid())) {
+                    throw new ControllerException(Message.Messages.UNAUTHORIZED);
+                }
             }
 
             return (Message<?>) point.proceed();

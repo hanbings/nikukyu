@@ -33,6 +33,7 @@ public record OAuth(
         @NotNull String avatar,
         @NotNull String name,
         @NotNull String description,
+        @NotNull String homepage,
         @NotNull String background,
         @NotNull String theme,
         @NotNull String policy,
