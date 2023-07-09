@@ -1,0 +1,16 @@
+{
+  "proxy": {
+    "host": "",
+    "port": 10001,
+    "username": "",
+    "password": ""
+  },
+  "providers": {
+    "github": {
+      "enable": true,
+      "proxy": false,
+      "client_id": "54746f5e7b0459480ec3",
+      "client_secret": "4ebdf05c353920ea1e40f17fc01dc0681dfb8555"
+    }
+  }
+}
