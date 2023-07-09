@@ -1,8 +1,7 @@
 import './style.css'
-import {createApp} from "vue";
-// WebStorm 莫名其妙 TS2307: Cannot find module './App.vue' or its corresponding type declarations.
-// 能过编译的
-// @ts-ignore
 import App from "./App.vue";
+import {createApp} from "vue";
+import {store} from "./stores/store.ts";
+import {router} from "./router/router.ts";
 
-createApp(App).mount('#app');
+createApp(App).use(store).use(router).mount('#app');

@@ -1,5 +1,5 @@
 {
-  "name": "nikukyu-web",
+  "name": "nikukyu",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,7 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "vue": "^3.3.4"
+    "axios": "^1.4.0",
+    "pinia": "^2.1.4",
+    "pinia-plugin-persistedstate": "^3.1.0",
+    "vue": "^3.3.4",
+    "vue-router": "^4.2.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.2.3",
