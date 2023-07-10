@@ -12,8 +12,7 @@ const background = reactive({background: `url('${config.indexBackground}')`});
 
 </script>
 <template>
-  <div class="h-full w-full bg-fixed bg-cover bg-center"
-       v-bind:style="{backgroundImage: background.background}">
+  <div class="h-full w-full bg-fixed bg-cover bg-center" v-bind:style="{backgroundImage: background.background}">
     <div class="h-full w-full backdrop-blur flex items-center justify-center">
       <div class="flex flex-col gap-1.5">
         <Slogan :slogan="config.slogan"/>

@@ -9,7 +9,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
       path: "./resources/images/github.svg",
-      link: "/home/authorize/github/authorize",
+      link: "/login/authorize/github/authorize",
       alt: "github",
       color: "#24282f",
       size: "32px"

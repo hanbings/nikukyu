@@ -11,7 +11,7 @@ import java.util.UUID;
  * 注册在平台内的 OAuth 服务商数据
  *
  * @param ouid        OAuth ID
- * @param create      创建时间
+ * @param created     创建时间
  * @param auid        用户账户 ID
  * @param redirect    重定向地址
  * @param access      授权类型
@@ -26,7 +26,7 @@ import java.util.UUID;
 @SuppressWarnings("SpellCheckingInspection")
 public record OAuth(
         @NotNull @Id UUID ouid,
-        long create,
+        long created,
         @NotNull UUID auid,
         @NotNull List<String> redirect,
         @NotNull List<AccessType> access,

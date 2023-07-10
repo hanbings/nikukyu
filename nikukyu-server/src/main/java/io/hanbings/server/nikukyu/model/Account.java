@@ -9,7 +9,7 @@ import java.util.UUID;
  * 用户账户数据
  *
  * @param auid       用户账户 ID
- * @param create     创建时间
+ * @param created    创建时间
  * @param verified   是否已验证
  * @param id         用户 ID
  * @param nick       用户昵称
@@ -21,7 +21,7 @@ import java.util.UUID;
 @SuppressWarnings("SpellCheckingInspection")
 public record Account(
         @NotNull @Id UUID auid,
-        long create,
+        long created,
         boolean verified,
 
         // 用户 ID

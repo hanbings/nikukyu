@@ -15,5 +15,6 @@ withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
-  <img class="rounded-full shadow-lg" v-bind:style="{ width: size, height: size }" v-bind:alt="alt" v-bind:src="avatar"/>
+  <img class="rounded-full shadow-lg" v-bind:alt="alt" v-bind:src="avatar"
+       v-bind:style="{ width: size, height: size }"/>
 </template>

@@ -4,6 +4,14 @@ import piniaPluginPersistedState from 'pinia-plugin-persistedstate'
 export const store = createPinia();
 store.use(piniaPluginPersistedState);
 
+export function loading() {
+    useStatusStore().$patch(state => state.loading = true);
+}
+
+export function loaded() {
+    useStatusStore().$patch(state => state.loading = false);
+}
+
 export const useStatusStore = defineStore("status", {
     state: () => {
         return {

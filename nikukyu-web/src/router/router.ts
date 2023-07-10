@@ -1,17 +1,18 @@
 import Index from "../pages/Index.vue";
 import Login from "../pages/Login.vue";
 import Authorize from "../pages/Authorize.vue";
-import Account from "../pages/Account.vue";
 import Home from "../pages/Home.vue";
+import About from "../pages/About.vue";
+import Callback from "../pages/Callback.vue";
 import {createRouter, createWebHistory} from "vue-router";
 
 const routes = [
     {path: '/', component: Index},
     {path: '/home', component: Home},
+    {path: '/about', component: About},
     {path: '/login', component: Login},
-    {path: '/home/authorize/:platform/authorize', component: Authorize},
-    {path: '/home/authorize/:platform/callback', component: Authorize},
-    {path: '/account', component: Account},
+    {path: '/login/oauth/:platform/authorize', component: Authorize},
+    {path: '/login/oauth/:platform/callback', component: Callback},
 ]
 
 export const router = createRouter({

@@ -1,6 +1,6 @@
 {
   "site": "http://localhost:5173",
-  "api": "http://127.0.0.1:10086/api/v0",
+  "api": "http://127.0.0.1:8080/api/v0",
   "avatar": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
   "slogan": "🍀 This is Nikukyu, A Open Source SSO （Single Sign-On) software.",
   "index_background": "https://i.imgloc.com/2023/07/10/VBpZ9d.jpeg",
