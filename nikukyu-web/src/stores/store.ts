@@ -1,22 +1,14 @@
 import {createPinia, defineStore} from "pinia";
 import piniaPluginPersistedState from 'pinia-plugin-persistedstate'
+import {AccessType} from "../data/common.ts";
 
 export const store = createPinia();
 store.use(piniaPluginPersistedState);
 
-export function loading() {
-    useStatusStore().$patch(state => state.loading = true);
-}
-
-export function loaded() {
-    useStatusStore().$patch(state => state.loading = false);
-}
-
 export const useStatusStore = defineStore("status", {
     state: () => {
         return {
-            login: false,
-            loading: true
+            login: false
         }
     }
 });
@@ -27,12 +19,41 @@ export const useConfigStore = defineStore("config", {
         api: "",
         avatar: "",
         slogan: "",
+        docs: "",
         indexBackground: "",
         loginBackground: "",
         authorizeBackground: ""
+    })
+});
+
+export const useAccountStore = defineStore("account", {
+    state: () => ({
+        auid: null,
+        created: 0,
+        verified: false,
+        id: "",
+        nick: "",
+        avatar: "",
+        background: "",
+        color: "",
+        email: ""
     }),
     persist: {
         storage: localStorage,
-        key: "config"
+        key: "account"
+    }
+});
+
+export const useTokenStore = defineStore("token", {
+    state: () => ({
+        token: null,
+        belong: null,
+        created: 0,
+        expire: 0,
+        access: new Array<AccessType>()
+    }),
+    persist: {
+        storage: localStorage,
+        key: "token"
     }
 });

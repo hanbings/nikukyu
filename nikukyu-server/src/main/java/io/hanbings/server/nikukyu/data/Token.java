@@ -8,7 +8,7 @@ import java.util.UUID;
 public record Token(
         String token,
         UUID belong,
-        long time,
+        long created,
         long expire,
         List<AccessType> access
 ) {

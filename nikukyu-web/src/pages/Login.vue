@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import Title from "../components/Title.vue";
 import Button from "../components/login/Button.vue";
-import {reactive} from "vue";
+import {reactive, ref} from "vue";
 import {useConfigStore} from "../stores/store.ts";
 
 const config = useConfigStore();
@@ -10,8 +10,8 @@ const config = useConfigStore();
 const background = reactive({background: `url('${config.loginBackground}')`});
 
 // 状态
-let chooseLogin = reactive<Boolean>(true);
-let needVerify = reactive<Boolean>(false);
+let chooseLogin = ref<boolean>(true);
+let needVerify = ref<boolean>(false);
 </script>
 
 <template>
@@ -31,7 +31,7 @@ let needVerify = reactive<Boolean>(false);
         <div></div>
         <div class="flex flex-row gap-3 mt-6">
           <Button alt="github" color="#29242f" link="/login/oauth/github/authorize"
-                  path="resources/images/icons8-github.svg"></Button>
+                  path="resources/images/icons8-github.svg" size="32px"></Button>
           <Button alt="discord" color="#6c19ff" link="/login/oauth/discord/authorize"
                   path="resources/images/icons8-discord.svg" size="24px"></Button>
           <Button alt="microsoft" color="#ffffff" link="/login/oauth/microsoft/authorize"
@@ -39,7 +39,7 @@ let needVerify = reactive<Boolean>(false);
           <Button alt="google" color="#ffffff" link="/login/oauth/google/authorize"
                   path="resources/images/icons8-google.svg" size="24px"></Button>
           <Button alt="more" color="#bbc5d0" link="/login/oauth/google/authorize"
-                  path="resources/images/more.svg"></Button>
+                  path="resources/images/more.svg" size="32px"></Button>
         </div>
       </div>
     </div>

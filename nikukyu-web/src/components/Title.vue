@@ -11,5 +11,5 @@ const props = withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
-  <p class="text-gray-900 text-2xl">{{ props.text }}</p>
+  <p class="text-gray-900 text-2xl break-all">{{ props.text }}</p>
 </template>

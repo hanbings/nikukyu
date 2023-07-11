@@ -13,7 +13,7 @@ const routes = [
     {path: '/login', component: Login},
     {path: '/login/oauth/:platform/authorize', component: Authorize},
     {path: '/login/oauth/:platform/callback', component: Callback},
-]
+];
 
 export const router = createRouter({
     history: createWebHistory(),

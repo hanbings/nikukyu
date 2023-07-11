@@ -11,11 +11,11 @@ const props = withDefaults(defineProps<Props>(), {
 
 <template>
   <button class="
-          focus:outline-none focus:ring-4 focus:ring-blue-300
-          bg-blue-500 hover:bg-blue-700
+          focus:outline-none focus:ring-4 focus:ring-primary-300
+          bg-primary-500 hover:bg-primary-300
           text-white font-medium rounded-lg text-sm
-          px-5 py-2.5 mr-2 mb-2
-          dark:bg-blue-400 dark:hover:bg-blue-500 dark:focus:ring-blue-600"
+          px-5 py-2.5 mr-2 mb-2"
+          style="min-width: 72px"
           type="button">
     {{ props.text }}
   </button>

@@ -3,12 +3,12 @@
 import axios from "axios";
 import Loading from "./components/Loading.vue";
 import Navbar from "./components/Navbar.vue";
-import {loaded, loading, useConfigStore, useStatusStore} from "./stores/store.ts";
-
-loading();
+import {useConfigStore, useStatusStore} from "./stores/store.ts";
+import {ref} from "vue";
 
 const config = useConfigStore();
 const status = useStatusStore();
+const loading = ref<boolean>(true);
 
 axios.get("/config.json")
     .then((res) => {
@@ -25,16 +25,16 @@ axios.get("/config.json")
         state.authorizeBackground = data.authorize_background;
       })
 
-      loaded();
+      loading.value = false;
     })
     .catch((err) => console.warn(err));
 </script>
 
 <template>
-  <div v-if="status.loading" class="h-full w-full grid place-items-center">
+  <div v-if="loading" class="h-full w-full grid place-items-center">
     <Loading/>
   </div>
-  <div v-if="!status.loading" class="h-full w-full">
+  <div v-if="!loading" class="h-full w-full">
     <Navbar v-if="status.login" class="glass fixed z-50"/>
     <router-view/>
   </div>
