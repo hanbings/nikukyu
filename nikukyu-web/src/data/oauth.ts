@@ -4,8 +4,8 @@ export class OAuth {
     constructor(
         public ouid: string,
         public created: number,
-        public redirect: Array<string>,
-        public access: Array<AccessType>,
+        public redirect: string[],
+        public access: AccessType[],
         public avatar: string,
         public name: string,
         public description: string,

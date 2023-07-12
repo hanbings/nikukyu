@@ -32,6 +32,6 @@ const props = withDefaults(defineProps<Props>(), {
 
   border-radius: 8px;
 
-  @apply shadow-lg flex justify-center items-center;
+  @apply shadow-2xl flex justify-center items-center hover:shadow-xl transition duration-500 ease-in-out;
 }
 </style>

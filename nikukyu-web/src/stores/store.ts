@@ -5,14 +5,6 @@ import {AccessType} from "../data/common.ts";
 export const store = createPinia();
 store.use(piniaPluginPersistedState);
 
-export const useStatusStore = defineStore("status", {
-    state: () => {
-        return {
-            login: false
-        }
-    }
-});
-
 export const useConfigStore = defineStore("config", {
     state: () => ({
         site: "",
@@ -24,6 +16,19 @@ export const useConfigStore = defineStore("config", {
         loginBackground: "",
         authorizeBackground: ""
     })
+});
+
+export const useStatusStore = defineStore("status", {
+    state: () => {
+        return {
+            login: false,
+            email: "",
+        }
+    },
+    persist: {
+        storage: localStorage,
+        key: "status"
+    }
 });
 
 export const useAccountStore = defineStore("account", {

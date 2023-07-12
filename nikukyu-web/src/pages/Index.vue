@@ -3,9 +3,19 @@
 import Button from "../components/index/Button.vue";
 import Slogan from "../components/Slogan.vue";
 import {reactive} from "vue";
-import {useConfigStore} from "../stores/store.ts";
+import {useAccountStore, useConfigStore, useStatusStore, useTokenStore} from "../stores/store.ts";
+import {router} from "../router/router.ts";
 
 const config = useConfigStore();
+const status = useStatusStore();
+const token = useTokenStore();
+const account = useAccountStore();
+
+const isLogin = status.login && account.auid != null && token.token != null;
+
+if (isLogin) {
+  router.push("/home");
+}
 
 // 背景图片 url
 const background = reactive({background: `url('${config.indexBackground}')`});

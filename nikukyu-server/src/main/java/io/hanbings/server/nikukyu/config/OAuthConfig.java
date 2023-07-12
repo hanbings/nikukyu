@@ -7,8 +7,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Map;
 
 public record OAuthConfig(Proxy proxy, Map<ProviderType, Provider> providers) {
@@ -37,8 +40,23 @@ public record OAuthConfig(Proxy proxy, Map<ProviderType, Provider> providers) {
     static class OAuthConfigBean {
         @Bean
         public OAuthConfig oaths() throws IOException {
-            Resource resource = new ClassPathResource("oauth.json");
-            InputStream input = resource.getInputStream();
+            // 读取到配置文件是否存在
+            if (!new File("oauth.json").exists()) {
+                Resource resource = new ClassPathResource("oauth.json");
+                InputStream input = resource.getInputStream();
+
+                // 释放到项目根目录
+                File file = new File("oauth.json");
+                boolean ignore = file.createNewFile();
+
+                // 使用 Files 写入
+                Files.copy(input, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+                throw new IOException("oauth.json not found");
+            }
+
+            // 读取到配置文件
+            InputStream input = Files.newInputStream(new File("oauth.json").toPath());
             return new ObjectMapper().readValue(input, OAuthConfig.class);
         }
     }

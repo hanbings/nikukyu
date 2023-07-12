@@ -43,7 +43,7 @@ export class AccountOAuth {
         public created: number,
         public auid: string,
         public ouid: string,
-        public access: Array<AccessType>,
+        public access: AccessType[],
     ) {
     }
 }

@@ -30,7 +30,9 @@ public class AccountService {
     }
 
     public AccountAuthorization getAccountAuthorizationWithOpenid(String openid) {
-        return authorizationRepository.findByOpenid(openid).get(0);
+        List<AccountAuthorization> authorizations = authorizationRepository.findByOpenid(openid);
+
+        return authorizations.isEmpty() ? null : authorizations.get(0);
     }
 
     public List<AccountAuthorization> getAccountAuthorizationsWithAuid(UUID auid) {

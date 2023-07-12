@@ -78,17 +78,18 @@ public class LoginController {
         String email = ((Identify) identify.data()).email();
 
         // 获取当前的 openid 是否已经绑定了账号
+        Account account = accountService.getAccountWithEmail(email);
         AccountAuthorization authorization = accountService.getAccountAuthorizationWithOpenid(oepnid);
 
         // OAuth 未被注册但邮箱已被占用
-        if (authorization == null && email != null) {
+        if (account != null) {
             throw new ControllerException(Message.ReturnCode.MAIL_EXIST, "该邮箱地址已被注册", Map.of("email", email));
         }
 
         // 如果已经存入系统则直接返回 Token
         if (authorization != null) {
             // 如果存在则从 authorizations 中获取 auid
-            Account account = accountService.getAccountWithAuid(authorization.auid());
+            account = accountService.getAccountWithAuid(authorization.auid());
 
             // 创建 token
             Token token = tokenService.signature(
@@ -113,7 +114,7 @@ public class LoginController {
         @SuppressWarnings("unused") MailVerifyFlow flow =
                 loginService.createMailVerifyFlow(token, email, authorization);
 
-        return Message.success(Map.of("token", token));
+        return Message.success(Map.of("token", token, "email", email));
     }
 
     @GetMapping("/login/verify/token")
@@ -125,7 +126,7 @@ public class LoginController {
                                 null,
                                 System.currentTimeMillis() + TokenService.Expire.MINUTE * 5,
                                 List.of(AccessType.EMAIL_VERIFY)
-                        ).token()
+                        )
                 )
         );
     }
@@ -221,7 +222,7 @@ public class LoginController {
                                 account.auid(),
                                 System.currentTimeMillis() + TokenService.Expire.WEEK,
                                 AccessType.all()
-                        ).token()
+                        )
                 )
         );
     }

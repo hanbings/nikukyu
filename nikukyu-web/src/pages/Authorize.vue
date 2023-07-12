@@ -1,11 +1,11 @@
 <script lang="ts" setup>
 // 读取到路由向后端请求
 import axios from "axios";
-import {router} from "../router/router.ts";
-import {useConfigStore} from "../stores/store.ts";
-import {ref} from "vue";
 import Loading from "../components/Loading.vue";
 import Warning from "../components/Warning.vue";
+import {ref} from "vue";
+import {router} from "../router/router.ts";
+import {useConfigStore} from "../stores/store.ts";
 
 const error = ref<boolean>(false);
 const loading = ref<boolean>(true);
