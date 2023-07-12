@@ -25,8 +25,8 @@ let needVerify = ref<boolean>(false);
         <div class="mt-6">
           <p class="text-gray-400 text-xs">未注册的电子邮箱地址将自动注册</p>
           <p class="text-gray-400 text-xs">注册代表您已同意我们的 <a
-              class="font-medium text-blue-400 dark:text-blue-400 hover:no-underline text-xs">隐私政策</a> 与 <a
-              class="font-medium text-blue-400 dark:text-blue-400 hover:no-underline text-xs">用户条款</a></p>
+              class="font-medium text-blue-400 hover:no-underline text-xs">隐私政策</a> 与 <a
+              class="font-medium text-blue-400 hover:no-underline text-xs">用户条款</a></p>
         </div>
         <div></div>
         <div class="flex flex-row gap-3 mt-6">
