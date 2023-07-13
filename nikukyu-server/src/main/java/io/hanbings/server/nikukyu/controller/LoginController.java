@@ -17,6 +17,7 @@ import io.hanbings.server.nikukyu.model.AccountAuthorization;
 import io.hanbings.server.nikukyu.service.*;
 import io.hanbings.server.nikukyu.utils.RandomUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -82,7 +83,7 @@ public class LoginController {
         AccountAuthorization authorization = accountService.getAccountAuthorizationWithOpenid(oepnid);
 
         // OAuth 未被注册但邮箱已被占用
-        if (account != null) {
+        if (account != null && authorization == null) {
             throw new ControllerException(Message.ReturnCode.MAIL_EXIST, "该邮箱地址已被注册", Map.of("email", email));
         }
 
@@ -98,7 +99,7 @@ public class LoginController {
                     AccessType.all()
             );
 
-            return Message.success(Map.of("token", token.token()));
+            return Message.success(Map.of("token", token));
         }
 
         // 如果还没存在则创建一个新的 AccountAuthorization 然后返回一个仅有发送 email 权限的 token 要求用户验证
@@ -131,6 +132,7 @@ public class LoginController {
         );
     }
 
+    @SneakyThrows
     @PostMapping("/login/email/verify")
     @NikukyuTokenCheck(
             access = {AccessType.OAUTH_EMAIL_VERIFY, AccessType.EMAIL_VERIFY},

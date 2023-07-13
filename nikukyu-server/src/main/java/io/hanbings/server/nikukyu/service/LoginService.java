@@ -77,6 +77,6 @@ public class LoginService {
     }
 
     public MailVerifyFlow getVerifyFlow(Token token) {
-        return verifies.remove(token.token());
+        return verifies.get(token.token());
     }
 }

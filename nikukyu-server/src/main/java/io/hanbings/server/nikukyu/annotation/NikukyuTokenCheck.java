@@ -50,24 +50,15 @@ public @interface NikukyuTokenCheck {
 
         @SuppressWarnings("DuplicatedCode")
         @Around(
-                value = "@annotation(io.hanbings.server.nikukyu.annotation.NikukyuTokenCheck) && args(auid, ouid)",
-                argNames = "point,auid,ouid"
+                value = "@annotation(io.hanbings.server.nikukyu.annotation.NikukyuTokenCheck) && args(request, auid, ouid)",
+                argNames = "point,request,auid,ouid"
         )
         public Message<?> check(
                 ProceedingJoinPoint point,
+                HttpServletRequest request,
                 @PathVariable(required = false) String auid,
                 @PathVariable(required = false) String ouid
         ) throws Throwable {
-            // 获取 HttpServletRequest 对象
-            Object[] args = point.getArgs();
-            HttpServletRequest request = null;
-            for (Object arg : args) {
-                if (arg instanceof HttpServletRequest) {
-                    request = (HttpServletRequest) arg;
-                    break;
-                }
-            }
-
             // 检查 Token
             if (request == null) throw new ControllerException(Message.Messages.UNAUTHORIZED);
 

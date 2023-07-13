@@ -6,10 +6,12 @@ import org.springframework.context.annotation.Configuration;
 
 @Data
 @Configuration
-@SuppressWarnings("SpellCheckingInspection")
 @ConfigurationProperties(prefix = "nikukyu.config")
 public class Config {
     String api;
     String site;
     String name;
+    String mail;
+    String privacy;
+    String tos;
 }

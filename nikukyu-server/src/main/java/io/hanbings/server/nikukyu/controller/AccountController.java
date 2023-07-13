@@ -37,7 +37,7 @@ public class AccountController {
     ) {
         Token token = tokenService.parse(bearer);
 
-         if (!token.belong().toString().equals(auid)) throw new ControllerException(Message.Messages.UNAUTHORIZED);
+        if (!token.belong().toString().equals(auid)) throw new ControllerException(Message.Messages.UNAUTHORIZED);
 
         Account account = accountService.getAccountWithAuid(token.belong());
 

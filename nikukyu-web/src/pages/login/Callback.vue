@@ -1,23 +1,19 @@
 <script lang="ts" setup>
 import axios from "axios";
-import Warning from "../components/Warning.vue";
+import Warning from "../../components/Warning.vue";
 // @ts-ignore
-import Loading from "../components/Loading.vue";
+import Loading from "../../components/Loading.vue";
 import {ref} from "vue";
-import {router} from "../router/router.ts";
-import {useAccountStore, useConfigStore, useStatusStore, useTokenStore} from "../stores/store.ts";
-import {AccessType} from "../data/common.ts";
-import {Message} from "../data/message.ts";
-import {Token} from "../data/token.ts";
-import {Account} from "../data/account.ts";
+import {router} from "../../router/router.ts";
+import {useAccountStore, useConfigStore, useStatusStore, useTokenStore} from "../../stores/store.ts";
+import {AccessType} from "../../data/common.ts";
+import {Message} from "../../data/message.ts";
+import {Token} from "../../data/token.ts";
+import {Account} from "../../data/account.ts";
 
 interface TokenResponse {
   token: Token,
   email: string
-}
-
-interface AccountResponse {
-  account: Account
 }
 
 const status = useStatusStore();
@@ -51,8 +47,6 @@ if (isLogin) {
         .then(res => {
           let data = res.data as Message<TokenResponse>;
 
-          console.log(data);
-
           if (data.code == 200) {
             // 处理全部的 Access
             let access: AccessType[] = data.data.token.access.map(a => a.replace(/_/g, '.').toLowerCase() as AccessType);
@@ -73,14 +67,14 @@ if (isLogin) {
               // 请求账号信息
               axios.get(`${useConfigStore().api}/account`, {headers: {'Authorization': `Bearer ${token.token}`}})
                   .then(res => {
-                    let data = res.data as Message<AccountResponse>;
-
-                    console.log(data);
-                    console.log(data.data.account);
+                    let data = res.data as Message<Account>;
 
                     // @ts-ignore
-                    account.$patch(state => Object.keys(data.data.account).forEach(k => state[k] = data.data.account[k]));
-                    status.$patch(state => state.login = true);
+                    account.$patch(state => Object.keys(data.data).forEach(k => state[k] = data.data[k]));
+                    status.$patch(state => {
+                      state.login = true;
+                      state.navbar = true;
+                    });
 
                     router.push('/home');
                   });
@@ -99,7 +93,7 @@ if (isLogin) {
   <div v-if="loading" class="h-full w-full grid place-items-center">
     <Loading/>
   </div>
-  <div v-if="error && message" class="h-full w-full backdrop-blur flex justify-center items-center">
+  <div v-if="error && message && !loading" class="h-full w-full backdrop-blur flex justify-center items-center">
     <Warning :text="message"/>
   </div>
 </template>

@@ -35,7 +35,7 @@ axios.get("/config.json")
     <Loading/>
   </div>
   <div v-if="!loading" class="h-full w-full">
-    <Navbar v-if="status.login" class="glass fixed z-50"/>
+    <Navbar v-if="status.login && status.navbar" class="glass fixed z-50"/>
     <router-view/>
   </div>
 </template>

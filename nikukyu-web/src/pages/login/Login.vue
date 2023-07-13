@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import Title from "../components/Title.vue";
-import Button from "../components/login/Button.vue";
+import Title from "../../components/Title.vue";
+import Button from "../../components/login/Button.vue";
 import {reactive, ref} from "vue";
-import {useConfigStore} from "../stores/store.ts";
+import {useConfigStore} from "../../stores/store.ts";
 
 const config = useConfigStore();
 

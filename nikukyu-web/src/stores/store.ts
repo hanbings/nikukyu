@@ -22,7 +22,9 @@ export const useStatusStore = defineStore("status", {
     state: () => {
         return {
             login: false,
+            navbar: false,
             email: "",
+            redirect: "",
         }
     },
     persist: {
