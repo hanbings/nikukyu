@@ -6,10 +6,11 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
 
+@SuppressWarnings("SpellCheckingInspection")
 public interface OAuthLogRepository extends MongoRepository<OAuthLog, String> {
     @Override
     <S extends OAuthLog> @NotNull S save(@NotNull S entity);
 
-    @SuppressWarnings("SpellCheckingInspection")
     List<OAuthLog> findByOuid(String ouid);
+
 }

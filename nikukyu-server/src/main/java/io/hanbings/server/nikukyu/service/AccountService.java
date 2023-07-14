@@ -1,6 +1,7 @@
 package io.hanbings.server.nikukyu.service;
 
 import io.hanbings.server.nikukyu.content.AccessType;
+import io.hanbings.server.nikukyu.content.AccountLogType;
 import io.hanbings.server.nikukyu.model.Account;
 import io.hanbings.server.nikukyu.model.AccountAuthorization;
 import io.hanbings.server.nikukyu.model.AccountLog;
@@ -39,18 +40,20 @@ public class AccountService {
         return authorizationRepository.findByAuid(auid);
     }
 
-    public AccountAuthorization getAccountAuthorizationWithAuid(String auid) {
-        List<AccountAuthorization> authorizations = authorizationRepository.findByAuid(auid);
-
-        return authorizations.isEmpty() ? null : authorizations.get(0);
-    }
-
-    public List<AccountAuthorization> getAccountAuthorizationsWithOpenid(String openid) {
-        return authorizationRepository.findByOpenid(openid);
+    public AccountAuthorization getAccountAuthorizationWithAaid(String aaid) {
+        return authorizationRepository.findByAaid(aaid);
     }
 
     // Account Log
-    public AccountLog createAccountLog(AccountLog log) {
+    public AccountLog createAccountLog(String auid, String ip, AccountLogType type) {
+        AccountLog log = new AccountLog(
+                RandomUtils.uuid(),
+                System.currentTimeMillis(),
+                auid,
+                ip,
+                type
+        );
+
         return accountLogRepository.save(log);
     }
 
@@ -58,18 +61,59 @@ public class AccountService {
         return accountLogRepository.findByAuid(auid);
     }
 
+    public AccountLog getAccountLogWithAlid(String alid) {
+        return accountLogRepository.findByAlid(alid);
+    }
+
     // Account OAuth
     public AccountOAuth createAccountOAuth(String auid, String ouid, List<AccessType> access) {
         return accountOAuthRepository.save(new AccountOAuth(RandomUtils.uuid(), System.currentTimeMillis(), auid, ouid, access));
     }
 
-    public List<AccountAuthorization> getAccountOAuthsWithAuid(String auid) {
+    public List<AccountOAuth> getAccountOAuthsWithAuid(String auid) {
         return accountOAuthRepository.findByAuid(auid);
+    }
+
+    public AccountOAuth getAccountOAuthWithAoid(String aoid) {
+        return accountOAuthRepository.findByAoid(aoid);
+    }
+
+    public void deleteAccountOAuthWithAoid(String aoid) {
+        accountOAuthRepository.deleteAccountOAuthByAoid(aoid);
     }
 
     // Account
     public Account createAccount(boolean verified, String id, String nick, String avatar, String background, String color, String email) {
         return accountRepository.save(new Account(RandomUtils.uuid(), System.currentTimeMillis(), verified, id, nick, avatar, background, color, email));
+    }
+
+    public Account updateAccount(
+            String auid,
+            String id,
+            String nick,
+            String avatar,
+            String background,
+            String color
+    ) {
+        Account old = accountRepository.findByAuid(auid);
+
+        // 查询用户名
+        Account verify = accountRepository.findById(id);
+        if (verify != null && !verify.auid().equals(auid)) return null;
+
+        Account account = new Account(
+                old.auid(),
+                old.created(),
+                old.verified(),
+                id == null ? old.id() : id,
+                nick == null ? old.nick() : nick,
+                avatar == null ? old.avatar() : avatar,
+                background == null ? old.background() : background,
+                color == null ? old.color() : color,
+                old.email()
+        );
+
+        return accountRepository.updateAccountByAuid(auid, account);
     }
 
     public Account getAccountWithAuid(String auid) {
@@ -80,7 +124,4 @@ public class AccountService {
         return accountRepository.findByEmail(email);
     }
 
-    public Account getAccountWithId(String id) {
-        return accountRepository.findById(id);
-    }
 }

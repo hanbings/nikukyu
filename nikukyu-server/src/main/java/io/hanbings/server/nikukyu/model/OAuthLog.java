@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @param olid    日志 ID
  * @param created 创建时间
+ * @param ip      IP 地址
  * @param ouid    OAuth ID
  * @param type    日志类型
  */
@@ -16,6 +17,7 @@ public record OAuthLog(
         @NotNull String olid,
         long created,
         @NotNull String ouid,
+        @NotNull String ip,
         @NotNull OAuthLogType type
 ) {
 }

@@ -175,13 +175,10 @@ public class LoginController {
     @GetMapping("/login/verify/token")
     public Message<?> token() {
         return Message.success(
-                Map.of(
-                        "token",
-                        tokenService.signature(
-                                null,
-                                System.currentTimeMillis() + TokenService.Expire.MINUTE * 5,
-                                List.of(AccessType.EMAIL_VERIFY)
-                        )
+                tokenService.signature(
+                        null,
+                        System.currentTimeMillis() + TokenService.Expire.MINUTE * 5,
+                        List.of(AccessType.EMAIL_VERIFY)
                 )
         );
     }
@@ -272,13 +269,10 @@ public class LoginController {
 
         // 签发 Token
         return Message.success(
-                Map.of(
-                        "token",
-                        tokenService.signature(
-                                account.auid(),
-                                System.currentTimeMillis() + TokenService.Expire.WEEK,
-                                AccessType.all()
-                        )
+                tokenService.signature(
+                        account.auid(),
+                        System.currentTimeMillis() + TokenService.Expire.WEEK,
+                        AccessType.all()
                 )
         );
     }

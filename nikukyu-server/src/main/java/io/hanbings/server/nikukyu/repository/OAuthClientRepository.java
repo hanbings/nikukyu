@@ -6,13 +6,18 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
 
+@SuppressWarnings("SpellCheckingInspection")
 public interface OAuthClientRepository extends MongoRepository<OAuthClient, String> {
     @Override
     <S extends OAuthClient> @NotNull S save(@NotNull S entity);
 
-    @SuppressWarnings("SpellCheckingInspection")
     List<OAuthClient> findByOuid(String ouid);
 
-    @SuppressWarnings("SpellCheckingInspection")
     OAuthClient findByOcid(String ocid);
+
+    OAuthClient updateOAuthClientByOcid(String ocid, OAuthClient oAuthClient);
+
+    void deleteOAuthClientByOcid(String ocid);
+
+    void deleteOAuthClientsByOuid(String ouid);
 }
