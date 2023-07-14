@@ -5,7 +5,7 @@ import io.hanbings.server.nikukyu.content.AccessType;
 import io.hanbings.server.nikukyu.data.Message;
 import io.hanbings.server.nikukyu.data.OAuthAuthorizeFlow;
 import io.hanbings.server.nikukyu.data.Token;
-import io.hanbings.server.nikukyu.exception.ControllerException;
+import io.hanbings.server.nikukyu.exception.OAuthAuthorizeException;
 import io.hanbings.server.nikukyu.model.Account;
 import io.hanbings.server.nikukyu.model.AccountOAuth;
 import io.hanbings.server.nikukyu.model.OAuth;
@@ -44,19 +44,18 @@ public class AuthorizeController {
         // 根据 client_id 获取 oauth client 信息
         OAuthClient client = oAuthService.getOAuthClientWithOcid(clientId);
         if (client == null) {
-            throw new ControllerException(
+            throw new OAuthAuthorizeException(
                     Message.ReturnCode.OAUTH_CLIENT_ID_INVALID,
-                    "client_id 无效 请联系应用开发者", null
+                    Message.Messages.OAUTH_CLIENT_ID_INVALID
             );
         }
 
         // 获取 oauth 信息
         OAuth oauth = oAuthService.getOAuthWithOuid(client.ouid());
         if (oauth == null) {
-            throw new ControllerException(
+            throw new OAuthAuthorizeException(
                     Message.ReturnCode.OAUTH_CLIENT_ID_INVALID,
-                    "client_id 无效 请联系应用开发者",
-                    null
+                    Message.Messages.OAUTH_CLIENT_ID_INVALID
             );
         }
 
@@ -73,17 +72,15 @@ public class AuthorizeController {
             boolean matched = urls.stream().anyMatch(u -> u.getHost().equals(url.getHost()));
 
             if (matched) {
-                throw new ControllerException(
+                throw new OAuthAuthorizeException(
                         Message.ReturnCode.OAUTH_CLIENT_REDIRECT_URI_NOT_MATCH,
-                        "redirect_uri 匹配错误 请联系应用开发者",
-                        null
+                        Message.Messages.OAUTH_CLIENT_REDIRECT_URI_NOT_MATCH
                 );
             }
         } catch (Exception e) {
-            throw new ControllerException(
+            throw new OAuthAuthorizeException(
                     Message.ReturnCode.OAUTH_CLIENT_REDIRECT_URI_INVALID,
-                    "redirect_uri 匹配错误 请联系应用开发者",
-                    null
+                    Message.Messages.OAUTH_CLIENT_REDIRECT_URI_INVALID
             );
         }
 
@@ -91,10 +88,9 @@ public class AuthorizeController {
         List<AccessType> access = AccessType.parse(scope);
         if (access == null) access = oauth.access();
         if (new HashSet<>(oauth.access()).containsAll(access)) {
-            throw new ControllerException(
+            throw new OAuthAuthorizeException(
                     Message.ReturnCode.OAUTH_CLIENT_SCOPE_INVALID,
-                    "scope 范围错误 请联系应用开发者",
-                    null
+                    Message.Messages.OAUTH_CLIENT_SCOPE_INVALID
             );
         }
 
@@ -121,7 +117,7 @@ public class AuthorizeController {
         if (oAuthAuthorizeFlow == null) {
             return new HashMap<>() {{
                 put("error_code", String.valueOf(Message.ReturnCode.OAUTH_AUTHORIZE_CODE_INVALID));
-                put("error_message", "授权码无效");
+                put("error_message", Message.Messages.OAUTH_AUTHORIZE_CODE_INVALID);
                 if (state != null) put("state", state);
             }};
         }
@@ -131,7 +127,7 @@ public class AuthorizeController {
                 Objects.equals(state, oAuthAuthorizeFlow.state())) {
             return new HashMap<>() {{
                 put("error_code", String.valueOf(Message.ReturnCode.OAUTH_STATE_INVALID));
-                put("error_message", "state 无效");
+                put("error_message", Message.Messages.OAUTH_STATE_INVALID);
                 if (state != null) put("state", state);
             }};
         }
@@ -141,7 +137,7 @@ public class AuthorizeController {
                 Objects.equals(oAuthAuthorizeFlow.client().secret(), clientSecret))) {
             return new HashMap<>() {{
                 put("error_code", String.valueOf(Message.ReturnCode.OAUTH_CLIENT_SECRET_INVALID));
-                put("error_message", "secret 匹配失败");
+                put("error_message", Message.Messages.OAUTH_CLIENT_SECRET_INVALID);
                 if (state != null) put("state", state);
             }};
         }

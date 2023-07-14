@@ -11,7 +11,8 @@ import io.hanbings.server.nikukyu.content.AccessType;
 import io.hanbings.server.nikukyu.data.MailVerifyFlow;
 import io.hanbings.server.nikukyu.data.Message;
 import io.hanbings.server.nikukyu.data.Token;
-import io.hanbings.server.nikukyu.exception.ControllerException;
+import io.hanbings.server.nikukyu.exception.EmailVerifyException;
+import io.hanbings.server.nikukyu.exception.OAuthProviderException;
 import io.hanbings.server.nikukyu.model.Account;
 import io.hanbings.server.nikukyu.model.AccountAuthorization;
 import io.hanbings.server.nikukyu.service.*;
@@ -57,21 +58,71 @@ public class LoginController {
                 state,
                 String.format("%s/login/oauth/%s/callback", config.getSite(), provider)
         );
-        if (callback == null) throw new ControllerException(Message.Messages.BAD_REQUEST);
-        if (callback.data() == null && !callback.success())
-            throw new ControllerException(Message.badRequest(((Access.Wrong) callback.wrong()).error()));
-        if (callback.data() == null) throw new ControllerException(Message.Messages.BAD_REQUEST);
+
+        if (callback == null) {
+            throw new OAuthProviderException(
+                    Message.ReturnCode.OAUTH_PROVIDER_INVALID,
+                    Message.Messages.OAUTH_PROVIDER_INVALID
+            );
+        }
+
+        if (callback.wrong() == null) {
+            throw new OAuthProviderException(
+                    Message.ReturnCode.OAUTH_PROVIDER_REQUEST_NETWORK_EXCEPTION,
+                    Message.Messages.OAUTH_PROVIDER_REQUEST_NETWORK_EXCEPTION
+            );
+        }
+
+        if (callback.data() == null && !callback.success()) {
+            throw new OAuthProviderException(
+                    Message.ReturnCode.OAUTH_PROVIDER_REQUEST_EXCEPTION,
+                    ((Access.Wrong) callback.wrong()).error()
+            );
+        }
+
+        if (callback.data() == null) {
+            throw new OAuthProviderException(
+                    Message.ReturnCode.OAUTH_PROVIDER_INVALID,
+                    Message.Messages.OAUTH_PROVIDER_INVALID
+            );
+        }
 
         // 获取用户信息
         if (!(client instanceof @SuppressWarnings("rawtypes")Identifiable identifiable)) {
-            throw new ControllerException(Message.Messages.BAD_REQUEST);
+            throw new OAuthProviderException(
+                    Message.ReturnCode.OAUTH_PROVIDER_INVALID,
+                    Message.Messages.OAUTH_PROVIDER_INVALID
+            );
         }
 
         @SuppressWarnings("rawtypes") Callback identify = identifiable.identify(callback.token());
-        if (identify == null) throw new ControllerException(Message.Messages.BAD_REQUEST);
-        if (identify.data() == null && !identify.success())
-            throw new ControllerException(Message.badRequest(identify.wrong()));
-        if (identify.data() == null) throw new ControllerException(Message.Messages.BAD_REQUEST);
+        if (identify == null) {
+            throw new OAuthProviderException(
+                    Message.ReturnCode.OAUTH_PROVIDER_INVALID,
+                    Message.Messages.OAUTH_PROVIDER_INVALID
+            );
+        }
+
+        if (identify.wrong() == null) {
+            throw new OAuthProviderException(
+                    Message.ReturnCode.OAUTH_PROVIDER_REQUEST_NETWORK_EXCEPTION,
+                    Message.Messages.OAUTH_PROVIDER_REQUEST_NETWORK_EXCEPTION
+            );
+        }
+
+        if (identify.data() == null && !identify.success()) {
+            throw new OAuthProviderException(
+                    Message.ReturnCode.OAUTH_PROVIDER_REQUEST_EXCEPTION,
+                    identify.wrong().toString()
+            );
+        }
+
+        if (identify.data() == null) {
+            throw new OAuthProviderException(
+                    Message.ReturnCode.OAUTH_PROVIDER_INVALID,
+                    Message.Messages.OAUTH_PROVIDER_INVALID
+            );
+        }
 
         // 邮箱
         String oepnid = ((Identify) identify.data()).openid();
@@ -83,7 +134,11 @@ public class LoginController {
 
         // OAuth 未被注册但邮箱已被占用
         if (account != null && authorization == null) {
-            throw new ControllerException(Message.ReturnCode.MAIL_EXIST, "该邮箱地址已被注册", Map.of("email", email));
+            throw new EmailVerifyException(
+                    Message.ReturnCode.MAIL_EXIST,
+                    Message.Messages.EMAIL_EXIST,
+                    Map.of("email", email)
+            );
         }
 
         // 如果已经存入系统则直接返回 Token
@@ -153,7 +208,7 @@ public class LoginController {
         // 发送邮件
         mailService.sendVerifyMail(flow.email(), flow.code());
 
-        return Message.Messages.SUCCESS;
+        return Message.success(Map.of("email", flow.email()));
     }
 
     @PostMapping("/login/token")
@@ -173,26 +228,26 @@ public class LoginController {
 
         // 验证不存在
         if (flow == null) {
-            throw new ControllerException(
+            throw new EmailVerifyException(
                     Message.ReturnCode.MAIL_VERIFY_INVALID,
-                    "验证不存在",
+                    Message.Messages.EMAIL_VERIFY_INVALID,
                     Map.of("token", token.token())
             );
         }
         // 查询是否超时
         if (flow.expire() < System.currentTimeMillis()) {
-            throw new ControllerException(
+            throw new EmailVerifyException(
                     Message.ReturnCode.MAIL_VERIFY_INVALID,
-                    "验证码已过期",
+                    Message.Messages.EMAIL_VERIFY_INVALID,
                     Map.of("token", token.token())
             );
         }
 
         // 验证码是否正确
         if (!flow.code().equals(code)) {
-            throw new ControllerException(
+            throw new EmailVerifyException(
                     Message.ReturnCode.MAIL_VERIFY_INVALID,
-                    "验证码错误",
+                    Message.Messages.EMAIL_VERIFY_INVALID,
                     Map.of("token", token.token())
             );
         }

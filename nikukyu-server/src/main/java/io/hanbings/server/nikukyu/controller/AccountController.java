@@ -4,7 +4,7 @@ import io.hanbings.server.nikukyu.annotation.NikukyuTokenCheck;
 import io.hanbings.server.nikukyu.content.AccessType;
 import io.hanbings.server.nikukyu.data.Message;
 import io.hanbings.server.nikukyu.data.Token;
-import io.hanbings.server.nikukyu.exception.ControllerException;
+import io.hanbings.server.nikukyu.exception.UnauthorizedException;
 import io.hanbings.server.nikukyu.model.Account;
 import io.hanbings.server.nikukyu.service.AccountService;
 import io.hanbings.server.nikukyu.service.TokenService;
@@ -37,7 +37,7 @@ public class AccountController {
     ) {
         Token token = tokenService.parse(bearer);
 
-        if (!token.belong().equals(auid)) throw new ControllerException(Message.Messages.UNAUTHORIZED);
+        if (!token.belong().equals(auid)) throw new UnauthorizedException();
 
         Account account = accountService.getAccountWithAuid(token.belong());
 

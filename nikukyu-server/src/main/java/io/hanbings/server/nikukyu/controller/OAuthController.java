@@ -4,6 +4,7 @@ import io.hanbings.server.nikukyu.annotation.NikukyuTokenCheck;
 import io.hanbings.server.nikukyu.content.AccessType;
 import io.hanbings.server.nikukyu.data.Message;
 import io.hanbings.server.nikukyu.data.Token;
+import io.hanbings.server.nikukyu.exception.NotFoundException;
 import io.hanbings.server.nikukyu.model.OAuth;
 import io.hanbings.server.nikukyu.service.OAuthService;
 import io.hanbings.server.nikukyu.service.TokenService;
@@ -76,7 +77,12 @@ public class OAuthController {
         Token token = tokenService.parse(bearer);
         OAuth oAuth = oAuthService.getOAuthWithOuid(ouid);
 
-        if (oAuth == null) return Message.notFound("未找到指定的 OAuth 应用");
+        if (oAuth == null) {
+            throw new NotFoundException(
+                    Message.ReturnCode.OAUTH_NOT_FOUND,
+                    Message.Messages.OAUTH_NOT_FOUND
+            );
+        }
 
         return Message.success(oAuth);
     }

@@ -2,7 +2,7 @@ package io.hanbings.server.nikukyu.annotation;
 
 import io.hanbings.server.nikukyu.content.AccessType;
 import io.hanbings.server.nikukyu.data.Message;
-import io.hanbings.server.nikukyu.exception.ControllerException;
+import io.hanbings.server.nikukyu.exception.UnauthorizedException;
 import io.hanbings.server.nikukyu.model.Account;
 import io.hanbings.server.nikukyu.model.OAuth;
 import io.hanbings.server.nikukyu.service.AccountService;
@@ -59,15 +59,15 @@ public @interface NikukyuTokenCheck {
                 @PathVariable(required = false) String ouid
         ) throws Throwable {
             // 检查 Token
-            if (request == null) throw new ControllerException(Message.Messages.UNAUTHORIZED);
+            if (request == null) throw new UnauthorizedException();
 
             // 获取 Header 中的 Token
             String header = request.getHeader("Authorization");
-            if (header == null) throw new ControllerException(Message.Messages.UNAUTHORIZED);
+            if (header == null) throw new UnauthorizedException();
 
             // 裁取 Token
             String token = header.substring(header.indexOf("Bearer ") + 7);
-            if (token.isEmpty()) throw new ControllerException(Message.Messages.UNAUTHORIZED);
+            if (token.isEmpty()) throw new UnauthorizedException();
 
             // 获取注解所规定的权限
             NikukyuTokenCheck annotation = point
@@ -84,22 +84,22 @@ public @interface NikukyuTokenCheck {
                         .stream(access)
                         .anyMatch(accessType -> tokens.checkAccess(token, new AccessType[]{accessType}));
 
-                if (!target) throw new ControllerException(Message.Messages.UNAUTHORIZED);
+                if (!target) throw new UnauthorizedException();
             } else {
                 if (!tokens.checkAccess(token, access)) {
-                    throw new ControllerException(Message.Messages.UNAUTHORIZED);
+                    throw new UnauthorizedException();
                 }
             }
 
             // 检查 Token 有效期
             if (tokens.get(token).expire() < System.currentTimeMillis()) {
-                throw new ControllerException(Message.Messages.UNAUTHORIZED);
+                throw new UnauthorizedException();
             }
 
             // 检查 Token 所属用户
             if (annotation.checkAccount()) {
                 if (!tokens.get(token).belong().equals(auid)) {
-                    throw new ControllerException(Message.Messages.UNAUTHORIZED);
+                    throw new UnauthorizedException();
                 }
             }
 
@@ -109,7 +109,7 @@ public @interface NikukyuTokenCheck {
                 OAuth oAuth = oAuthService.getOAuthWithOuid(ouid);
 
                 if (Objects.equals(account.auid(), oAuth.auid())) {
-                    throw new ControllerException(Message.Messages.UNAUTHORIZED);
+                    throw new UnauthorizedException();
                 }
             }
 
