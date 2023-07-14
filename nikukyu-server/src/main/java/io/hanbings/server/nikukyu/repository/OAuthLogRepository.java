@@ -5,12 +5,11 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
-import java.util.UUID;
 
-public interface OAuthLogRepository extends MongoRepository<OAuthLog, UUID> {
+public interface OAuthLogRepository extends MongoRepository<OAuthLog, String> {
     @Override
     <S extends OAuthLog> @NotNull S save(@NotNull S entity);
 
     @SuppressWarnings("SpellCheckingInspection")
-    List<OAuthLog> findByOuid(UUID ouid);
+    List<OAuthLog> findByOuid(String ouid);
 }

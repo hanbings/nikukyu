@@ -2,10 +2,8 @@ package io.hanbings.server.nikukyu.model;
 
 import io.hanbings.server.nikukyu.content.AccessType;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.data.annotation.Id;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * 注册在平台内的 OAuth 服务商数据
@@ -25,9 +23,9 @@ import java.util.UUID;
  */
 @SuppressWarnings("SpellCheckingInspection")
 public record OAuth(
-        @NotNull @Id UUID ouid,
+        @NotNull String ouid,
         long created,
-        @NotNull UUID auid,
+        @NotNull String auid,
         @NotNull List<String> redirect,
         @NotNull List<AccessType> access,
         @NotNull String avatar,

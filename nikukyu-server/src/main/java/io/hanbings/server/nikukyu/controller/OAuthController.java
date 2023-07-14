@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -75,7 +74,7 @@ public class OAuthController {
             @PathVariable String ouid
     ) {
         Token token = tokenService.parse(bearer);
-        OAuth oAuth = oAuthService.getOAuthWithOuid(UUID.fromString(ouid));
+        OAuth oAuth = oAuthService.getOAuthWithOuid(ouid);
 
         if (oAuth == null) return Message.notFound("未找到指定的 OAuth 应用");
 

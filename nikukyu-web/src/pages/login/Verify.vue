@@ -9,7 +9,7 @@ import Button from "../../components/verify/Button.vue";
 import CodeInput from "../../components/verify/CodeInput.vue";
 import {onMounted, ref} from "vue";
 import {AccessType} from "../../data/common.ts";
-import {useConfigStore, useStatusStore, useTokenStore} from "../../stores/store.ts";
+import {useAccountStore, useConfigStore, useStatusStore, useTokenStore} from "../../stores/store.ts";
 import {Message} from "../../data/message.ts";
 import {Token} from "../../data/token.ts";
 import {router} from "../../router/router.ts";
@@ -22,6 +22,7 @@ interface TokenResponse {
 const config = useConfigStore();
 const status = useStatusStore();
 const token = useTokenStore();
+const account = useAccountStore();
 
 const error = ref<boolean>(false);
 const loading = ref<boolean>(true);

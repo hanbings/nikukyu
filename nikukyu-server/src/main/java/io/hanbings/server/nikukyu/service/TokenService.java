@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class TokenService {
     static Map<String, Token> tokens = new ConcurrentHashMap<>();
 
-    public Token signature(UUID belong, long expire, List<AccessType> access) {
+    public Token signature(String belong, long expire, List<AccessType> access) {
         Token token = new Token(
                 UUID.randomUUID().toString(),
                 belong,

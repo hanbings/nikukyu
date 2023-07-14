@@ -42,7 +42,7 @@ public class AuthorizeController {
         Account account = accountService.getAccountWithAuid(t.belong());
 
         // 根据 client_id 获取 oauth client 信息
-        OAuthClient client = oAuthService.getOAuthClientWithOcid(UUID.fromString(clientId));
+        OAuthClient client = oAuthService.getOAuthClientWithOcid(clientId);
         if (client == null) {
             throw new ControllerException(
                     Message.ReturnCode.OAUTH_CLIENT_ID_INVALID,
@@ -137,7 +137,7 @@ public class AuthorizeController {
         }
 
         // 检查 client 与 secret
-        if (!(Objects.equals(oAuthAuthorizeFlow.client().ouid(), UUID.fromString(clientId)) &&
+        if (!(Objects.equals(oAuthAuthorizeFlow.client().ouid(), clientId) &&
                 Objects.equals(oAuthAuthorizeFlow.client().secret(), clientSecret))) {
             return new HashMap<>() {{
                 put("error_code", String.valueOf(Message.ReturnCode.OAUTH_CLIENT_SECRET_INVALID));

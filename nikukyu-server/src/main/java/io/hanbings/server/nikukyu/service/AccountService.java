@@ -9,11 +9,11 @@ import io.hanbings.server.nikukyu.repository.AccountAuthorizationRepository;
 import io.hanbings.server.nikukyu.repository.AccountLogRepository;
 import io.hanbings.server.nikukyu.repository.AccountOAuthRepository;
 import io.hanbings.server.nikukyu.repository.AccountRepository;
+import io.hanbings.server.nikukyu.utils.RandomUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -25,8 +25,8 @@ public class AccountService {
     final AccountAuthorizationRepository authorizationRepository;
 
     // Account Authorization
-    public AccountAuthorization createAccountAuthorization(UUID auid, String provider, String openid) {
-        return authorizationRepository.save(new AccountAuthorization(UUID.randomUUID(), System.currentTimeMillis(), auid, provider, openid));
+    public AccountAuthorization createAccountAuthorization(String auid, String provider, String openid) {
+        return authorizationRepository.save(new AccountAuthorization(RandomUtils.uuid(), System.currentTimeMillis(), auid, provider, openid));
     }
 
     public AccountAuthorization getAccountAuthorizationWithOpenid(String openid) {
@@ -35,12 +35,14 @@ public class AccountService {
         return authorizations.isEmpty() ? null : authorizations.get(0);
     }
 
-    public List<AccountAuthorization> getAccountAuthorizationsWithAuid(UUID auid) {
+    public List<AccountAuthorization> getAccountAuthorizationsWithAuid(String auid) {
         return authorizationRepository.findByAuid(auid);
     }
 
-    public AccountAuthorization getAccountAuthorizationWithAuid(UUID auid) {
-        return authorizationRepository.findByAuid(auid).get(0);
+    public AccountAuthorization getAccountAuthorizationWithAuid(String auid) {
+        List<AccountAuthorization> authorizations = authorizationRepository.findByAuid(auid);
+
+        return authorizations.isEmpty() ? null : authorizations.get(0);
     }
 
     public List<AccountAuthorization> getAccountAuthorizationsWithOpenid(String openid) {
@@ -52,25 +54,25 @@ public class AccountService {
         return accountLogRepository.save(log);
     }
 
-    public List<AccountLog> getAccountLogsWithAuid(UUID auid) {
+    public List<AccountLog> getAccountLogsWithAuid(String auid) {
         return accountLogRepository.findByAuid(auid);
     }
 
     // Account OAuth
-    public AccountOAuth createAccountOAuth(UUID auid, UUID ouid, List<AccessType> access) {
-        return accountOAuthRepository.save(new AccountOAuth(UUID.randomUUID(), System.currentTimeMillis(), auid, ouid, access));
+    public AccountOAuth createAccountOAuth(String auid, String ouid, List<AccessType> access) {
+        return accountOAuthRepository.save(new AccountOAuth(RandomUtils.uuid(), System.currentTimeMillis(), auid, ouid, access));
     }
 
-    public List<AccountAuthorization> getAccountOAuthsWithAuid(UUID auid) {
+    public List<AccountAuthorization> getAccountOAuthsWithAuid(String auid) {
         return accountOAuthRepository.findByAuid(auid);
     }
 
     // Account
     public Account createAccount(boolean verified, String id, String nick, String avatar, String background, String color, String email) {
-        return accountRepository.save(new Account(UUID.randomUUID(), System.currentTimeMillis(), verified, id, nick, avatar, background, color, email));
+        return accountRepository.save(new Account(RandomUtils.uuid(), System.currentTimeMillis(), verified, id, nick, avatar, background, color, email));
     }
 
-    public Account getAccountWithAuid(UUID auid) {
+    public Account getAccountWithAuid(String auid) {
         return accountRepository.findByAuid(auid);
     }
 

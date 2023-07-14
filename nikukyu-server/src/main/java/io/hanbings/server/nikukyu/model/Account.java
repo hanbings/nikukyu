@@ -1,9 +1,6 @@
 package io.hanbings.server.nikukyu.model;
 
 import org.jetbrains.annotations.NotNull;
-import org.springframework.data.annotation.Id;
-
-import java.util.UUID;
 
 /**
  * 用户账户数据
@@ -20,7 +17,7 @@ import java.util.UUID;
  */
 @SuppressWarnings("SpellCheckingInspection")
 public record Account(
-        @NotNull @Id UUID auid,
+        @NotNull String auid,
         long created,
         boolean verified,
 

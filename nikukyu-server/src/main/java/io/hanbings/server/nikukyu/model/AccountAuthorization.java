@@ -1,9 +1,6 @@
 package io.hanbings.server.nikukyu.model;
 
 import org.jetbrains.annotations.NotNull;
-import org.springframework.data.annotation.Id;
-
-import java.util.UUID;
 
 /**
  * 用户已授权用于 OAuth 登录的第三方服务提供商数据
@@ -16,9 +13,9 @@ import java.util.UUID;
  */
 @SuppressWarnings("SpellCheckingInspection")
 public record AccountAuthorization(
-        @NotNull @Id UUID aaid,
+        @NotNull String aaid,
         long created,
-        @NotNull UUID auid,
+        @NotNull String auid,
         @NotNull String provider,
         @NotNull String openid
 ) {

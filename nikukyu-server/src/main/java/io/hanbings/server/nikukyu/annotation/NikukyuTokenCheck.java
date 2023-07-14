@@ -22,7 +22,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.UUID;
 
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
@@ -99,15 +98,15 @@ public @interface NikukyuTokenCheck {
 
             // 检查 Token 所属用户
             if (annotation.checkAccount()) {
-                if (!tokens.get(token).belong().equals(UUID.fromString(auid))) {
+                if (!tokens.get(token).belong().equals(auid)) {
                     throw new ControllerException(Message.Messages.UNAUTHORIZED);
                 }
             }
 
             // 检查 OAuth 的所属用户
             if (annotation.checkOAuth()) {
-                Account account = accountService.getAccountWithAuid(UUID.fromString(auid));
-                OAuth oAuth = oAuthService.getOAuthWithOuid(UUID.fromString(ouid));
+                Account account = accountService.getAccountWithAuid(auid);
+                OAuth oAuth = oAuthService.getOAuthWithOuid(ouid);
 
                 if (Objects.equals(account.auid(), oAuth.auid())) {
                     throw new ControllerException(Message.Messages.UNAUTHORIZED);

@@ -2,9 +2,6 @@ package io.hanbings.server.nikukyu.model;
 
 import io.hanbings.server.nikukyu.content.OAuthLogType;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.data.annotation.Id;
-
-import java.util.UUID;
 
 /**
  * OAuth 日志数据
@@ -16,9 +13,9 @@ import java.util.UUID;
  */
 @SuppressWarnings("SpellCheckingInspection")
 public record OAuthLog(
-        @NotNull @Id UUID olid,
+        @NotNull String olid,
         long created,
-        @NotNull UUID ouid,
+        @NotNull String ouid,
         @NotNull OAuthLogType type
 ) {
 }

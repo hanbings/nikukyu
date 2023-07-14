@@ -12,7 +12,7 @@ public interface AccountRepository extends MongoRepository<Account, UUID> {
     <S extends Account> @NotNull S save(@NotNull S entity);
 
     @SuppressWarnings("SpellCheckingInspection")
-    Account findByAuid(UUID auid);
+    Account findByAuid(String auid);
 
     Account findByEmail(String email);
 

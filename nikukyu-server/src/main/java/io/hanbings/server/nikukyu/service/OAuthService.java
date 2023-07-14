@@ -8,11 +8,11 @@ import io.hanbings.server.nikukyu.model.OAuthLog;
 import io.hanbings.server.nikukyu.repository.OAuthClientRepository;
 import io.hanbings.server.nikukyu.repository.OAuthLogRepository;
 import io.hanbings.server.nikukyu.repository.OAuthRepository;
+import io.hanbings.server.nikukyu.utils.RandomUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -27,15 +27,15 @@ public class OAuthService {
         return oAuthClientRepository.save(client);
     }
 
-    public OAuthClient getOAuthClientWithOuid(UUID ouid) {
+    public OAuthClient getOAuthClientWithOuid(String ouid) {
         return oAuthClientRepository.findByOuid(ouid).get(0);
     }
 
-    public List<OAuthClient> getOAuthClientsWithOuid(UUID ouid) {
+    public List<OAuthClient> getOAuthClientsWithOuid(String ouid) {
         return oAuthClientRepository.findByOuid(ouid);
     }
 
-    public OAuthClient getOAuthClientWithOcid(UUID ocid) {
+    public OAuthClient getOAuthClientWithOcid(String ocid) {
         return oAuthClientRepository.findByOcid(ocid);
     }
 
@@ -44,13 +44,13 @@ public class OAuthService {
         return oAuthLogRepository.save(log);
     }
 
-    public List<OAuthLog> getOAuthLogsWithOuid(UUID ouid) {
+    public List<OAuthLog> getOAuthLogsWithOuid(String ouid) {
         return oAuthLogRepository.findByOuid(ouid);
     }
 
     // OAuth
     public OAuth createOAuth(
-            UUID auid,
+            String auid,
             List<String> redirect,
             List<AccessType> access,
             String avatar,
@@ -63,7 +63,7 @@ public class OAuthService {
             String tos
     ) {
         return oAuthRepository.save(new OAuth(
-                UUID.randomUUID(),
+                RandomUtils.uuid(),
                 System.currentTimeMillis(),
                 auid,
                 redirect,
@@ -79,11 +79,11 @@ public class OAuthService {
         ));
     }
 
-    public OAuth getOAuthWithOuid(UUID ouid) {
+    public OAuth getOAuthWithOuid(String ouid) {
         return oAuthRepository.findByOuid(ouid);
     }
 
-    public List<OAuth> getOAuthWithAuid(UUID auid) {
+    public List<OAuth> getOAuthWithAuid(String auid) {
         return oAuthRepository.findByAuid(auid);
     }
 }

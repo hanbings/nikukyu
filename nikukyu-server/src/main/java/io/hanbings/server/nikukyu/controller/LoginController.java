@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -103,7 +102,7 @@ public class LoginController {
         }
 
         // 如果还没存在则创建一个新的 AccountAuthorization 然后返回一个仅有发送 email 权限的 token 要求用户验证
-        authorization = new AccountAuthorization(UUID.randomUUID(), System.currentTimeMillis(), null, provider, oepnid);
+        authorization = new AccountAuthorization(RandomUtils.uuid(), System.currentTimeMillis(), null, provider, oepnid);
 
         // 创建 token
         Token token = tokenService.signature(

@@ -2,9 +2,6 @@ package io.hanbings.server.nikukyu.model;
 
 import io.hanbings.server.nikukyu.content.AccountLogType;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.data.annotation.Id;
-
-import java.util.UUID;
 
 /**
  * 用户账户日志数据
@@ -17,9 +14,9 @@ import java.util.UUID;
  */
 @SuppressWarnings("SpellCheckingInspection")
 public record AccountLog(
-        @NotNull @Id UUID alid,
+        @NotNull String alid,
         long created,
-        @NotNull UUID auid,
+        @NotNull String auid,
         @NotNull String ip,
         @NotNull AccountLogType type
 ) {

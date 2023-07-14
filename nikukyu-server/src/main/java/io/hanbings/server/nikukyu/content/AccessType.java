@@ -85,4 +85,8 @@ public enum AccessType {
 
         return builder.substring(0, builder.length() - 2);
     }
+
+    public String toString() {
+        return this.name().toLowerCase(Locale.ROOT).replaceAll("_", ".");
+    }
 }

@@ -1,9 +1,6 @@
 package io.hanbings.server.nikukyu.model;
 
 import org.jetbrains.annotations.NotNull;
-import org.springframework.data.annotation.Id;
-
-import java.util.UUID;
 
 /**
  * OAuth 客户端数据
@@ -16,9 +13,9 @@ import java.util.UUID;
  */
 @SuppressWarnings("SpellCheckingInspection")
 public record OAuthClient(
-        @NotNull @Id UUID ocid,
+        @NotNull String ocid,
         long created,
-        @NotNull UUID ouid,
+        @NotNull String ouid,
         @NotNull String secret,
         long expire
 ) {

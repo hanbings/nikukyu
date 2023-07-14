@@ -10,6 +10,7 @@ import io.hanbings.server.nikukyu.data.MailVerifyFlow;
 import io.hanbings.server.nikukyu.data.Token;
 import io.hanbings.server.nikukyu.model.AccountAuthorization;
 import io.hanbings.server.nikukyu.utils.RandomUtils;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.net.Proxy;
@@ -51,6 +52,15 @@ public class LoginService {
 
             if (provider.proxy()) {
                 LoginService.providers.get(provider.toString()).proxy(() -> LoginService.proxy);
+            }
+        });
+    }
+
+    @Scheduled(fixedRate = 30000)
+    public void updateVerifyFlow() {
+        verifies.forEach((token, flow) -> {
+            if (flow.expire() < System.currentTimeMillis()) {
+                verifies.remove(token);
             }
         });
     }
