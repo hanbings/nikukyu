@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -79,6 +80,13 @@ public class OAuthService {
                 client.secret().substring(0, 4) + "****************************",
                 client.expire()
         );
+    }
+
+    public boolean checkSecretWithOcid(String ocid, String secret) {
+        OAuthClient client = oAuthClientRepository.findByOcid(ocid);
+        if (client == null) return false;
+
+        return Objects.equals(client.secret(), secret);
     }
 
     public void deleteOAuthClientWithOcid(String ocid) {

@@ -28,6 +28,15 @@ public class AuthorizeController {
     final LocationService locationService;
     final AuthorizeService authorizeService;
 
+    @GetMapping("/oauth/client/{client_id}")
+    @NikukyuTokenCheck(access = {AccessType.OAUTH_AUTHORIZE})
+    public Message<?> getClient(@PathVariable(value = "client_id") String clientId) {
+        OAuthClient client = oAuthService.getOAuthClientWithOcid(clientId);
+        OAuth oAuth = oAuthService.getOAuthWithOuid(client.ouid());
+
+        return Message.success(oAuth);
+    }
+
     @PostMapping("/oauth/authorize")
     @NikukyuTokenCheck(access = {AccessType.OAUTH_AUTHORIZE})
     public Message<?> authorize(
@@ -71,7 +80,7 @@ public class AuthorizeController {
 
             boolean matched = urls.stream().anyMatch(u -> u.getHost().equals(url.getHost()));
 
-            if (matched) {
+            if (!matched) {
                 throw new OAuthAuthorizeException(
                         Message.ReturnCode.OAUTH_CLIENT_REDIRECT_URI_NOT_MATCH,
                         Message.Messages.OAUTH_CLIENT_REDIRECT_URI_NOT_MATCH
@@ -87,7 +96,7 @@ public class AuthorizeController {
         // scpoe 检查
         List<AccessType> access = AccessType.parse(scope);
         if (access == null) access = oauth.access();
-        if (new HashSet<>(oauth.access()).containsAll(access)) {
+        if (!new HashSet<>(oauth.access()).containsAll(access)) {
             throw new OAuthAuthorizeException(
                     Message.ReturnCode.OAUTH_CLIENT_SCOPE_INVALID,
                     Message.Messages.OAUTH_CLIENT_SCOPE_INVALID
@@ -124,7 +133,7 @@ public class AuthorizeController {
 
         // 检查 state
         if ((state == null && oAuthAuthorizeFlow.state() == null) ||
-                Objects.equals(state, oAuthAuthorizeFlow.state())) {
+                !Objects.equals(state, oAuthAuthorizeFlow.state())) {
             return new HashMap<>() {{
                 put("error_code", String.valueOf(Message.ReturnCode.OAUTH_STATE_INVALID));
                 put("error_message", Message.Messages.OAUTH_STATE_INVALID);
@@ -133,12 +142,11 @@ public class AuthorizeController {
         }
 
         // 检查 client 与 secret
-        if (!(Objects.equals(oAuthAuthorizeFlow.client().ouid(), clientId) &&
-                Objects.equals(oAuthAuthorizeFlow.client().secret(), clientSecret))) {
+        if (!oAuthService.checkSecretWithOcid(clientId, clientSecret)) {
             return new HashMap<>() {{
                 put("error_code", String.valueOf(Message.ReturnCode.OAUTH_CLIENT_SECRET_INVALID));
                 put("error_message", Message.Messages.OAUTH_CLIENT_SECRET_INVALID);
-                if (state != null) put("state", state);
+                put("state", state);
             }};
         }
 
@@ -160,7 +168,7 @@ public class AuthorizeController {
             put("expire_in", String.valueOf(access.expire()));
             put("token_type", "Bearer");
             put("scope", AccessType.parse(oAuthAuthorizeFlow.access()));
-            if (state != null) put("state", state);
+            put("state", state);
         }};
     }
 }

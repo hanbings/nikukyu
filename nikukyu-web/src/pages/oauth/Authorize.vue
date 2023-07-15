@@ -21,7 +21,7 @@ const account = useAccountStore();
 const error = ref<boolean>(false);
 const loading = ref<boolean>(true);
 const message = ref<string | null>(null);
-const oauth = ref<OAuth>();
+const oauth = new OAuth("", 0, [], [], "", "", "", "", "", "", "", "");
 
 interface CodeResponse {
   code: string,
@@ -41,34 +41,26 @@ if (!status.login) {
 if (oauth) {
   let clientId = router.currentRoute.value.query.client_id;
 
-  axios.get(`${config.api}/oauth/${clientId}`, {headers: {'Authorization': `Bearer ${token.token}`}})
+  axios.get(`${config.api}/oauth/client/${clientId}`, {headers: {'Authorization': `Bearer ${token.token}`}})
       .then(res => {
         let data = res.data as Message<OAuth>;
 
-        if (data.code == 200) {
-          let access: AccessType[] = data.data.access.map(a => a.replace(/_/g, '.').toLowerCase() as AccessType);
+        let access: AccessType[] = data.data.access.map(a => a.replace(/_/g, '.').toLowerCase() as AccessType);
 
-          // @ts-ignore
-          Object.keys(data.data).forEach(k => oauth.value[k] = data.data[k]);
-          // @ts-ignore
-          oauth['access'] = access;
-        } else {
-          //error.value = true;
-          message.value = data.message;
-        }
+        // @ts-ignore
+        Object.keys(data.data).forEach(k => oauth[k] = data.data[k]);
+        // @ts-ignore
+        oauth['access'] = access;
       })
-      .catch(err => {
-        error.value = true;
-        message.value = err;
-      }).finally(() => loading.value = false);
+      .finally(() => loading.value = false);
 }
 
 const approve = () => {
-  let {clientId, state, redirectUri, scope} = router.currentRoute.value.query;
+  let {client_id, state, redirect_uri, scope} = router.currentRoute.value.query;
 
   let body = new FormData();
-  redirectUri && body.append("redirect_uri", redirectUri.toString());
-  clientId && body.append("client_id", clientId.toString());
+  redirect_uri && body.append("redirect_uri", redirect_uri.toString());
+  client_id && body.append("client_id", client_id.toString());
   state && body.append("state", state.toString());
   scope && body.append("scope", scope.toString());
   body.append("response_type", "code");
@@ -78,7 +70,7 @@ const approve = () => {
         let data = res.data as Message<CodeResponse>;
 
         if (data.code == 200) {
-          router.push(`/oauth/authorize?code=${data.data.code}&state=${data.data.state}`);
+          window.location.href = `${redirect_uri}?code=${data.data.code}&state=${data.data.state}`;
         } else {
           error.value = true;
           message.value = data.message;
@@ -104,7 +96,8 @@ const background = ref({background: oauth && oauth.background ? `url('${oauth.ba
     <div class="h-full w-full backdrop-blur flex justify-center items-center">
       <Warning v-if="error" text="发生错误"/>
 
-      <div v-if="!error" class="shadow-lg flex flex-col bg-white rounded-2xl px-20 py-24">
+      <div v-if="!error" class="shadow-lg flex flex-col bg-white rounded-2xl px-20 py-24"
+           style="min-width: 380px; max-width: 480px;">
         <div class="flex">
           <Avatar :avatar="oauth ? oauth.avatar : account.avatar" size="72px"/>
           <Avatar :avatar="account.avatar" class="-ml-8" size="72px"/>
@@ -112,13 +105,15 @@ const background = ref({background: oauth && oauth.background ? `url('${oauth.ba
         <div class="mt-6">
           <Title :text="oauth ? oauth.name : '该应用没有设置名称'"/>
         </div>
-        <div class="mt-6">
+        <div class="mt-2">
           <p class="text-gray-400 text-xs">{{ oauth ? oauth.description : '该应用没有设置描述' }}</p>
         </div>
-        <div class="mt-2">
+        <div class="mt-6">
           <p class="text-gray-400 text-xs">{{ `正在使用 ${account.nick} 进行授权` }}</p>
           <p class="text-gray-400 text-xs">授权后应用将获得</p>
-          <li v-for="item in oauth ? oauth.access : []" :key="item"> {{ item }}</li>
+          <div class="mt-2">
+            <p v-for="item in oauth ? oauth.access : []" :key="item" class="text-gray-400 text-xs"> {{ item }}</p>
+          </div>
         </div>
         <div class="mt-6">
           <p class="text-gray-400 text-xs">{{ oauth ? `查看应用的 ` : `该应用没有设置隐私协议` }}

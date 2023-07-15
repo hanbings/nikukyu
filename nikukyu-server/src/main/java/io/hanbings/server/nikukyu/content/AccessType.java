@@ -65,7 +65,7 @@ public enum AccessType {
         List<AccessType> result = new ArrayList<>();
         for (String s : scopes) {
             try {
-                result.add(AccessType.valueOf(s));
+                result.add(AccessType.valueOf(s.toUpperCase(Locale.ROOT).replaceAll("\\.", "_")));
             } catch (Exception ignore) {
             }
         }
