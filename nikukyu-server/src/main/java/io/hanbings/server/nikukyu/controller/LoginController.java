@@ -66,14 +66,14 @@ public class LoginController {
             );
         }
 
-        if (callback.wrong() == null) {
+        if (callback.throwable() != null) {
             throw new OAuthProviderException(
                     Message.ReturnCode.OAUTH_PROVIDER_REQUEST_NETWORK_EXCEPTION,
                     Message.Messages.OAUTH_PROVIDER_REQUEST_NETWORK_EXCEPTION
             );
         }
 
-        if (callback.data() == null && !callback.success()) {
+        if (callback.data() == null && !callback.success() && callback.wrong() != null) {
             throw new OAuthProviderException(
                     Message.ReturnCode.OAUTH_PROVIDER_REQUEST_EXCEPTION,
                     ((Access.Wrong) callback.wrong()).error()
@@ -103,14 +103,14 @@ public class LoginController {
             );
         }
 
-        if (identify.wrong() == null) {
+        if (identify.throwable() != null) {
             throw new OAuthProviderException(
                     Message.ReturnCode.OAUTH_PROVIDER_REQUEST_NETWORK_EXCEPTION,
                     Message.Messages.OAUTH_PROVIDER_REQUEST_NETWORK_EXCEPTION
             );
         }
 
-        if (identify.data() == null && !identify.success()) {
+        if (identify.data() == null && !identify.success() && identify.wrong() != null) {
             throw new OAuthProviderException(
                     Message.ReturnCode.OAUTH_PROVIDER_REQUEST_EXCEPTION,
                     identify.wrong().toString()
@@ -167,7 +167,7 @@ public class LoginController {
         );
 
         @SuppressWarnings("unused") MailVerifyFlow flow =
-                loginService.createMailVerifyFlow(token, email, authorization);
+                loginService.createMailVerifyFlow(token, email, authorization, (Identify) identify.data());
 
         return Message.success(Map.of("token", token, "email", email));
     }
@@ -194,12 +194,12 @@ public class LoginController {
 
         // 检查参数
         if (flow == null) {
-            flow = loginService.createMailVerifyFlow(tokenService.parse(token), email, null);
+            flow = loginService.createMailVerifyFlow(tokenService.parse(token), email, null, null);
         }
 
         // 对照 email
         if (!Objects.equals(email, flow.email())) {
-            loginService.createMailVerifyFlow(tokenService.parse(token), email, flow.accountAuthorization());
+            loginService.createMailVerifyFlow(tokenService.parse(token), email, flow.accountAuthorization(), flow.identify());
         }
 
         // 发送邮件
@@ -249,10 +249,19 @@ public class LoginController {
             );
         }
 
+        // 信息
+        Identify identify = flow.identify();
+
         // 验证成功
         // 创建 Account
         Account account = accountService.createAccount(
-                true, RandomUtils.strings(8), "", "", "", "", email
+                true,
+                RandomUtils.strings(8),
+                identify == null ? "" : identify.nickname(),
+                identify == null ? "" : identify.avatar(),
+                "",
+                "",
+                email
         );
 
         if (flow.accountAuthorization() != null) {

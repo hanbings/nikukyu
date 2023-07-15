@@ -2,6 +2,7 @@ package io.hanbings.server.nikukyu.service;
 
 import io.hanbings.flows.common.OAuth;
 import io.hanbings.flows.common.interfaces.Access;
+import io.hanbings.flows.common.interfaces.Identify;
 import io.hanbings.flows.common.interfaces.Request;
 import io.hanbings.flows.github.GithubOAuth;
 import io.hanbings.server.nikukyu.config.Config;
@@ -73,12 +74,13 @@ public class LoginService {
         return providers.get(provider);
     }
 
-    public MailVerifyFlow createMailVerifyFlow(Token token, String email, AccountAuthorization authorization) {
+    public MailVerifyFlow createMailVerifyFlow(Token token, String email, AccountAuthorization authorization, Identify identify) {
         MailVerifyFlow flow = new MailVerifyFlow(
                 RandomUtils.strings(6),
                 System.currentTimeMillis() + TokenService.Expire.MINUTE * 5,
                 email,
-                authorization
+                authorization,
+                identify
         );
 
         verifies.put(token.token(), flow);

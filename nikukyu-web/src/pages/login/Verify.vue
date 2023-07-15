@@ -15,10 +15,6 @@ import {Token} from "../../data/token.ts";
 import {router} from "../../router/router.ts";
 import {Account} from "../../data/account.ts";
 
-interface TokenResponse {
-  token: Token
-}
-
 const config = useConfigStore();
 const status = useStatusStore();
 const token = useTokenStore();
@@ -92,7 +88,7 @@ const sendVerify = () => {
       body,
       {headers: {Authorization: `Bearer ${token.token}`}}
   ).then(res => {
-    let data = res.data as Message<TokenResponse>;
+    let data = res.data as Message<Token>;
 
     // 检查是否成功
     if (data.code != 200) {
@@ -101,8 +97,8 @@ const sendVerify = () => {
     } else {
       // 更新 token
       // @ts-ignore
-      token.$patch(state => Object.keys(data.data.token).forEach(k => state[k] = data.data.token[k]));
-      token.$patch(state => state.access = data.data.token.access.map(a => a.replace(/_/g, '.').toLowerCase() as AccessType));
+      token.$patch(state => Object.keys(data.data).forEach(k => state[k] = data.data[k]));
+      token.$patch(state => state.access = data.data.access.map(a => a.replace(/_/g, '.').toLowerCase() as AccessType));
 
       // 请求账号信息
       axios.get(`${useConfigStore().api}/account`, {headers: {'Authorization': `Bearer ${token.token}`}})

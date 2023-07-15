@@ -79,7 +79,7 @@ public enum AccessType {
         StringBuilder builder = new StringBuilder();
 
         access.forEach(a -> {
-            builder.append(a.toString().toLowerCase(Locale.ROOT));
+            builder.append(a.toString());
             builder.append(", ");
         });
 
