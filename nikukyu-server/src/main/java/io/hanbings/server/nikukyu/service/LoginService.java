@@ -49,10 +49,10 @@ public class LoginService {
                             Map.of()
                     ));
                 }
-            }
 
-            if (provider.proxy()) {
-                LoginService.providers.get(provider.toString()).proxy(() -> LoginService.proxy);
+                if (provider.proxy()) {
+                    LoginService.providers.get(type.toString()).proxy(() -> LoginService.proxy);
+                }
             }
         });
     }

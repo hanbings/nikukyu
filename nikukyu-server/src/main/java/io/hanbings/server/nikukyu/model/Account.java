@@ -1,6 +1,7 @@
 package io.hanbings.server.nikukyu.model;
 
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * 用户账户数据
@@ -15,6 +16,8 @@ import org.jetbrains.annotations.NotNull;
  * @param color      主题颜色
  * @param email      用户邮箱
  */
+
+@Document("account")
 @SuppressWarnings("SpellCheckingInspection")
 public record Account(
         @NotNull String auid,

@@ -1,6 +1,7 @@
 package io.hanbings.server.nikukyu.model;
 
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * OAuth 客户端数据
@@ -11,6 +12,8 @@ import org.jetbrains.annotations.NotNull;
  * @param secret  密钥
  * @param expire  过期时间
  */
+
+@Document("oauth_client")
 @SuppressWarnings("SpellCheckingInspection")
 public record OAuthClient(
         @NotNull String ocid,

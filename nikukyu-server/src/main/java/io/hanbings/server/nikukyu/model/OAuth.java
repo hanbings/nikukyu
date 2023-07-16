@@ -2,6 +2,7 @@ package io.hanbings.server.nikukyu.model;
 
 import io.hanbings.server.nikukyu.content.AccessType;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
@@ -21,6 +22,8 @@ import java.util.List;
  * @param policy      隐私政策
  * @param tos         服务条款
  */
+
+@Document("oauth")
 @SuppressWarnings("SpellCheckingInspection")
 public record OAuth(
         @NotNull String ouid,

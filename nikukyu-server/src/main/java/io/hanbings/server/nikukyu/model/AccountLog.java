@@ -2,6 +2,7 @@ package io.hanbings.server.nikukyu.model;
 
 import io.hanbings.server.nikukyu.content.AccountLogType;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * 用户账户日志数据
@@ -12,6 +13,8 @@ import org.jetbrains.annotations.NotNull;
  * @param ip      IP 地址
  * @param type    日志类型
  */
+
+@Document("account_log")
 @SuppressWarnings("SpellCheckingInspection")
 public record AccountLog(
         @NotNull String alid,

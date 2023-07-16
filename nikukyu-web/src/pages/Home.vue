@@ -5,6 +5,7 @@ import {useAccountStore, useConfigStore, useStatusStore, useTokenStore} from "..
 import Title from "../components/Title.vue";
 import Avatar from "../components/Avatar.vue";
 import {router} from "../router/router.ts";
+import Button from "../components/index/Button.vue";
 
 const config = useConfigStore();
 const status = useStatusStore();
@@ -23,6 +24,17 @@ if (status.redirect) {
   router.push(redirect);
 }
 
+const clearState = () => {
+  status.login = false;
+  status.navbar = false;
+  status.email = "";
+
+  account.$reset();
+  token.$reset();
+
+  router.push("/login");
+}
+
 </script>
 <template>
   <div class="h-full w-full bg-fixed bg-cover bg-center" v-bind:style="{backgroundImage: background.background}">
@@ -38,6 +50,9 @@ if (status.redirect) {
           <p class="text-gray-400 text-xs">{{ `邮箱 ${account.email}` }}</p>
           <p class="text-gray-400 text-xs">{{ `账号 ID  ${account.id}` }}</p>
           <p class="text-gray-400 text-xs">{{ `账号 UID ${account.auid}` }}</p>
+        </div>
+        <div class="mt-6">
+          <Button class="bg-error hover:bg-error-300 focus:ring-error-300" text="退出当前账号" @click="clearState"/>
         </div>
       </div>
     </div>

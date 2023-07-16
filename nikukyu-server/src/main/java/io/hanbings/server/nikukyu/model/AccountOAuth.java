@@ -3,6 +3,7 @@ package io.hanbings.server.nikukyu.model;
 
 import io.hanbings.server.nikukyu.content.AccessType;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
@@ -15,6 +16,8 @@ import java.util.List;
  * @param ouid    OAuth ID
  * @param access  授权类型
  */
+
+@Document("account_oauth")
 @SuppressWarnings("SpellCheckingInspection")
 public record AccountOAuth(
         @NotNull String aoid,

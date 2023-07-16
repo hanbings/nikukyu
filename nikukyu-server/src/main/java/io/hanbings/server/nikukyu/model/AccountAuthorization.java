@@ -1,6 +1,7 @@
 package io.hanbings.server.nikukyu.model;
 
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * 用户已授权用于 OAuth 登录的第三方服务提供商数据
@@ -11,7 +12,9 @@ import org.jetbrains.annotations.NotNull;
  * @param provider 提供商名称
  * @param openid   提供商用户 ID
  */
+
 @SuppressWarnings("SpellCheckingInspection")
+@Document("account_authorization")
 public record AccountAuthorization(
         @NotNull String aaid,
         long created,
