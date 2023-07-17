@@ -1,6 +1,7 @@
 package io.hanbings.server.nikukyu.model;
 
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
@@ -16,7 +17,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @SuppressWarnings("SpellCheckingInspection")
 @Document("account_authorization")
 public record AccountAuthorization(
-        @NotNull String aaid,
+        @NotNull @Id String aaid,
         long created,
         @NotNull String auid,
         @NotNull String provider,

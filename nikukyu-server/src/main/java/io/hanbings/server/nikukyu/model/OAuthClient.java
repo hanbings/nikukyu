@@ -1,6 +1,7 @@
 package io.hanbings.server.nikukyu.model;
 
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
@@ -16,7 +17,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document("oauth_client")
 @SuppressWarnings("SpellCheckingInspection")
 public record OAuthClient(
-        @NotNull String ocid,
+        @NotNull @Id String ocid,
         long created,
         @NotNull String ouid,
         @NotNull String secret,

@@ -2,6 +2,7 @@ package io.hanbings.server.nikukyu.model;
 
 import io.hanbings.server.nikukyu.content.AccountLogType;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
@@ -17,7 +18,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document("account_log")
 @SuppressWarnings("SpellCheckingInspection")
 public record AccountLog(
-        @NotNull String alid,
+        @NotNull @Id String alid,
         long created,
         @NotNull String auid,
         @NotNull String ip,

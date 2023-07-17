@@ -2,6 +2,7 @@ package io.hanbings.server.nikukyu.model;
 
 import io.hanbings.server.nikukyu.content.OAuthLogType;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
@@ -17,7 +18,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document("oauth_log")
 @SuppressWarnings("SpellCheckingInspection")
 public record OAuthLog(
-        @NotNull String olid,
+        @NotNull @Id String olid,
         long created,
         @NotNull String ouid,
         @NotNull String ip,

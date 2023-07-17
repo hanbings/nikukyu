@@ -3,6 +3,7 @@ package io.hanbings.server.nikukyu.model;
 
 import io.hanbings.server.nikukyu.content.AccessType;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
@@ -20,7 +21,7 @@ import java.util.List;
 @Document("account_oauth")
 @SuppressWarnings("SpellCheckingInspection")
 public record AccountOAuth(
-        @NotNull String aoid,
+        @NotNull @Id String aoid,
         long created,
         @NotNull String auid,
         @NotNull String ouid,
