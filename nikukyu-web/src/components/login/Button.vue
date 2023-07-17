@@ -18,10 +18,14 @@ const props = withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
-  <div :style="{ backgroundColor: props.color }" class="oauth-button">
-    <router-link :to="props.link" class="flex flex-row items-center pr-4 pl-2">
+  <div :style="{ backgroundColor: props.color }"
+       class="
+       oauth-button
+       shadow-sm
+       flex justify-center items-center
+       hover:shadow-xl transition duration-500 ease-in-out">
+    <router-link :to="props.link">
       <img :alt=props.alt :src=props.path :style="{height: size, width: size}">
-      <p class="text-white text-xs ml-2">使用 Github 登录</p>
     </router-link>
   </div>
 </template>
@@ -29,8 +33,8 @@ const props = withDefaults(defineProps<Props>(), {
 <style scoped>
 .oauth-button {
   height: 42px;
-  border-radius: 8px;
+  width: 42px;
 
-  @apply shadow-md flex flex-row items-center hover:shadow-xl transition duration-500 ease-in-out;
+  border-radius: 8px;
 }
 </style>

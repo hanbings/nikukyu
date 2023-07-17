@@ -14,18 +14,22 @@ import {Message} from "../../data/message.ts";
 import {Token} from "../../data/token.ts";
 import {router} from "../../router/router.ts";
 import {Account} from "../../data/account.ts";
+import EmailInput from "../../components/verify/EmailInput.vue";
 
 const config = useConfigStore();
 const status = useStatusStore();
 const token = useTokenStore();
 const account = useAccountStore();
 
+const email = ref<string>(status.email);
 const error = ref<boolean>(false);
 const loading = ref<boolean>(true);
 const message = ref<string | null>(null);
 const unverified = ref<boolean | null>(null);
+const needChangeEmail = ref<boolean>(true);
 
-const input = ref(CodeInput);
+const emailInput = ref(EmailInput);
+const codeInput = ref(CodeInput);
 const background = ref({background: `url('${config.loginBackground}')`});
 
 onMounted(() => {
@@ -37,41 +41,55 @@ onMounted(() => {
     loading.value = false;
     message.value = "未登录";
     error.value = true;
-  } else {
-    // 发送邮箱验证码
-    let body = new FormData();
-    body.append('email', status.email);
-
-    axios.post(
-        `${useConfigStore().api}/login/email/verify`,
-        body,
-        {headers: {Authorization: `Bearer ${token.token}`}}
-    ).then(res => {
-      let data = res.data as Message<null>;
-
-      if (data.code != 200) {
-        message.value = data.message;
-        error.value = true;
-        loading.value = false;
-        return;
-      }
-    }).catch(err => {
-      message.value = err.message;
-      error.value = true;
-      loading.value = false;
-      return;
-    });
   }
 });
 
+const confirmChangeEmail = () => {
+  needChangeEmail.value = false;
+
+  checkEmail();
+}
+
+const checkEmail = () => {
+  console.log(1)
+  console.log(email.value)
+  console.log(/^\b[\w.%-]+@[\w.-]+\.[A-Za-z]{2,}\b$/i.test(email.value))
+  if (/^\b[\w.%-]+@[\w.-]+\.[A-Za-z]{2,}\b$/i.test(email.value)) {
+    sendVerifyRequest();
+  }
+}
+
+const sendVerifyRequest = () => {
+  // 发送邮箱验证码
+  let body = new FormData();
+  body.append('email', email.value);
+
+  axios.post(
+      `${useConfigStore().api}/login/email/verify`,
+      body,
+      {headers: {Authorization: `Bearer ${token.token}`}}
+  ).then(res => {
+    let data = res.data as Message<null>;
+
+    if (data.code != 200) {
+      message.value = data.message;
+      error.value = true;
+      loading.value = false;
+      return;
+    }
+  }).catch(err => {
+    message.value = err.message;
+    error.value = true;
+    loading.value = false;
+    return;
+  });
+}
 const resetVerify = () => unverified.value = false;
 const sendVerify = () => {
   loading.value = true;
 
   let inputCode = "";
-  console.log(input);
-  console.log(input.value.box);
-  input.value.box.forEach((v: { value: "" }) => {
+  codeInput.value.box.forEach((v: { value: "" }) => {
     if (v.value != "") inputCode += v.value;
   });
 
@@ -80,7 +98,7 @@ const sendVerify = () => {
 
   // 请求 token
   let body = new FormData();
-  body.append('email', status.email);
+  body.append('email', email.value);
   body.append('code', inputCode);
 
   axios.post(
@@ -135,20 +153,24 @@ loading.value = false;
           <Title text="验证邮箱"/>
         </div>
         <div class="mt-6">
-          <p class="text-gray-400 text-xs">{{ `验证邮件将发送到 ` }}
-            <a class="font-medium text-blue-400 hover:no-underline text-xs">{{ `${status.email}` }}</a>
+          <p v-if="!needChangeEmail" class="text-gray-400 text-xs">{{ `验证邮件已发送到 ` }}
+            <a class="font-medium text-blue-400 hover:no-underline text-xs">{{ `${email}` }}</a>
           </p>
           <p class="text-gray-400 text-xs">未注册的电子邮箱地址将自动注册</p>
           <p class="text-gray-400 text-xs">注册代表您已同意我们的 <a
               class="font-medium text-blue-400 hover:no-underline text-xs">隐私政策</a> 与 <a
               class="font-medium text-blue-400 hover:no-underline text-xs">用户条款</a></p>
         </div>
-        <div class="mt-6">
-          <CodeInput ref="input" :onchange="resetVerify"/>
+        <div class="mt-6" v-if="needChangeEmail">
+          <EmailInput ref="emailInput" v-model:email="email" :text="email"/>
+        </div>
+        <div class="mt-6" v-if="!needChangeEmail">
+          <CodeInput ref="codeInput" :onchange="resetVerify"/>
           <p v-if="unverified" class="text-error mt-2 text-xs">验证码错误</p>
         </div>
         <div class="mt-6">
-          <Button class="w-full" text="验证邮箱" @click="sendVerify"/>
+          <Button v-if="needChangeEmail" class="w-full" text="发送验证邮件" @click="confirmChangeEmail"/>
+          <Button v-if="!needChangeEmail" class="w-full" text="验证邮箱" @click="sendVerify"/>
         </div>
       </div>
     </div>

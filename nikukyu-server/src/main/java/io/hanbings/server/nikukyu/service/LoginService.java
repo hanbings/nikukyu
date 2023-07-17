@@ -4,7 +4,10 @@ import io.hanbings.flows.common.OAuth;
 import io.hanbings.flows.common.interfaces.Access;
 import io.hanbings.flows.common.interfaces.Identify;
 import io.hanbings.flows.common.interfaces.Request;
+import io.hanbings.flows.discord.DiscordOAuth;
 import io.hanbings.flows.github.GithubOAuth;
+import io.hanbings.flows.google.GoogleOAuth;
+import io.hanbings.flows.microsoft.MicrosoftCommonOAuth;
 import io.hanbings.server.nikukyu.config.Config;
 import io.hanbings.server.nikukyu.config.OAuthConfig;
 import io.hanbings.server.nikukyu.data.MailVerifyFlow;
@@ -27,7 +30,6 @@ public class LoginService {
     // 缓存验证码与 Token 的对应关系 (验证码只能使用一次) Token - VerifyCode
     static Map<String, MailVerifyFlow> verifies = new ConcurrentHashMap<>();
 
-    @SuppressWarnings("SwitchStatementWithTooFewBranches")
     public LoginService(Config config, OAuthConfig oauth) {
         // init oauth service
         LoginService.proxy = new Request.Proxy(
@@ -46,6 +48,34 @@ public class LoginService {
                             provider.clientSecret(),
                             String.format("%s/login/oauth/%s/callback", config.getSite(), type),
                             List.of("read:user", "user:email"),
+                            Map.of()
+                    ));
+
+                    case DISCORD -> LoginService.providers.put(type.toString(), new DiscordOAuth(
+                            provider.clientId(),
+                            provider.clientSecret(),
+                            String.format("%s/login/oauth/%s/callback", config.getSite(), type),
+                            List.of("identify", "email"),
+                            Map.of()
+                    ));
+
+                    case GOOGLE -> LoginService.providers.put(type.toString(), new GoogleOAuth(
+                            provider.clientId(),
+                            provider.clientSecret(),
+                            String.format("%s/login/oauth/%s/callback", config.getSite(), type),
+                            List.of(
+                                    "openid",
+                                    "https://www.googleapis.com/auth/userinfo.email",
+                                    "https://www.googleapis.com/auth/userinfo.profile"
+                            ),
+                            Map.of()
+                    ));
+
+                    case MICROSOFT -> LoginService.providers.put(type.toString(), new MicrosoftCommonOAuth(
+                            provider.clientId(),
+                            provider.clientSecret(),
+                            String.format("%s/login/oauth/%s/callback", config.getSite(), type),
+                            List.of("mail.read", "user.read"),
                             Map.of()
                     ));
                 }

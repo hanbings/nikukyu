@@ -32,6 +32,14 @@ let needVerify = ref<boolean>(false);
         <div class="flex flex-row gap-3 mt-6">
           <Button alt="github" color="#29242f" link="/login/oauth/github/authorize"
                   path="resources/images/icons8-github.svg" size="32px"></Button>
+          <Button alt="discord" color="#6c19ff" link="/login/oauth/discord/authorize"
+                  path="resources/images/icons8-discord.svg" size="24px"></Button>
+          <Button alt="microsoft" color="#ffffff" link="/login/oauth/microsoft/authorize"
+                  path="resources/images/icons8-microsoft.svg" size="24px"></Button>
+          <Button alt="google" color="#ffffff" link="/login/oauth/google/authorize"
+                  path="resources/images/icons8-google.svg" size="24px"></Button>
+          <Button alt="more" color="#c0c5cc" link="/login/oauth/github/authorize"
+                  path="resources/images/more.svg" size="32px"></Button>
         </div>
       </div>
     </div>

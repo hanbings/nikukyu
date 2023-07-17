@@ -17,7 +17,13 @@ import java.util.Map;
 public record OAuthConfig(Proxy proxy, Map<ProviderType, Provider> providers) {
     public enum ProviderType {
         @JsonProperty("github")
-        GITHUB;
+        GITHUB,
+        @JsonProperty("discord")
+        DISCORD,
+        @JsonProperty("google")
+        GOOGLE,
+        @JsonProperty("microsoft")
+        MICROSOFT;
 
         @Override
         public String toString() {

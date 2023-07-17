@@ -16,6 +16,7 @@ import io.hanbings.server.nikukyu.exception.OAuthProviderException;
 import io.hanbings.server.nikukyu.model.Account;
 import io.hanbings.server.nikukyu.model.AccountAuthorization;
 import io.hanbings.server.nikukyu.service.*;
+import io.hanbings.server.nikukyu.utils.FormatCheck;
 import io.hanbings.server.nikukyu.utils.RandomUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -169,7 +170,7 @@ public class LoginController {
         @SuppressWarnings("unused") MailVerifyFlow flow =
                 loginService.createMailVerifyFlow(token, email, authorization, (Identify) identify.data());
 
-        return Message.success(Map.of("token", token, "email", email));
+        return Message.success(Map.of("token", token, "email", email == null ? "" : email));
     }
 
     @GetMapping("/login/verify/token")
@@ -202,10 +203,18 @@ public class LoginController {
             loginService.createMailVerifyFlow(tokenService.parse(token), email, flow.accountAuthorization(), flow.identify());
         }
 
+        if (!FormatCheck.checkEmail(email)) {
+            throw new EmailVerifyException(
+                    Message.ReturnCode.EMAIL_FORMAT_INVALID,
+                    Message.Messages.EMAIL_FORMAT_INVALID,
+                    Map.of("email", email)
+            );
+        }
+
         // 发送邮件
         mailService.sendVerifyMail(flow.email(), flow.code());
 
-        return Message.success(Map.of("email", flow.email()));
+        return Message.success(Map.of("email", email));
     }
 
     @PostMapping("/login/token")

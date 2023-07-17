@@ -39,6 +39,7 @@ public class Message<T> {
         public static final String OAUTH_PROVIDER_REQUEST_NETWORK_EXCEPTION = "请求第三方登录出现网络问题 (╯°Д°)╯︵ ┻━┻";
         public static final String OAUTH_NOT_FOUND = "没有找到对应的 OAuth 应用 (╯°Д°)╯︵ ┻━┻";
         public static final String OAUTH_AUTHORIZE_INVALID = "授权失败 (╯°Д°)╯︵ ┻━┻";
+        public static final String EMAIL_FORMAT_INVALID = "邮箱格式不正确 (╯°Д°)╯︵ ┻━┻";
     }
 
     public static class ReturnCode {
@@ -61,5 +62,6 @@ public class Message<T> {
         public static final int OAUTH_PROVIDER_REQUEST_EXCEPTION = 20211;
         public static final int OAUTH_NOT_FOUND = 20212;
         public static final int OAUTH_AUTHORIZE_INVALID = 20213;
+        public static final int EMAIL_FORMAT_INVALID = 20214;
     }
 }

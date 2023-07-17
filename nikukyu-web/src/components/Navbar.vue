@@ -3,8 +3,6 @@ import Avatar from "./Avatar.vue";
 import {useAccountStore} from "../stores/store.ts";
 
 const account = useAccountStore();
-
-console.log(account.avatar);
 </script>
 
 <template>

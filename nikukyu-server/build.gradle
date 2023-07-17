@@ -34,8 +34,11 @@ dependencies {
     // gson
     implementation 'com.google.code.gson:gson:2.10.1'
     // flows
-    implementation "io.hanbings.flows:flows-common:b8b23ab-SNAPSHOT"
-    implementation "io.hanbings.flows:flows-github:b8b23ab-SNAPSHOT"
+    implementation "io.hanbings.flows:flows-common:3170ba3-SNAPSHOT"
+    implementation "io.hanbings.flows:flows-github:3170ba3-SNAPSHOT"
+    implementation "io.hanbings.flows:flows-discord:3170ba3-SNAPSHOT"
+    implementation "io.hanbings.flows:flows-microsoft:3170ba3-SNAPSHOT"
+    implementation "io.hanbings.flows:flows-google:3170ba3-SNAPSHOT"
     // lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
