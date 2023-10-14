@@ -1,10 +1,11 @@
-package io.hanbings.server;
+package io.hanbings.server.nikukyu;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class NikukyuServerApplicationTests {
+@SuppressWarnings("SpellCheckingInspection")
+class NikukyuApplicationTests {
 
     @Test
     void contextLoads() {
