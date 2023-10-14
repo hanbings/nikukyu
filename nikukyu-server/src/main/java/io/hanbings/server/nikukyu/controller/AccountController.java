@@ -54,15 +54,21 @@ public class AccountController {
     @NikukyuTokenCheck(access = {AccessType.ACCOUNT_WRITE}, checkAccount = true)
     public Message<?> updateAccount(
             @PathVariable String auid,
-            @RequestParam(value = "id", required = false) String id,
-            @RequestParam(value = "nick", required = false) String nick,
-            @RequestParam(value = "avatar", required = false) String avatar,
-            @RequestParam(value = "background", required = false) String background,
-            @RequestParam(value = "color", required = false) String color
+            @RequestBody Account account
     ) {
-        Account account = accountService.updateAccount(auid, id, nick, avatar, background, color);
+        Account oldAccount = accountService.getAccountWithAuid(auid);
 
-        return Message.success(account);
+        if (oldAccount == null) throw new NotFoundException();
+        Account updatedAccount = accountService.updateAccount(
+                auid,
+                account.id() == null ? oldAccount.id() : account.id(),
+                account.nick() == null ? oldAccount.nick() : account.nick(),
+                account.avatar() == null ? oldAccount.avatar() : account.avatar(),
+                account.background() == null ? oldAccount.background() : account.background(),
+                account.color() == null ? oldAccount.color() : account.color()
+        );
+
+        return Message.success(updatedAccount);
     }
 
     // authorization

@@ -26,16 +26,16 @@ public record Account(
         boolean verified,
 
         // 用户 ID
-        @NotNull String id,
+        String id,
         // 用户昵称
-        @NotNull String nick,
+        String nick,
         // 用户头像
-        @NotNull String avatar,
+        String avatar,
         // 背景图片
-        @NotNull String background,
+        String background,
         // 主题颜色
-        @NotNull String color,
+        String color,
         // 用户邮箱
-        @NotNull String email
+        String email
 ) {
 }

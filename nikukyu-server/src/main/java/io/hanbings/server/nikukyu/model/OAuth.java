@@ -29,16 +29,16 @@ import java.util.List;
 public record OAuth(
         @NotNull @Id String ouid,
         long created,
-        @NotNull String auid,
-        @NotNull List<String> redirect,
-        @NotNull List<AccessType> access,
-        @NotNull String avatar,
-        @NotNull String name,
-        @NotNull String description,
-        @NotNull String homepage,
-        @NotNull String background,
-        @NotNull String theme,
-        @NotNull String policy,
-        @NotNull String tos
+        String auid,
+        List<String> redirect,
+        List<AccessType> access,
+        String avatar,
+        String name,
+        String description,
+        String homepage,
+        String background,
+        String theme,
+        String policy,
+        String tos
 ) {
 }

@@ -39,40 +39,25 @@ public class OAuthController {
     @NikukyuTokenCheck(access = {AccessType.OAUTH_WRITE})
     public Message<?> createOAuth(
             @RequestHeader("Authorization") String bearer,
-            @RequestParam("name") String name,
-            @RequestParam(value = "access") String access,
-            @RequestParam(value = "redirect", required = false, defaultValue = "") String redirect,
-            @RequestParam(value = "avatar", required = false, defaultValue = "") String avatar,
-            @RequestParam(value = "description", required = false, defaultValue = "") String description,
-            @RequestParam(value = "homepage", required = false, defaultValue = "") String homepage,
-            @RequestParam(value = "background", required = false, defaultValue = "") String background,
-            @RequestParam(value = "theme", required = false, defaultValue = "") String theme,
-            @RequestParam(value = "policy", required = false, defaultValue = "") String policy,
-            @RequestParam(value = "tos", required = false, defaultValue = "") String tos
+            @RequestBody OAuth oAuth
     ) {
         Token token = tokenService.parse(bearer);
 
-        // 处理 Access
-        List<AccessType> types = access == null ? List.of() : AccessType.parse(access);
-
-        // 处理 Redirect
-        List<String> redirects = redirect == null ? List.of() : List.of(redirect.split(","));
-
-        OAuth oAuth = oAuthService.createOAuth(
+        OAuth createdOAuth = oAuthService.createOAuth(
                 token.belong(),
-                redirects,
-                types,
-                avatar,
-                name,
-                description,
-                homepage,
-                background,
-                theme,
-                policy,
-                tos
+                oAuth.redirect() == null ? List.of() : oAuth.redirect(),
+                oAuth.access() == null ? List.of() : oAuth.access(),
+                oAuth.avatar() == null ? "" : oAuth.avatar(),
+                oAuth.name() == null ? "" : oAuth.name(),
+                oAuth.description() == null ? "" : oAuth.description(),
+                oAuth.homepage() == null ? "" : oAuth.homepage(),
+                oAuth.background() == null ? "" : oAuth.background(),
+                oAuth.theme() == null ? "" : oAuth.theme(),
+                oAuth.policy() == null ? "" : oAuth.policy(),
+                oAuth.tos() == null ? "" : oAuth.tos()
         );
 
-        return Message.success(oAuth);
+        return Message.success(createdOAuth);
     }
 
     @GetMapping("/oauth/{ouid}")
@@ -98,38 +83,32 @@ public class OAuthController {
     @NikukyuTokenCheck(access = {AccessType.OAUTH_WRITE}, checkOAuth = true)
     public Message<?> updateOAuth(
             @PathVariable String ouid,
-            @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "access", required = false) String access,
-            @RequestParam(value = "redirect", required = false) String redirect,
-            @RequestParam(value = "avatar", required = false) String avatar,
-            @RequestParam(value = "description", required = false) String description,
-            @RequestParam(value = "homepage", required = false) String homepage,
-            @RequestParam(value = "background", required = false) String background,
-            @RequestParam(value = "theme", required = false) String theme,
-            @RequestParam(value = "policy", required = false) String policy,
-            @RequestParam(value = "tos", required = false) String tos
+            @RequestBody OAuth oAuth
     ) {
-        // 处理 Access
-        List<AccessType> types = access == null ? null : AccessType.parse(access);
+        OAuth oldOAuth = oAuthService.getOAuthWithOuid(ouid);
 
-        // 处理 Redirect
-        List<String> redirects = redirect == null ? null : List.of(redirect.split(","));
+        if (oldOAuth == null) {
+            throw new NotFoundException(
+                    Message.ReturnCode.OAUTH_NOT_FOUND,
+                    Message.Messages.OAUTH_NOT_FOUND
+            );
+        }
 
-        OAuth oAuth = oAuthService.updateOAuthWithOuid(
+        OAuth updatedOAuth = oAuthService.updateOAuthWithOuid(
                 ouid,
-                redirects,
-                types,
-                avatar,
-                name,
-                description,
-                homepage,
-                background,
-                theme,
-                policy,
-                tos
+                oAuth.redirect() == null ? oldOAuth.redirect() : oAuth.redirect(),
+                oAuth.access() == null ? oldOAuth.access() : oAuth.access(),
+                oAuth.avatar() == null ? oldOAuth.avatar() : oAuth.avatar(),
+                oAuth.name() == null ? oldOAuth.name() : oAuth.name(),
+                oAuth.description() == null ? oldOAuth.description() : oAuth.description(),
+                oAuth.homepage() == null ? oldOAuth.homepage() : oAuth.homepage(),
+                oAuth.background() == null ? oldOAuth.background() : oAuth.background(),
+                oAuth.theme() == null ? oldOAuth.theme() : oAuth.theme(),
+                oAuth.policy() == null ? oldOAuth.policy() : oAuth.policy(),
+                oAuth.tos() == null ? oldOAuth.tos() : oAuth.tos()
         );
 
-        return Message.success(oAuth);
+        return Message.success(updatedOAuth);
     }
 
     @DeleteMapping("/oauth/{ouid}")
