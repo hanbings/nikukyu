@@ -1,41 +1,35 @@
-import {AccessType, OAuthLogType} from "./common.ts";
+import {AccessType} from "./token.ts";
 
-export class OAuth {
-    constructor(
-        public ouid: string,
-        public created: number,
-        public redirect: string[],
-        public access: AccessType[],
-        public avatar: string,
-        public name: string,
-        public description: string,
-        public homepage: string,
-        public background: string,
-        public theme: string,
-        public policy: string,
-        public tos: string,
-    ) {
-    }
+export interface OAuth {
+    ouid: string
+    created: number
+    redirect: string
+    access: AccessType[]
+    avatar: string
+    name: string
+    description: string
+    homepage: string
+    background: string
+    theme: string
+    policy: string
+    tos: string
 }
 
-export class OAuthClient {
-    constructor(
-        public ocid: string,
-        public created: number,
-        public ouid: string,
-        public secret: string,
-        public expire: number,
-    ) {
-    }
+export interface OAuthClient {
+    ocid: string
+    created: number
+    ouid: string
+    secret: string
+    expire: number
 }
 
-export class OAuthLog {
-    constructor(
-        public olid: string,
-        public created: number,
-        public ouid: string,
-        public type: OAuthLogType,
-    ) {
-    }
+export enum OAuthLogType {
+
 }
 
+export interface OAuthLog {
+    olid: string
+    created: number
+    ouid: string
+    type: OAuthLogType
+}

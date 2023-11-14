@@ -1,6 +1,6 @@
 {
   "site": "http://localhost:5173",
-  "api": "http://127.0.0.1:8080/api/v0",
+  "api": "https://970dd90c-0b47-4528-aba1-3fb9ade74894.mock.pstmn.io",
   "avatar": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
   "slogan": "🍀 This is Nikukyu, A Open Source SSO （Single Sign-On) software.",
   "docs": "https://github.com/hanbings/nikukyu",

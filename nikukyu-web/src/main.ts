@@ -1,7 +1,11 @@
-import './style.css'
-import App from "./App.vue";
-import {createApp} from "vue";
-import {store} from "./stores/store.ts";
-import {router} from "./router/router.ts";
+import {createApp} from 'vue';
+import './style.css';
+import App from './App.vue';
+import router from "./router.ts";
+import {createPinia} from "pinia";
+import 'preline';
 
-createApp(App).use(store).use(router).mount('#app');
+const route = router;
+const store = createPinia();
+const app = createApp(App);
+app.use(route).use(store).mount('#app');

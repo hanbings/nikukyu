@@ -1,8 +1,5 @@
-export class Message<T> {
-    constructor(
-        public code: number,
-        public message: string,
-        public data: T,
-    ) {
-    }
+export default interface Message<T> {
+    message: string
+    code: number
+    data: T
 }

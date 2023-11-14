@@ -1,50 +1,41 @@
-import {AccessType, AccountLogType} from "./common.ts";
+import {AccessType} from "./token.ts";
 
-export class Account {
-    constructor(
-        public auid: string,
-        public created: number,
-        public verified: boolean,
-        public id: string,
-        public nick: string,
-        public avatar: string,
-        public background: string,
-        public color: string,
-        public email: string,
-    ) {
-    }
+export interface Account {
+    auid: string
+    created: number
+    verified: boolean
+    id: string
+    nick: string
+    avatar: string
+    background: string
+    color: string
+    email: string
 }
 
-export class AccountAuthorization {
-    constructor(
-        public aaid: string,
-        public created: number,
-        public auid: string,
-        public provider: string,
-        public openid: string,
-    ) {
-    }
+export interface AccountAuthorization {
+    aaid: string
+    created: number
+    auid: string
+    provider: string
+    openid: string
 }
 
-export class AccountLog {
-    constructor(
-        public alid: string,
-        public created: number,
-        public auid: string,
-        public ip: string,
-        public type: AccountLogType,
-    ) {
-    }
+export enum AccountLogType {
+
 }
 
-export class AccountOAuth {
-    constructor(
-        public aoid: string,
-        public created: number,
-        public auid: string,
-        public ouid: string,
-        public access: AccessType[],
-    ) {
-    }
+export interface AccountLog {
+    alid: string
+    created: number
+    auid: string
+    ip: string
+    type: AccountLogType
 }
 
+export interface AccountOAuth {
+    aoid: string
+    created: number
+    auid: string
+    ooid: string
+    access: AccessType[]
+}
