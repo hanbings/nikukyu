@@ -16,18 +16,17 @@ const logins = [
 </script>
 <template>
   <div class="h-full w-full flex justify-center items-center">
-    <div class="h-full w-full flex flex-row justify-center items-center backdrop-blur-3xl">
+    <div class="h-full w-full flex flex-row justify-center items-center backdrop-blur-3xl bg-green-200">
       <Panel class="flex flex-col gap-3">
         <p class="text-2xl">Login Nests ID</p>
         <div class="w-[320px]">
           <p class="text-sm text-gray-500">Unregistered email addresses will automatically be used to register a new
             account.</p>
-          <div class="flex flex-row flex-wrap gap-1">
-            <p class="text-sm text-gray-500">This means you have agreed to our</p>
+          <p class="text-sm text-gray-500">This means you have agreed to our
             <a class="text-sm text-green-500">Privacy Policy</a>
-            <p class="text-sm text-gray-500">and</p>
+            and
             <a class="text-sm text-green-500">Terms of Use</a>
-          </div>
+          </p>
         </div>
         <Input class="w-[320px]" placeholder="Email / Account ID / Username"/>
         <div class="flex flex-row flex-wrap gap-2 w-[323px]">
