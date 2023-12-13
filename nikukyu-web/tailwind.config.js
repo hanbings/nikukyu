@@ -1,17 +1,17 @@
-/** @type {import('tailwindcss').Config} */
-module.exports = {
-  content: [
-    "./index.html",
-    "./src/**/*.{vue,js,ts,jsx,tsx}",
+import {nextui} from "@nextui-org/react";
 
-    // Preline directives
-    'node_modules/preline/dist/*.js',
-  ],
-  theme: {
-    extend: {},
-  },
-  plugins: [
-    require('preline/plugin'),
-    require('@tailwindcss/forms')
-  ],
+/** @type {import('tailwindcss').Config} */
+export default {
+    content: [
+        "./index.html",
+        "./src/**/*.{js,ts,jsx,tsx}",
+        "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
+    ],
+    theme: {
+        extend: {},
+    },
+    darkMode: "class",
+    plugins: [
+        nextui()
+    ],
 }
