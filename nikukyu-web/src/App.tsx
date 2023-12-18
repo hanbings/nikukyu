@@ -13,7 +13,7 @@ function App() {
                     <Route path="/" element={<Home/>}></Route>
                     <Route path="/login" element={<Login/>}></Route>
                     <Route path="/account" element={<Account/>}></Route>
-                    <Route path="/authorize" element={<Authorize/>}></Route>
+                    <Route path="/oauth/authorize" element={<Authorize/>}></Route>
                 </Routes>
             </main>
         </NextUIProvider>

@@ -55,8 +55,8 @@ export const access = [
         isDanger: true
     },
     { access: "email.verify", description: "发起邮件验证的权限", isDanger: true },
-    { access: "account.read", description: "查看账号的权限", isDanger: false },
-    { access: "account.write", description: "修改账号的权限", isDanger: false },
+    { access: "account.read", description: "查看账号信息的权限", isDanger: false },
+    { access: "account.write", description: "修改账号信息的权限", isDanger: false },
     { access: "account.settings.read", description: "查看账号设置的权限", isDanger: false },
     { access: "account.settings.write", description: "修改账号设置的权限", isDanger: false },
     { access: "account.authorization.read", description: "查看账号内 OAuth 提供商的权限", isDanger: false },
