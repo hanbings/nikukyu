@@ -1,13 +1,12 @@
 package io.hanbings.nikukyu.server.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.hanbings.nikukyu.server.content.AccessType;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * 用户账户授权本平台 OAuth 授权数据
@@ -26,6 +25,6 @@ public record AccountOAuth(
         @Field("created") @JsonProperty("created") long created,
         @Field("account_id") @JsonProperty("account_id") @NotNull String auid,
         @Field("oauth_id") @JsonProperty("oauth_id") @NotNull String ouid,
-        @Field("access") @JsonProperty("access") @NotNull List<AccessType> access
+        @Field("access") @JsonProperty("access") @NotNull Set<String> access
 ) {
 }

@@ -1,7 +1,6 @@
 package io.hanbings.nikukyu.server.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.hanbings.nikukyu.server.content.AccountLogType;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -24,6 +23,6 @@ public record AccountLog(
         @Field("created") @JsonProperty("created") long created,
         @Field("account_id") @JsonProperty("account_id") @NotNull String auid,
         @Field("ip") @JsonProperty("ip") @NotNull String ip,
-        @Field("type") @JsonProperty("type") @NotNull AccountLogType type
+        @Field("type") @JsonProperty("type") @NotNull String type
 ) {
 }

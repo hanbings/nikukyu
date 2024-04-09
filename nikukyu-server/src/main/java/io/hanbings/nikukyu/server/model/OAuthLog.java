@@ -2,7 +2,6 @@ package io.hanbings.nikukyu.server.model;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.hanbings.nikukyu.server.content.OAuthLogType;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -22,9 +21,9 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @SuppressWarnings("SpellCheckingInspection")
 public record OAuthLog(
         @Id @JsonProperty("oauth_log_id") @NotNull String olid,
-        long created,
+        @Field("created") @JsonProperty("created") long created,
         @Field("oauth_id") @JsonProperty("oauth_id") @NotNull String ouid,
         @Field("ip") @JsonProperty("ip") @NotNull String ip,
-        @Field("type") @JsonProperty("type") @NotNull OAuthLogType type
+        @Field("type") @JsonProperty("type") @NotNull String type
 ) {
 }

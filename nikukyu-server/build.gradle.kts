@@ -4,6 +4,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.4"
 }
 
+@Suppress("SpellCheckingInspection")
 group = "io.hanbings"
 version = "0.0.1-SNAPSHOT"
 

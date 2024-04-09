@@ -8,5 +8,5 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @SuppressWarnings("SpellCheckingInspection")
-public @interface NikukyuTokenCheck {
+public @interface NikukyuPermissionCheck {
 }

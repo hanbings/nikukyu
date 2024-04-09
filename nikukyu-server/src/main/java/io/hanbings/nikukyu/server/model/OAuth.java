@@ -1,14 +1,13 @@
 package io.hanbings.nikukyu.server.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.hanbings.nikukyu.server.content.AccessType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * 注册在平台内的 OAuth 服务商数据
@@ -33,8 +32,8 @@ public record OAuth(
         @Id @JsonProperty("oauth_id") @NotNull String ouid,
         @Field("created") @JsonProperty("created") long created,
         @Field("account_id") @JsonProperty("account_id") @NotNull String auid,
-        @Field("redirect") @JsonProperty("redirect") @NotNull List<String> redirect,
-        @Field("access") @JsonProperty("access") @NotNull List<AccessType> access,
+        @Field("redirect") @JsonProperty("redirect") @NotNull Set<String> redirect,
+        @Field("access") @JsonProperty("access") @NotNull Set<String> access,
         @Field("avatar") @JsonProperty("avatar") @NotNull String avatar,
         @Field("name") @JsonProperty("name") @NotNull String name,
         @Field("description") @JsonProperty("description") @Nullable String description,
