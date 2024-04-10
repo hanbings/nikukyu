@@ -3,9 +3,13 @@ package io.hanbings.nikukyu.server.annotation;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.hanbings.nikukyu.server.data.Message;
+import io.hanbings.nikukyu.server.exception.UnauthorizationException;
 import io.hanbings.nikukyu.server.security.Permission;
+import io.hanbings.nikukyu.server.security.Token;
+import io.hanbings.nikukyu.server.service.TokenService;
 import io.hanbings.nikukyu.server.utils.RandomUtils;
 import io.hanbings.nikukyu.server.utils.TimeUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -13,6 +17,8 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -20,6 +26,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Set;
 
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
@@ -36,10 +43,10 @@ public @interface NikukyuPermissionCheck {
     @RequiredArgsConstructor
     @SuppressWarnings("all")
     public class AccessChecker {
+        final TokenService tokenService;
+
         static ObjectMapper mapper = new ObjectMapper();
         static JavaType listType = mapper.getTypeFactory().constructParametricType(ArrayList.class, Permission.class);
-
-        final
 
         @SneakyThrows
         @Around(value = "@annotation(io.hanbings.nikukyu.server.annotation.NikukyuPermissionCheck)")
@@ -48,7 +55,41 @@ public @interface NikukyuPermissionCheck {
             MethodSignature signature = (MethodSignature) point.getSignature();
             Object target = point.getTarget();
             Method method = target.getClass().getMethod(signature.getName(), signature.getParameterTypes());
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
             NikukyuPermissionCheck annotation = method.getAnnotation(NikukyuPermissionCheck.class);
+
+            // 获取请求头的 Auhtoization header
+            String authorization = request.getHeader("Authorization");
+
+            // 检查是否需要登录
+            // 如果需要登录没有 Token 则返回未授权错误
+            if (annotation.requiredLogin() && authorization == null) throw new UnauthorizationException(request.getRequestURI());
+
+            // 获取 Token
+            Token token = tokenService.parse(authorization);
+
+            // 检查 Token 是否过期
+            if (token == null) throw new UnauthorizationException(request.getRequestURI());
+
+            // 检查 Token 是否有权限
+            // 校验登录后检查是否需要检查全部的权限
+            Set<String> willBeCheck = Set.of(annotation.access());
+
+            // 检测权限
+            if (!annotation.requiredAllAccess()) {
+                if (!tokenService.checkAccess(token, willBeCheck)) {
+                    throw new UnauthorizationException(request.getRequestURI());
+                }
+            } else {
+                for (String permission : willBeCheck) {
+                    if (!tokenService.checkAccess(token, permission)) {
+                        throw new UnauthorizationException(request.getRequestURI());
+                    }
+                }
+            }
+
+            // 设置 Account ID 到请求中
+            request.setAttribute("X-Nikukyu-AccountId", token.belong());
 
             // 构造消息
             Message<Object> message = new Message<>(

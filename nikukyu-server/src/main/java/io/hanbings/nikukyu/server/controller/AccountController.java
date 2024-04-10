@@ -1,5 +1,6 @@
 package io.hanbings.nikukyu.server.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -7,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/v0/account")
 public class AccountController {
+    final HttpServletRequest request;
 
     @GetMapping()
     public Object getAccountList() {

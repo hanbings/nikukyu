@@ -27,7 +27,7 @@ public class Permission {
     public static final String OAUTH_READ = "oauth:read";
     public static final String OAUTH_UPDATE = "oauth:update";
     public static final String OAUTH_DELETE = "oauth:delete";
-    // OAuth Client
+
     // OAuth Client
     public static final String OAUTH_CLIENT_CREATE = "oauth.client:create";
     public static final String OAUTH_CLIENT_READ = "oauth.client:read";

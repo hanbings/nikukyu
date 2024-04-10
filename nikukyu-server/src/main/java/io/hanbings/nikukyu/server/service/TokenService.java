@@ -48,6 +48,16 @@ public class TokenService {
         return t.permissions().containsAll(access);
     }
 
+    public boolean checkAccess(Token token, String permission) {
+        // 检查 Token 是否有权限
+        return token.permissions().contains(permission);
+    }
+
+    public boolean checkAccess(Token token, Set<String> permissions) {
+        // 检查 Token 是否有权限
+        return token.permissions().containsAll(permissions);
+    }
+
     public static class Expire {
         // 一分钟
         public static final long MINUTE = 60 * 1000;
