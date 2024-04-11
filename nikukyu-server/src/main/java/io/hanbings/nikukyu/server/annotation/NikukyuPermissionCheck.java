@@ -43,10 +43,9 @@ public @interface NikukyuPermissionCheck {
     @RequiredArgsConstructor
     @SuppressWarnings("all")
     public class AccessChecker {
-        final TokenService tokenService;
-
         static ObjectMapper mapper = new ObjectMapper();
         static JavaType listType = mapper.getTypeFactory().constructParametricType(ArrayList.class, Permission.class);
+        final TokenService tokenService;
 
         @SneakyThrows
         @Around(value = "@annotation(io.hanbings.nikukyu.server.annotation.NikukyuPermissionCheck)")
@@ -63,13 +62,14 @@ public @interface NikukyuPermissionCheck {
 
             // 检查是否需要登录
             // 如果需要登录没有 Token 则返回未授权错误
-            if (annotation.requiredLogin() && authorization == null) throw new UnauthorizationException(request.getRequestURI());
+            if (annotation.requiredLogin() && authorization == null)
+                throw new UnauthorizationException(RandomUtils.uuid(), request.getRequestURI());
 
             // 获取 Token
             Token token = tokenService.parse(authorization);
 
             // 检查 Token 是否过期
-            if (token == null) throw new UnauthorizationException(request.getRequestURI());
+            if (token == null) throw new UnauthorizationException(RandomUtils.uuid(), request.getRequestURI());
 
             // 检查 Token 是否有权限
             // 校验登录后检查是否需要检查全部的权限
@@ -78,12 +78,12 @@ public @interface NikukyuPermissionCheck {
             // 检测权限
             if (!annotation.requiredAllAccess()) {
                 if (!tokenService.checkAccess(token, willBeCheck)) {
-                    throw new UnauthorizationException(request.getRequestURI());
+                    throw new UnauthorizationException(RandomUtils.uuid(), request.getRequestURI());
                 }
             } else {
                 for (String permission : willBeCheck) {
                     if (!tokenService.checkAccess(token, permission)) {
-                        throw new UnauthorizationException(request.getRequestURI());
+                        throw new UnauthorizationException(RandomUtils.uuid(), request.getRequestURI());
                     }
                 }
             }

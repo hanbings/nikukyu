@@ -9,19 +9,18 @@ import org.springframework.data.mongodb.core.mapping.Field;
 /**
  * 用户账户日志数据
  *
- * @param alid    日志 ID
- * @param created 创建时间
- * @param auid    用户账户 ID
- * @param ip      IP 地址
- * @param type    日志类型
+ * @param accountLogId 日志 ID
+ * @param created      创建时间
+ * @param createdBy    用户账户 ID
+ * @param ip           IP 地址
+ * @param type         日志类型
  */
 
 @Document("account_log")
-@SuppressWarnings("SpellCheckingInspection")
 public record AccountLog(
-        @Id @JsonProperty("account_log_id") @NotNull String alid,
+        @Id @JsonProperty("account_log_id") @NotNull String accountLogId,
         @Field("created") @JsonProperty("created") long created,
-        @Field("account_id") @JsonProperty("account_id") @NotNull String auid,
+        @Field("created_by") @JsonProperty("created_by") @NotNull String createdBy,
         @Field("ip") @JsonProperty("ip") @NotNull String ip,
         @Field("type") @JsonProperty("type") @NotNull String type
 ) {

@@ -6,8 +6,6 @@ import io.hanbings.nikukyu.server.utils.TimeUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import static java.lang.StringTemplate.STR;
-
 @Slf4j
 @SuppressWarnings("SpellCheckingInspection")
 public class NikukyuException extends RuntimeException {
@@ -25,7 +23,7 @@ public class NikukyuException extends RuntimeException {
 
     @ExceptionHandler(value = NikukyuException.class)
     public Message<?> handleException(NikukyuException e) {
-        log.error(STR."Trace ID: \{traceId}\n Return Code: \{code}\n Message: \{message}\n Time: \{timestamp}\n \{e.getStackTrace()}\n");
+        log.warn(STR."Trace ID: \{traceId}\n Return Code: \{code}\n Message: \{message}\n Time: \{timestamp}\n \{e.getStackTrace()}\n");
 
         return new Message<>(
                 e.traceId,

@@ -1,19 +1,18 @@
 package io.hanbings.nikukyu.server.exception;
 
 import io.hanbings.nikukyu.server.data.Message;
-import io.hanbings.nikukyu.server.utils.RandomUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @SuppressWarnings("SpellCheckingInspection")
 public class UnauthorizationException extends NikukyuException {
-    public UnauthorizationException(String path) {
+    public UnauthorizationException(String traceId, String path) {
         super(
-                RandomUtils.uuid(),
+                traceId,
                 Message.ReturnCode.UNAUTHORIZED,
                 Message.Messages.UNAUTHORIZED
         );
 
-        log.warn("Catch UnauthorizationException: {}", path);
+        log.warn(STR."Trace ID: \{traceId} Catch UnauthorizationException: \{path}");
     }
 }
