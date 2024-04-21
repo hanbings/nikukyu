@@ -5,6 +5,7 @@ import io.hanbings.nikukyu.server.data.OAuthClientDto;
 import io.hanbings.nikukyu.server.data.OAuthDto;
 import io.hanbings.nikukyu.server.exception.NotFoundException;
 import io.hanbings.nikukyu.server.model.OAuth;
+import io.hanbings.nikukyu.server.security.Header;
 import io.hanbings.nikukyu.server.service.OAuthService;
 import io.hanbings.nikukyu.server.utils.RandomUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,16 +28,16 @@ public class OAuthController {
             @RequestParam("page") int page,
             @RequestParam("size") int size
     ) {
-        String accountId = request.getHeader("X-ACCOUNT-ID");
-        if (accountId == null) throw new NotFoundException(RandomUtils.uuid(), "X-ACCOUNT-ID", request.getRequestURI());
+        String accountId = request.getHeader(Header.ACCOUNT);
+        if (accountId == null) throw new NotFoundException(RandomUtils.uuid(), Header.ACCOUNT, request.getRequestURI());
 
         return oAuthService.getOAuthList(accountId, page, size);
     }
 
     @PostMapping
     public Object createOAuth(@RequestBody OAuthDto dto) {
-        String accountId = request.getHeader("X-ACCOUNT-ID");
-        if (accountId == null) throw new NotFoundException(RandomUtils.uuid(), "X-ACCOUNT-ID", request.getRequestURI());
+        String accountId = request.getHeader(Header.ACCOUNT);
+        if (accountId == null) throw new NotFoundException(RandomUtils.uuid(), Header.ACCOUNT, request.getRequestURI());
 
         return oAuthService.createOAuth(
                 accountId,
@@ -59,7 +60,7 @@ public class OAuthController {
         OAuth oAuth = oAuthService.getOAuth(oauthId);
         if (oAuth == null) throw new NotFoundException(RandomUtils.uuid(), oauthId, request.getRequestURI());
 
-        String accountToken = request.getHeader("X-ACCOUNT-ID");
+        String accountToken = request.getHeader(Header.ACCOUNT);
         if (!Objects.equals(accountToken, oAuth.createdBy()))
             throw new NotFoundException(RandomUtils.uuid(), oauthId, request.getRequestURI());
 
@@ -72,7 +73,7 @@ public class OAuthController {
         OAuth oAuth = oAuthService.getOAuth(oauthId);
         if (oAuth == null) throw new NotFoundException(RandomUtils.uuid(), oauthId, request.getRequestURI());
 
-        String accountToken = request.getHeader("X-ACCOUNT-ID");
+        String accountToken = request.getHeader(Header.ACCOUNT);
         if (!Objects.equals(accountToken, oAuth.createdBy()))
             throw new NotFoundException(RandomUtils.uuid(), oauthId, request.getRequestURI());
 
@@ -101,7 +102,7 @@ public class OAuthController {
         OAuth oAuth = oAuthService.getOAuth(oauthId);
         if (oAuth == null) throw new NotFoundException(RandomUtils.uuid(), oauthId, request.getRequestURI());
 
-        String accountToken = request.getHeader("X-ACCOUNT-ID");
+        String accountToken = request.getHeader(Header.ACCOUNT);
         if (!Objects.equals(accountToken, oAuth.createdBy()))
             throw new NotFoundException(RandomUtils.uuid(), oauthId, request.getRequestURI());
 
@@ -118,7 +119,7 @@ public class OAuthController {
         OAuth oAuth = oAuthService.getOAuth(oauthId);
         if (oAuth == null) throw new NotFoundException(RandomUtils.uuid(), oauthId, request.getRequestURI());
 
-        String accountToken = request.getHeader("X-ACCOUNT-ID");
+        String accountToken = request.getHeader(Header.ACCOUNT);
         if (!Objects.equals(accountToken, oAuth.createdBy()))
             throw new NotFoundException(RandomUtils.uuid(), oauthId, request.getRequestURI());
 
@@ -131,7 +132,7 @@ public class OAuthController {
         OAuth oAuth = oAuthService.getOAuth(oauthId);
         if (oAuth == null) throw new NotFoundException(RandomUtils.uuid(), oauthId, request.getRequestURI());
 
-        String accountToken = request.getHeader("X-ACCOUNT-ID");
+        String accountToken = request.getHeader(Header.ACCOUNT);
         if (!Objects.equals(accountToken, oAuth.createdBy()))
             throw new NotFoundException(RandomUtils.uuid(), oauthId, request.getRequestURI());
 
@@ -148,7 +149,7 @@ public class OAuthController {
         OAuth oAuth = oAuthService.getOAuth(oauthId);
         if (oAuth == null) throw new NotFoundException(RandomUtils.uuid(), oauthId, request.getRequestURI());
 
-        String accountToken = request.getHeader("X-ACCOUNT-ID");
+        String accountToken = request.getHeader(Header.ACCOUNT);
         if (!Objects.equals(accountToken, oAuth.createdBy()))
             throw new NotFoundException(RandomUtils.uuid(), oauthId, request.getRequestURI());
 
@@ -164,7 +165,7 @@ public class OAuthController {
         OAuth oAuth = oAuthService.getOAuth(oauthId);
         if (oAuth == null) throw new NotFoundException(RandomUtils.uuid(), oauthId, request.getRequestURI());
 
-        String accountToken = request.getHeader("X-ACCOUNT-ID");
+        String accountToken = request.getHeader(Header.ACCOUNT);
         if (!Objects.equals(accountToken, oAuth.createdBy()))
             throw new NotFoundException(RandomUtils.uuid(), oauthId, request.getRequestURI());
 
@@ -181,7 +182,7 @@ public class OAuthController {
         OAuth oAuth = oAuthService.getOAuth(oauthId);
         if (oAuth == null) throw new NotFoundException(RandomUtils.uuid(), oauthId, request.getRequestURI());
 
-        String accountToken = request.getHeader("X-ACCOUNT-ID");
+        String accountToken = request.getHeader(Header.ACCOUNT);
         if (!Objects.equals(accountToken, oAuth.createdBy()))
             throw new NotFoundException(RandomUtils.uuid(), oauthId, request.getRequestURI());
 
@@ -197,7 +198,7 @@ public class OAuthController {
         OAuth oAuth = oAuthService.getOAuth(oauthId);
         if (oAuth == null) throw new NotFoundException(RandomUtils.uuid(), oauthId, request.getRequestURI());
 
-        String accountToken = request.getHeader("X-ACCOUNT-ID");
+        String accountToken = request.getHeader(Header.ACCOUNT);
         if (!Objects.equals(accountToken, oAuth.createdBy()))
             throw new NotFoundException(RandomUtils.uuid(), oauthId, request.getRequestURI());
 

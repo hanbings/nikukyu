@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.hanbings.nikukyu.server.data.Message;
 import io.hanbings.nikukyu.server.exception.UnauthorizationException;
+import io.hanbings.nikukyu.server.security.Header;
 import io.hanbings.nikukyu.server.security.Permission;
 import io.hanbings.nikukyu.server.security.Token;
 import io.hanbings.nikukyu.server.service.TokenService;
@@ -89,7 +90,7 @@ public @interface NikukyuPermissionCheck {
             }
 
             // 设置 Account ID 到请求中
-            request.setAttribute("X-Nikukyu-AccountId", token.belong());
+            request.setAttribute(Header.ACCOUNT, token.belong());
 
             // 构造消息
             Message<Object> message = new Message<>(

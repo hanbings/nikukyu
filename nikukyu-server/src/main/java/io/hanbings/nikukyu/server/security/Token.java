@@ -11,6 +11,4 @@ public record Token(
         @JsonProperty("expire") long expire,
         @JsonProperty("created") long created
 ) {
-    @SuppressWarnings("SpellCheckingInspection")
-    public static String Custom_Header = "X-Nikukyu-Token";
 }

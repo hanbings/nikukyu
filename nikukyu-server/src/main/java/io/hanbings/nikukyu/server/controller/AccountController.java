@@ -7,6 +7,7 @@ import io.hanbings.nikukyu.server.model.Account;
 import io.hanbings.nikukyu.server.model.AccountAuthorization;
 import io.hanbings.nikukyu.server.model.AccountLog;
 import io.hanbings.nikukyu.server.model.AccountOAuth;
+import io.hanbings.nikukyu.server.security.Header;
 import io.hanbings.nikukyu.server.service.AccountService;
 import io.hanbings.nikukyu.server.utils.RandomUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,7 +25,7 @@ public class AccountController {
     @NikukyuPermissionCheck(access = {"account:read"})
     public Object getAccount(@PathVariable("account_id") String accountId) {
         @SuppressWarnings("all")
-        String tokenAccountId = request.getHeader("X-ACCOUNT-ID");
+        String tokenAccountId = request.getHeader(Header.ACCOUNT);
         if (!accountId.equals(tokenAccountId))
             throw new NotFoundException(RandomUtils.uuid(), accountId, request.getRequestURI());
 
@@ -38,7 +39,7 @@ public class AccountController {
     @NikukyuPermissionCheck(access = {"account:update"})
     public Object updateAccount(@PathVariable("account_id") String accountId, @RequestBody AccountDto dto) {
         @SuppressWarnings("all")
-        String tokenAccountId = request.getHeader("X-ACCOUNT-ID");
+        String tokenAccountId = request.getHeader(Header.ACCOUNT);
         if (!accountId.equals(tokenAccountId))
             throw new NotFoundException(RandomUtils.uuid(), accountId, request.getRequestURI());
 
@@ -61,7 +62,7 @@ public class AccountController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        String tokenAccountId = request.getHeader("X-ACCOUNT-ID");
+        String tokenAccountId = request.getHeader(Header.ACCOUNT);
         if (!account_id.equals(tokenAccountId))
             throw new NotFoundException(RandomUtils.uuid(), account_id, request.getRequestURI());
 
@@ -74,7 +75,7 @@ public class AccountController {
             @PathVariable("account_id") String accountId,
             @PathVariable("authorization_id") String authorizationId
     ) {
-        String tokenAccountId = request.getHeader("X-ACCOUNT-ID");
+        String tokenAccountId = request.getHeader(Header.ACCOUNT);
         if (!accountId.equals(tokenAccountId))
             throw new NotFoundException(RandomUtils.uuid(), authorizationId, request.getRequestURI());
 
@@ -91,7 +92,7 @@ public class AccountController {
             @PathVariable("account_id") String accountId,
             @PathVariable("authorization_id") String authorizationId
     ) {
-        String tokenAccountId = request.getHeader("X-ACCOUNT-ID");
+        String tokenAccountId = request.getHeader(Header.ACCOUNT);
         if (!accountId.equals(tokenAccountId))
             throw new NotFoundException(RandomUtils.uuid(), authorizationId, request.getRequestURI());
 
@@ -105,7 +106,7 @@ public class AccountController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        String tokenAccountId = request.getHeader("X-ACCOUNT-ID");
+        String tokenAccountId = request.getHeader(Header.ACCOUNT);
         if (!account_id.equals(tokenAccountId))
             throw new NotFoundException(RandomUtils.uuid(), account_id, request.getRequestURI());
 
@@ -118,7 +119,7 @@ public class AccountController {
             @PathVariable("account_id") String accountId,
             @PathVariable("log_id") String logId
     ) {
-        String tokenAccountId = request.getHeader("X-ACCOUNT-ID");
+        String tokenAccountId = request.getHeader(Header.ACCOUNT);
         if (!accountId.equals(tokenAccountId))
             throw new NotFoundException(RandomUtils.uuid(), logId, request.getRequestURI());
 
@@ -135,7 +136,7 @@ public class AccountController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        String tokenAccountId = request.getHeader("X-ACCOUNT-ID");
+        String tokenAccountId = request.getHeader(Header.ACCOUNT);
         if (!accountId.equals(tokenAccountId))
             throw new NotFoundException(RandomUtils.uuid(), accountId, request.getRequestURI());
 
@@ -148,7 +149,7 @@ public class AccountController {
             @PathVariable("account_id") String accountId,
             @PathVariable("oauth_id") String oauthId
     ) {
-        String tokenAccountId = request.getHeader("X-ACCOUNT-ID");
+        String tokenAccountId = request.getHeader(Header.ACCOUNT);
         if (!accountId.equals(tokenAccountId))
             throw new NotFoundException(RandomUtils.uuid(), oauthId, request.getRequestURI());
 
@@ -164,7 +165,7 @@ public class AccountController {
             @PathVariable("account_id") String accountId,
             @PathVariable("oauth_id") String oauthId
     ) {
-        String tokenAccountId = request.getHeader("X-ACCOUNT-ID");
+        String tokenAccountId = request.getHeader(Header.ACCOUNT);
         if (!accountId.equals(tokenAccountId))
             throw new NotFoundException(RandomUtils.uuid(), oauthId, request.getRequestURI());
 
