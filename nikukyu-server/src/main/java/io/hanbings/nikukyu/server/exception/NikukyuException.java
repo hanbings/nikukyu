@@ -21,6 +21,7 @@ public class NikukyuException extends RuntimeException {
         this.timestamp = TimeUtils.getMilliUnixTime();
     }
 
+    @SuppressWarnings("all")
     @ExceptionHandler(value = NikukyuException.class)
     public Message<?> handleException(NikukyuException e) {
         log.warn(STR."Trace ID: \{traceId}\n Return Code: \{code}\n Message: \{message}\n Time: \{timestamp}\n \{e.getStackTrace()}\n");
@@ -34,6 +35,7 @@ public class NikukyuException extends RuntimeException {
         );
     }
 
+    @SuppressWarnings("all")
     @ExceptionHandler(value = Exception.class)
     public Message<?> handleException(Exception e) {
         log.error(STR."Trace ID: \{traceId}\n Return Code: \{code}\n Message: \{message}\n Time: \{timestamp}\n \{e.getStackTrace()}\n");

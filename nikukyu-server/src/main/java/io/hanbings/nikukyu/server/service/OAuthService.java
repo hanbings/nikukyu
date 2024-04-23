@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Service
@@ -95,6 +96,7 @@ public class OAuthService {
         return oAuthRepository.deleteOAuthByOauthId(oauthId);
     }
 
+    @SuppressWarnings("all")
     public List<OAuthClient> getOAuthClientList(String oauthId, int page, int size) {
         Pageable pageable = Pageable.ofSize(Math.min(size, MAX_PAGE_SIZE));
         Page<OAuthClient> oAuthClientPage = oAuthClientRepository.findAllByCreatedBy(oauthId, pageable);
@@ -124,6 +126,20 @@ public class OAuthService {
         return oAuthClientRepository.save(oAuthClient);
     }
 
+    @SuppressWarnings("all")
+    public OAuthClient getOAuthClient(String oauthClientId) {
+        OAuthClient oAuthClient = oAuthClientRepository.findOAuthClientByOauthClientId(oauthClientId);
+
+        return new OAuthClient(
+                oAuthClient.oauthClientId(),
+                oAuthClient.created(),
+                oAuthClient.createdBy(),
+                STR."\{oAuthClient.secret().substring(0, 6)}******-******-******-******-******",
+                oAuthClient.expire()
+        );
+    }
+
+    @SuppressWarnings("all")
     public OAuthClient getOAuthClient(String oauthId, String oauthClientId) {
         OAuthClient oAuthClient = oAuthClientRepository.findOAuthClientByCreatedByAndOauthClientId(oauthId, oauthClientId);
 
@@ -149,5 +165,12 @@ public class OAuthService {
 
     public OAuthLog getOAuthLog(String oauthId, String oauthLogId) {
         return oAuthLogRepository.deleteOAuthLogByCreatedByAndOauthLogId(oauthId, oauthLogId);
+    }
+
+    public boolean checkSecret(String clientId, String secret) {
+        OAuthClient client = oAuthClientRepository.findOAuthClientByOauthClientId(clientId);
+        if (client == null) return false;
+
+        return Objects.equals(client.secret(), secret);
     }
 }

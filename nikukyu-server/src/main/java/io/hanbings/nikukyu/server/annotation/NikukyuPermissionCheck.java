@@ -39,6 +39,8 @@ public @interface NikukyuPermissionCheck {
 
     boolean requiredAllAccess() default true;
 
+    boolean wrapperData() default true;
+
     @Aspect
     @Component
     @RequiredArgsConstructor
@@ -50,7 +52,7 @@ public @interface NikukyuPermissionCheck {
 
         @SneakyThrows
         @Around(value = "@annotation(io.hanbings.nikukyu.server.annotation.NikukyuPermissionCheck)")
-        public Message<Object> check(ProceedingJoinPoint point) {
+        public Object check(ProceedingJoinPoint point) {
             // 获取注解所规定的权限
             MethodSignature signature = (MethodSignature) point.getSignature();
             Object target = point.getTarget();
@@ -70,7 +72,8 @@ public @interface NikukyuPermissionCheck {
             Token token = tokenService.parse(authorization);
 
             // 检查 Token 是否过期
-            if (token == null) throw new UnauthorizationException(RandomUtils.uuid(), request.getRequestURI());
+            if (annotation.requiredLogin() && token == null)
+                throw new UnauthorizationException(RandomUtils.uuid(), request.getRequestURI());
 
             // 检查 Token 是否有权限
             // 校验登录后检查是否需要检查全部的权限
@@ -91,17 +94,24 @@ public @interface NikukyuPermissionCheck {
 
             // 设置 Account ID 到请求中
             request.setAttribute(Header.ACCOUNT, token.belong());
+            if (token != null) {
+                request.setAttribute(Header.Custom_Header, token);
+            }
 
             // 构造消息
-            Message<Object> message = new Message<>(
-                    RandomUtils.uuid(),
-                    Message.ReturnCode.SUCCESS,
-                    Message.Messages.SUCCESS,
-                    TimeUtils.getMilliUnixTime(),
-                    point.proceed()
-            );
+            if (annotation.wrapperData()) {
+                Message<Object> message = new Message<>(
+                        RandomUtils.uuid(),
+                        Message.ReturnCode.SUCCESS,
+                        Message.Messages.SUCCESS,
+                        TimeUtils.getMilliUnixTime(),
+                        point.proceed()
+                );
 
-            return message;
+                return message;
+            } else {
+                return point.proceed();
+            }
         }
 
         private Class<?>[] getParameterTypes(ProceedingJoinPoint point) {

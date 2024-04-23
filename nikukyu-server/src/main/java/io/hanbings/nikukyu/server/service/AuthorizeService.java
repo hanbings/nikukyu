@@ -5,11 +5,13 @@ import io.hanbings.nikukyu.server.model.OAuth;
 import io.hanbings.nikukyu.server.model.OAuthClient;
 import io.hanbings.nikukyu.server.security.OAuthAuthorizeFlow;
 import io.hanbings.nikukyu.server.utils.RandomUtils;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Service
 public class AuthorizeService {
     static Map<String, OAuthAuthorizeFlow> authorizes = new ConcurrentHashMap<>();
 

@@ -8,6 +8,8 @@ import io.hanbings.nikukyu.server.repository.AccountAuthorizationRepository;
 import io.hanbings.nikukyu.server.repository.AccountLogRepository;
 import io.hanbings.nikukyu.server.repository.AccountOAuthRepository;
 import io.hanbings.nikukyu.server.repository.AccountRepository;
+import io.hanbings.nikukyu.server.utils.RandomUtils;
+import io.hanbings.nikukyu.server.utils.TimeUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -82,6 +85,18 @@ public class AccountService {
         Page<AccountOAuth> accountOAuthPage = accountOAuthRepository.getAccountOAuthList(accountId, pageable);
 
         return accountOAuthPage.getContent();
+    }
+
+    public AccountOAuth createAccountOAuth(String accountId, String oauthId, Set<String> access) {
+        AccountOAuth accountOAuth = new AccountOAuth(
+                RandomUtils.uuid(),
+                TimeUtils.getMilliUnixTime(),
+                accountId,
+                oauthId,
+                access
+        );
+
+        return accountOAuthRepository.save(accountOAuth);
     }
 
     public AccountOAuth getAccountOAuth(String accountId, String accountOAuthId) {

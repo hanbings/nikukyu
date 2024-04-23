@@ -12,6 +12,8 @@ public interface OAuthClientRepository extends MongoRepository<OAuthClient, Stri
 
     Page<OAuthClient> findAllByCreatedBy(String accountId, Pageable pageable);
 
+    OAuthClient findOAuthClientByOauthClientId(String oauthClientId);
+
     OAuthClient findOAuthClientByCreatedByAndOauthClientId(String accountId, String oauthClientId);
 
     OAuthClient deleteOAuthClientByCreatedByAndOauthClientId(String accountId, String oauthClientId);
