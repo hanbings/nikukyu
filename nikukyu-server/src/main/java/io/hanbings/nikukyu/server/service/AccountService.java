@@ -113,10 +113,6 @@ public class AccountService {
         return accountAuthorizationRepository.getAccountAuthorizationByOpenid(openId);
     }
 
-    public AccountAuthorization deleteAccountAuthorization(String accountId, String accountAuthorizationId) {
-        return null;
-    }
-
     public List<AccountLog> getAccountLogList(String accountId, int page, int size) {
         Pageable pageable = PageRequest.of(page, Math.min(size, MAX_PAGE_SIZE));
         Page<AccountLog> accountLogPage = accountLogRepository.getAccountLogList(accountId, pageable);
