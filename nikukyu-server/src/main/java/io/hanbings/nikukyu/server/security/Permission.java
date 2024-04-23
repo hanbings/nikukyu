@@ -38,4 +38,8 @@ public class Permission {
     public static final String OAUTH_LOG_READ = "oauth.log:read";
     public static final String OAUTH_LOG_UPDATE = "oauth.log:update";
     public static final String OAUTH_LOG_DELETE = "oauth.log:delete";
+
+    // Verify
+    public static final String VERIFY_OAUTH_EMAIL = "verify:oauth:email";
+    public static final String VERIFY_EMAIL = "verify:email";
 }

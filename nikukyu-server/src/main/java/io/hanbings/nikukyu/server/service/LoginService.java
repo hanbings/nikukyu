@@ -91,7 +91,7 @@ public class LoginService {
     @Scheduled(fixedRate = 30000)
     public void updateVerifyFlow() {
         verifies.forEach((token, flow) -> {
-            if (flow.expire() < System.currentTimeMillis()) {
+            if (flow.expire() < TimeUtils.getMilliUnixTime()) {
                 verifies.remove(token);
             }
         });

@@ -28,12 +28,40 @@ public class AccountService {
     final AccountOAuthRepository accountOAuthRepository;
     final AccountRepository accountRepository;
 
+    public Account createAccount(
+            boolean verified,
+            String id,
+            String nick,
+            String avatar,
+            String background,
+            String color,
+            String email
+    ) {
+        return accountRepository.save(
+                new Account(
+                        RandomUtils.uuid(),
+                        TimeUtils.getMilliUnixTime(),
+                        verified,
+                        id,
+                        nick,
+                        avatar,
+                        background,
+                        color,
+                        email
+                )
+        );
+    }
+
     public Account getAccount(String accountId) {
-        return accountRepository.findAccountById(accountId);
+        return accountRepository.findAccountByAccountId(accountId);
+    }
+
+    public Account getAccountWithEmail(String email) {
+        return accountRepository.findAccountByEmail(email);
     }
 
     public Account updateAccount(String accountId, String nickname, String avatar, String background, String color) {
-        Account account = accountRepository.findAccountById(accountId);
+        Account account = accountRepository.findAccountByAccountId(accountId);
         if (account == null) return null;
 
         Account updated = new Account(
@@ -63,6 +91,26 @@ public class AccountService {
 
     public AccountAuthorization getAccountAuthorization(String accountId, String accountAuthorizationId) {
         return accountAuthorizationRepository.getAccountAuthorizationByCreatedByAndAccountAuthorizationId(accountId, accountAuthorizationId);
+    }
+
+    public AccountAuthorization createAccountAuthorization(
+            String accountId,
+            String provider,
+            String openid
+    ) {
+        return accountAuthorizationRepository.save(
+                new AccountAuthorization(
+                        RandomUtils.uuid(),
+                        TimeUtils.getMilliUnixTime(),
+                        accountId,
+                        provider,
+                        openid
+                )
+        );
+    }
+
+    public AccountAuthorization getAccountAuthorization(String openId) {
+        return accountAuthorizationRepository.getAccountAuthorizationByOpenid(openId);
     }
 
     public AccountAuthorization deleteAccountAuthorization(String accountId, String accountAuthorizationId) {

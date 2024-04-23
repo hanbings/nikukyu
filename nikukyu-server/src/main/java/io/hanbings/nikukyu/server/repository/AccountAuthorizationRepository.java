@@ -12,6 +12,8 @@ public interface AccountAuthorizationRepository extends MongoRepository<AccountA
 
     Page<AccountAuthorization> getAccountAuthorizationList(String accountId, Pageable pageable);
 
+    AccountAuthorization getAccountAuthorizationByOpenid(String openid);
+
     AccountAuthorization getAccountAuthorizationByCreatedByAndAccountAuthorizationId(String createdBy, String accountAuthorizationId);
 
     AccountAuthorization deleteAccountAuthorizationByAccountAuthorizationId(String accountAuthorizationId);

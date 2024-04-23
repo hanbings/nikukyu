@@ -8,5 +8,7 @@ public interface AccountRepository extends MongoRepository<Account, String> {
     @Override
     <T extends Account> @NotNull T save(@NotNull T entity);
 
-    Account findAccountById(String id);
+    Account findAccountByAccountId(String account);
+
+    Account findAccountByEmail(String email);
 }
