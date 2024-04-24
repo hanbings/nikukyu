@@ -14,10 +14,10 @@ const store = configureStore({
 const query = new QueryClient()
 
 const router = createBrowserRouter([
-    { path: "/", element: <Home/> },
-    { path: "/login", element: <Login/> },
-    { path: "/authorize", element: <Authorize/> },
-    { path: "/account", element: <Account/> },
+    {path: "/", element: <Home/>},
+    {path: "/login", element: <Login/>},
+    {path: "/authorize", element: <Authorize/>},
+    {path: "/account", element: <Account/>},
 ])
 
 export default function App() {

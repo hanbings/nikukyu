@@ -124,7 +124,7 @@ public class AuthorizeController {
         }};
     }
 
-    @PostMapping("/oauth/token")
+    @PostMapping("/token")
     @NikukyuPermissionCheck(access = {Permission.ACCOUNT_OAUTH_CREATE}, wrapperData = false)
     public Map<String, String> token(
             @RequestParam("client_id") String clientId,
