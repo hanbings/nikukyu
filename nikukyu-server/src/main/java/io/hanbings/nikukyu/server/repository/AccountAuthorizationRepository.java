@@ -5,12 +5,14 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
 public interface AccountAuthorizationRepository extends MongoRepository<AccountAuthorization, String> {
     @Override
     <T extends AccountAuthorization> @NotNull T save(@NotNull T entity);
 
-    Page<AccountAuthorization> getAccountAuthorizationList(String accountId, Pageable pageable);
+    @Query("{created_by: ?0}")
+    Page<AccountAuthorization> getAccountAuthorizationList(String createdBy, Pageable pageable);
 
     AccountAuthorization getAccountAuthorizationByOpenid(String openid);
 

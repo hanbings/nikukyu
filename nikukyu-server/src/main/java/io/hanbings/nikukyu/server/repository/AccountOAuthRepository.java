@@ -5,14 +5,16 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
 public interface AccountOAuthRepository extends MongoRepository<AccountOAuth, String> {
     @Override
     <T extends AccountOAuth> @NotNull T save(@NotNull T entity);
 
-    Page<AccountOAuth> getAccountOAuthList(String accountId, Pageable pageable);
+    @Query("{created_by: ?0}")
+    Page<AccountOAuth> getAccountOAuthList(String createdBy, Pageable pageable);
 
-    AccountOAuth getAccountOAuthByCreatedByAndAccountOAuthId(String accountId, String accountOAuthId);
+    AccountOAuth getAccountOAuthByCreatedByAndAccountOAuthId(String createdBy, String accountOAuthId);
 
-    AccountOAuth deleteAccountOAuthByCreatedByAndAccountOAuthId(String accountId, String accountOAuthId);
+    AccountOAuth deleteAccountOAuthByCreatedByAndAccountOAuthId(String createdBy, String accountOAuthId);
 }
