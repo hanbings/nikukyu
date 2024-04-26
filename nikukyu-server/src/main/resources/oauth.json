@@ -1,0 +1,34 @@
+{
+  "proxy": {
+    "host": "",
+    "port": "",
+    "username": "",
+    "password": ""
+  },
+  "providers": {
+    "github": {
+      "enable": false,
+      "proxy": false,
+      "client_id": "",
+      "client_secret": ""
+    },
+    "discord": {
+      "enable": false,
+      "proxy": false,
+      "client_id": "",
+      "client_secret": ""
+    },
+    "google": {
+      "enable": false,
+      "proxy": false,
+      "client_id": "",
+      "client_secret": ""
+    },
+    "microsoft": {
+      "enable": false,
+      "proxy": false,
+      "client_id": "",
+      "client_secret": ""
+    }
+  }
+}
