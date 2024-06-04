@@ -10,6 +10,7 @@ import {
     Select,
     SelectedItems,
     SelectItem,
+    Textarea,
     useDisclosure
 } from "@nextui-org/react";
 import {access} from '../types/token.ts'
@@ -24,9 +25,6 @@ export function Account() {
                     <p className="text-2xl">Yours Account</p>
                     <p className="text-sm text-gray-500">Click card to edit your account</p>
                 </div>
-                <div>
-
-                </div>
                 <div className="flex flex-row gap-2">
                     <Button className="bg-green-200">Log out Account</Button>
                     <Button className="bg-red-500 text-white">Delete Account</Button>
@@ -34,8 +32,20 @@ export function Account() {
             </div>
             <div className="w-full flex flex-col gap-3 rounded-2xl bg-white p-6">
                 <div>
+                    <p className="text-2xl">Linked Accounts</p>
+                    <p className="text-sm text-gray-500">View your linked accounts</p>
+                </div>
+            </div>
+            <div className="w-full flex flex-col gap-3 rounded-2xl bg-white p-6">
+                <div>
+                    <p className="text-2xl">Account Activity</p>
+                    <p className="text-sm text-gray-500">Here are recent account activity, including logins, password changes, and approval of new OAuth applications.</p>
+                </div>
+            </div>
+            <div className="w-full flex flex-col gap-3 rounded-2xl bg-white p-6">
+                <div>
                     <p className="text-2xl">Authorized Applications</p>
-                    <p className="text-sm text-gray-500">Click card to change access or delete it</p>
+                    <p className="text-sm text-gray-500">Click card to change access or delete it.</p>
                 </div>
             </div>
             <div className="w-full flex flex-col gap-3 rounded-2xl bg-white p-6">
@@ -55,10 +65,13 @@ export function Account() {
                             <ModalBody>
                                 <Input type="text" label="Application Name"/>
                                 <Input type="text" label="Application Description"/>
-                                <Input type="text" label="Application Homepage"/>
                                 <Input type="text" label="Private Policy"/>
                                 <Input type="text" label="Teams of Use"/>
                                 <Input type="text" label="Theme Color (Using HEX RGB value)"/>
+                                <Textarea
+                                    isRequired
+                                    placeholder="Application Homepage"
+                                />
                                 <Select
                                     items={access}
                                     label="Apply some access"
@@ -79,7 +92,7 @@ export function Account() {
                                             <div className="flex flex-wrap gap-2">
                                                 {items.map((item) => (
                                                     item.data?.isDanger
-                                                        ? <Chip className="bg-red-500"
+                                                        ? <Chip className="bg-yellow-300"
                                                                 key={item.key}>{item.data?.access}</Chip>
                                                         : <Chip className="bg-green-200"
                                                                 key={item.key}>{item.data?.access}</Chip>

@@ -6,6 +6,7 @@ import {Home} from "./pages/Home.tsx";
 import {Login} from "./pages/Login.tsx";
 import {Authorize} from "./pages/Authorize.tsx";
 import {Account} from "./pages/Account.tsx";
+import {OAuth} from "./pages/OAuth.tsx";
 
 const store = configureStore({
     reducer: {},
@@ -18,6 +19,7 @@ const router = createBrowserRouter([
     {path: "/login/*", element: <Login/>},
     {path: "/authorize", element: <Authorize/>},
     {path: "/account", element: <Account/>},
+    {path: "/oauth", element: <OAuth/>},
 ])
 
 export default function App() {
