@@ -1,6 +1,6 @@
-import {Button, Checkbox} from "@nextui-org/react";
+import {Button, Checkbox} from "@nextui-org/react"
 
-export function Authorize() {
+export function AuthorizePage() {
     return (
         <div className="w-screen h-screen flex justify-center items-center bg-green-100">
             <div

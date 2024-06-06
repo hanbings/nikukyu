@@ -22,7 +22,7 @@ export interface AccountLog {
     accountLogId: string
     created: number
     createdBy: string
-    io: string
+    ip: string
     type: string
 }
 

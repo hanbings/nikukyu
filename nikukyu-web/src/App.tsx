@@ -1,12 +1,12 @@
-import {configureStore} from "@reduxjs/toolkit";
-import {Provider} from "react-redux";
-import {QueryClient, QueryClientProvider} from "react-query";
-import {createBrowserRouter, RouterProvider} from "react-router-dom";
-import {Home} from "./pages/Home.tsx";
-import {Login} from "./pages/Login.tsx";
-import {Authorize} from "./pages/Authorize.tsx";
-import {Account} from "./pages/Account.tsx";
-import {OAuth} from "./pages/OAuth.tsx";
+import {configureStore} from "@reduxjs/toolkit"
+import {Provider} from "react-redux"
+import {QueryClient, QueryClientProvider} from "react-query"
+import {createBrowserRouter, RouterProvider} from "react-router-dom"
+import {HomePage} from "./pages/Home.tsx"
+import {LoginPage} from "./pages/Login.tsx"
+import {AuthorizePage} from "./pages/Authorize.tsx"
+import {AccountPage} from "./pages/Account.tsx"
+import {OAuthPage} from "./pages/OAuth.tsx"
 
 const store = configureStore({
     reducer: {},
@@ -15,11 +15,11 @@ const store = configureStore({
 const query = new QueryClient()
 
 const router = createBrowserRouter([
-    {path: "/", element: <Home/>},
-    {path: "/login/*", element: <Login/>},
-    {path: "/authorize", element: <Authorize/>},
-    {path: "/account", element: <Account/>},
-    {path: "/oauth", element: <OAuth/>},
+    {path: "/", element: <HomePage/>},
+    {path: "/login/*", element: <LoginPage/>},
+    {path: "/authorize", element: <AuthorizePage/>},
+    {path: "/account", element: <AccountPage/>},
+    {path: "/oauth", element: <OAuthPage/>},
 ])
 
 export default function App() {

@@ -1,7 +1,7 @@
-import {Button, Input} from "@nextui-org/react";
-import {getAuthorize} from "../services/login.service.ts";
+import {Button, Input} from "@nextui-org/react"
+import {getAuthorize} from "../services/login.service.ts"
 
-export function Login() {
+export function LoginPage() {
     const toOAuthAuthorize = (provider: string) => {
         getAuthorize(provider).then((res) => {
             window.open(res.data.provider)

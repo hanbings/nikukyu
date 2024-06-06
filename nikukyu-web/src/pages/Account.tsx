@@ -10,20 +10,58 @@ import {
     Select,
     SelectedItems,
     SelectItem,
+    Spinner,
+    Table,
+    TableBody,
+    TableColumn,
+    TableHeader,
     Textarea,
-    useDisclosure
-} from "@nextui-org/react";
+    useDisclosure,
+    User,
+} from "@nextui-org/react"
 import {access} from '../types/token.ts'
+import {Fragment, useState} from "react"
+import {Account, AccountAuthorization, AccountLog} from "../data/account.ts"
+import {OAuth} from "../data/oauth.ts"
 
-export function Account() {
-    const {isOpen, onOpen, onOpenChange} = useDisclosure();
+export function AccountPage() {
+    const [account, setAccount] = useState<Account>({
+        accountId: "5183509a-534a-dd65-0be1-7a0df9eeb0fe",
+        created: 1717656603,
+        verified: false,
+        username: "example",
+        nickname: "example",
+        avatar: "github-mark.svg",
+        email: "example@example.com",
+        background: "",
+        color: ""
+    })
+    const [authorizations, setAuthorizations] = useState<AccountAuthorization[]>([])
+    const [logs, setLogs] = useState<AccountLog[]>([])
+    const [applications, setApplications] = useState<OAuth[]>([])
+    const [oauth, setOAuth] = useState<OAuth[]>([])
+
+    // page content
+    const {isOpen, onOpen, onOpenChange} = useDisclosure()
+    const [isLoadingAccount, setIsLoadingAccount] = useState<boolean>(true)
+    const [isLoadingOAuth, setIsLoadingOAuth] = useState<boolean>(true)
 
     return (
-        <div className="w-screen h-screen flex flex-col gap-3 bg-green-100 p-2 sm:p-12">
+        <div className="min-w-full min-h-screen flex flex-col gap-3 bg-green-100 px-2 p-10 sm:p-12">
             <div className="w-full flex flex-col gap-3 rounded-2xl bg-white p-6">
                 <div>
                     <p className="text-2xl">Yours Account</p>
                     <p className="text-sm text-gray-500">Click card to edit your account</p>
+                </div>
+                <div className="p-6 bg-gray-50 rounded-2xl">
+                    <User
+                        name={account.nickname}
+                        description={`${account.username} - ${account.email}`}
+                        avatarProps={{
+                            src: account.avatar,
+                            size: "lg",
+                        }}
+                    />
                 </div>
                 <div className="flex flex-row gap-2">
                     <Button className="bg-green-200">Log out Account</Button>
@@ -35,11 +73,27 @@ export function Account() {
                     <p className="text-2xl">Linked Accounts</p>
                     <p className="text-sm text-gray-500">View your linked accounts</p>
                 </div>
+                {isLoadingAccount ?
+                    <Spinner className="w-full h-[120px]" color="success" labelColor="success"/> :
+                    authorizations.map(() => <Fragment/>)
+                }
             </div>
             <div className="w-full flex flex-col gap-3 rounded-2xl bg-white p-6">
                 <div>
                     <p className="text-2xl">Account Activity</p>
-                    <p className="text-sm text-gray-500">Here are recent account activity, including logins, password changes, and approval of new OAuth applications.</p>
+                    <p className="text-sm text-gray-500">Here are recent account activity, including logins, password
+                        changes, and approval of new OAuth applications.</p>
+                </div>
+                <div className="bg-gray-50">
+                    <Table aria-label="Example empty table" shadow="none">
+                        <TableHeader>
+                            <TableColumn>Time</TableColumn>
+                            <TableColumn>IP</TableColumn>
+                            <TableColumn>ACTIVITY</TableColumn>
+                            <TableColumn>TYPE</TableColumn>
+                        </TableHeader>
+                        <TableBody emptyContent={"There are no activities."}>{logs.map(() => <Fragment/>)}</TableBody>
+                    </Table>
                 </div>
             </div>
             <div className="w-full flex flex-col gap-3 rounded-2xl bg-white p-6">
@@ -47,6 +101,11 @@ export function Account() {
                     <p className="text-2xl">Authorized Applications</p>
                     <p className="text-sm text-gray-500">Click card to change access or delete it.</p>
                 </div>
+                {
+                    isLoadingAccount ?
+                        <Spinner className="w-full h-[120px]" color="success" labelColor="success"/> :
+                        applications.map(() => <Fragment/>)
+                }
             </div>
             <div className="w-full flex flex-col gap-3 rounded-2xl bg-white p-6">
                 <div>
@@ -56,6 +115,11 @@ export function Account() {
                 <div>
                     <Button className="bg-green-200" onPress={onOpen}>Apply a new OAuth Application</Button>
                 </div>
+                {
+                    isLoadingOAuth ?
+                        <Spinner className="w-full h-[120px]" color="success" labelColor="success"/> :
+                        oauth.map(() => <Fragment/>)
+                }
             </div>
             <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
                 <ModalContent>

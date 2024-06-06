@@ -1,6 +1,6 @@
-import get from "axios";
-import post from "axios";
-import {config} from "../config.ts";
+import get from "axios"
+import post from "axios"
+import {config} from "../config.ts"
 
 const getAuthorize = (provider: string) => get(`${config.api}/api/v0/login/oauth/${provider}/authorize`)
 const callback = (provider: string, code: string, state: string) =>

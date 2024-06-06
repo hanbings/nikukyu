@@ -1,6 +1,6 @@
-import {create, get, list, remove, update} from "./service.ts";
-import {OAuth, OAuthClient, OAuthLog} from "../data/oauth.ts";
-import {Message} from "../data/message.ts";
+import {create, get, list, remove, update} from "./service.ts"
+import {OAuth, OAuthClient, OAuthLog} from "../data/oauth.ts"
+import {Message} from "../data/message.ts"
 
 type OAuthParams = {
     name: string

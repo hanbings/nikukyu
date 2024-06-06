@@ -1,6 +1,6 @@
-import {Account, AccountAuthorization, AccountLog, AccountOAuth} from "../data/account.ts";
-import {get, list, remove, update} from "./service.ts";
-import {Message} from "../data/message.ts";
+import {Account, AccountAuthorization, AccountLog, AccountOAuth} from "../data/account.ts"
+import {get, list, remove, update} from "./service.ts"
+import {Message} from "../data/message.ts"
 
 type AccountParams = {
     nickname: string

@@ -1,7 +1,7 @@
-import {Button} from "@nextui-org/react";
-import {Link} from "react-router-dom";
+import {Button} from "@nextui-org/react"
+import {Link} from "react-router-dom"
 
-export function Home() {
+export function HomePage() {
     return (
         <div className={"h-screen w-screen bg-green-100 flex flex-col gap-2 justify-center items-center"}>
             <p className={"text-2xl text-green-500"}>🍀 This is Nikukyu, A Open Source SSO （Single Sign-On) software.</p>
