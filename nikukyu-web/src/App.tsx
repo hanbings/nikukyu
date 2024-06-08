@@ -1,6 +1,6 @@
 import {configureStore} from "@reduxjs/toolkit"
 import {Provider} from "react-redux"
-import {QueryClient, QueryClientProvider} from "react-query"
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query"
 import {createBrowserRouter, RouterProvider} from "react-router-dom"
 import {HomePage} from "./pages/Home.tsx"
 import {LoginPage} from "./pages/Login.tsx"

@@ -15,7 +15,7 @@ type OAuthParams = {
     tos: string
 }
 
-const listOAuth = (page: number, size: number): Promise<Array<Message<OAuth>>> => list(`/api/v0/oauth?page=${page}&size=${size}`)
+const listOAuth = (page: number, size: number): Promise<Message<Array<OAuth>>> => list(`/api/v0/oauth?page=${page}&size=${size}`)
 const createOAuth = (params: OAuthParams): Promise<Message<OAuth>> => create(`/api/v0/oauth`, params)
 const getOAuth = (id: string): Promise<Message<OAuth>> => get(`/api/v0/oauth/${id}`)
 const updateOAuth = (id: string, params: OAuthParams): Promise<Message<OAuth>> => update(`/api/v0/oauth/${id}`, params)
