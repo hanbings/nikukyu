@@ -15,25 +15,25 @@ type OAuthParams = {
     tos: string
 }
 
-const listOAuth = (page: number, size: number): Promise<Message<Array<OAuth>>> => list(`/api/v0/oauth?page=${page}&size=${size}`)
-const createOAuth = (params: OAuthParams): Promise<Message<OAuth>> => create(`/api/v0/oauth`, params)
-const getOAuth = (id: string): Promise<Message<OAuth>> => get(`/api/v0/oauth/${id}`)
-const updateOAuth = (id: string, params: OAuthParams): Promise<Message<OAuth>> => update(`/api/v0/oauth/${id}`, params)
-const deleteOAuth = (id: string): Promise<Message<void>> => get(`/api/v0/oauth/${id}`)
+const listOAuth = (page: number, size: number): Promise<Message<Array<OAuth>>> => list(`oauth?page=${page}&size=${size}`)
+const createOAuth = (params: OAuthParams): Promise<Message<OAuth>> => create(`oauth`, params)
+const getOAuth = (id: string): Promise<Message<OAuth>> => get(`oauth/${id}`)
+const updateOAuth = (id: string, params: OAuthParams): Promise<Message<OAuth>> => update(`oauth/${id}`, params)
+const deleteOAuth = (id: string): Promise<Message<void>> => get(`oauth/${id}`)
 
 const listOAuthClient = (oauthId: string, page: number, size: number): Promise<Message<Array<OAuthClient>>> =>
-    list(`/api/v0/oauth/${oauthId}/client?page=${page}&size=${size}`)
+    list(`oauth/${oauthId}/client?page=${page}&size=${size}`)
 const createOAuthClient = (oauthId: string, params: OAuthParams): Promise<Message<OAuthClient>> =>
-    create(`/api/v0/oauth/${oauthId}/client`, params)
+    create(`oauth/${oauthId}/client`, params)
 const getOAuthClient = (oauthId: string, clientId: string): Promise<Message<OAuthClient>> =>
-    get(`/api/v0/oauth/${oauthId}/client/${clientId}`)
+    get(`oauth/${oauthId}/client/${clientId}`)
 const deleteOAuthClient = (oauthId: string, clientId: string): Promise<Message<void>> =>
-    remove(`/api/v0/oauth/${oauthId}/client/${clientId}`)
+    remove(`oauth/${oauthId}/client/${clientId}`)
 
 const listOAuthLog = (oauthId: string, page: number, size: number): Promise<Message<Array<OAuthLog>>> =>
-    list(`/api/v0/oauth/${oauthId}/log?page=${page}&size=${size}`)
+    list(`oauth/${oauthId}/log?page=${page}&size=${size}`)
 const getOAuthLog = (oauthId: string, logId: string): Promise<Message<OAuthLog>> =>
-    get(`/api/v0/oauth/${oauthId}/log/${logId}`)
+    get(`oauth/${oauthId}/log/${logId}`)
 
 export {
     listOAuth,

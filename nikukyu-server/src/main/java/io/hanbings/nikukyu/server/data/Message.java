@@ -1,27 +1,6 @@
 package io.hanbings.nikukyu.server.data;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-public class Message<T> {
-    @JsonProperty("trace_id")
-    String traceId;
-    @JsonProperty("code")
-    int code;
-    @JsonProperty("message")
-    String message;
-    @JsonProperty("timestamp")
-    long timestamp;
-    @JsonProperty("data")
-    T data;
-
-    public Message(String traceId, int code, String message, long timestamp, T data) {
-        this.traceId = traceId;
-        this.code = code;
-        this.message = message;
-        this.timestamp = timestamp;
-        this.data = data;
-    }
-
+public record Message() {
     public static class Messages {
         public static final String SUCCESS = "好欸！ ╭(○｀∀´○)╯";
         public static final String BAD_REQUEST = "不要乱来啦！ ⁽⁽(੭ꐦ •̀Д•́ )੭*⁾⁾";

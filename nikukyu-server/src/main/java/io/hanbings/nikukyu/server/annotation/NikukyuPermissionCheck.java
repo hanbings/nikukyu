@@ -28,6 +28,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Set;
 
 @Target({ElementType.METHOD})
@@ -56,6 +57,7 @@ public @interface NikukyuPermissionCheck {
         @SneakyThrows
         @Around(value = "@annotation(io.hanbings.nikukyu.server.annotation.NikukyuPermissionCheck)")
         public Object check(ProceedingJoinPoint point) {
+            int a = 10 / 0;
             // 获取注解所规定的权限
             MethodSignature signature = (MethodSignature) point.getSignature();
             Object target = point.getTarget();
@@ -104,15 +106,13 @@ public @interface NikukyuPermissionCheck {
 
             // 构造消息
             if (annotation.wrapperData()) {
-                Message<Object> message = new Message<>(
-                        RandomUtils.uuid(),
-                        Message.ReturnCode.SUCCESS,
-                        Message.Messages.SUCCESS,
-                        TimeUtils.getMilliUnixTime(),
-                        point.proceed()
+                return Map.of(
+                        "traceId", RandomUtils.uuid(),
+                        "code", Message.ReturnCode.SUCCESS,
+                        "message", Message.Messages.SUCCESS,
+                        "timestamp", TimeUtils.getMilliUnixTime(),
+                        "data", point.proceed()
                 );
-
-                return message;
             } else {
                 return point.proceed();
             }

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class NotFoundException extends NikukyuException {
+    @SuppressWarnings("all")
     public NotFoundException(String traceId, String resource, String path) {
         super(
                 traceId,
