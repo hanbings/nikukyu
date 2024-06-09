@@ -13,6 +13,7 @@ import io.hanbings.nikukyu.server.utils.TimeUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -41,11 +42,13 @@ public @interface NikukyuPermissionCheck {
 
     boolean wrapperData() default true;
 
+    @Slf4j
     @Aspect
     @Component
     @RequiredArgsConstructor
     @SuppressWarnings("all")
     public class AccessChecker {
+
         static ObjectMapper mapper = new ObjectMapper();
         static JavaType listType = mapper.getTypeFactory().constructParametricType(ArrayList.class, Permission.class);
         final TokenService tokenService;
@@ -67,6 +70,7 @@ public @interface NikukyuPermissionCheck {
             // 如果需要登录没有 Token 则返回未授权错误
             if (annotation.requiredLogin() && authorization == null)
                 throw new UnauthorizationException(RandomUtils.uuid(), request.getRequestURI());
+
 
             // 获取 Token
             Token token = tokenService.parse(authorization);
