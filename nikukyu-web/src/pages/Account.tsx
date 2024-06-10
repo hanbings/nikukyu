@@ -24,7 +24,6 @@ import {Fragment, useState} from "react"
 import {Account, AccountAuthorization, AccountLog, AccountOAuth} from "../data/account.ts"
 import {listAccountAuthorization, listAccountLog, listAccountOAuth} from "../services/account.service.ts"
 import {useQuery} from "@tanstack/react-query"
-import {Message} from "../data/message.ts"
 import {OAuth} from "../data/oauth.ts"
 import {listOAuth} from "../services/oauth.service.ts"
 
@@ -150,7 +149,7 @@ function AccountView(account: Account) {
 }
 
 function AccountAuthorizations(accountId: string) {
-    const {isPending, data} = useQuery<Message<AccountAuthorization[]>>({
+    const {isPending, data} = useQuery<AccountAuthorization[]>({
         queryKey: ['authorizations'],
         queryFn: () => listAccountAuthorization(accountId, 1, 10)
     })
@@ -164,14 +163,14 @@ function AccountAuthorizations(accountId: string) {
             {
                 isPending ?
                     <Spinner className="w-full h-[120px]" color="success" labelColor="success"/> :
-                    data?.data.map(() => <Fragment/>)
+                    data?.map(() => <Fragment/>)
             }
         </div>
     )
 }
 
 function AccountLogs(accountId: string) {
-    useQuery<Message<AccountLog[]>>({
+    useQuery<AccountLog[]>({
         queryKey: ['logs'],
         queryFn: () => listAccountLog(accountId, 1, 10)
     })
@@ -199,7 +198,7 @@ function AccountLogs(accountId: string) {
 }
 
 function AccountOAuths(accountId: string) {
-    const {isPending, data} = useQuery<Message<AccountOAuth[]>>({
+    const {isPending, data} = useQuery<AccountOAuth[]>({
         queryKey: ['approve'],
         queryFn: () => listAccountOAuth(accountId, 1, 10)
     })
@@ -213,14 +212,14 @@ function AccountOAuths(accountId: string) {
             {
                 isPending ?
                     <Spinner className="w-full h-[120px]" color="success" labelColor="success"/> :
-                    data?.data.map(() => <Fragment/>)
+                    data?.map(() => <Fragment/>)
             }
         </div>
     )
 }
 
 function OAuths(onOpen: () => void) {
-    const {isPending, data} = useQuery<Message<OAuth[]>>({
+    const {isPending, data} = useQuery<OAuth[]>({
         queryKey: ['oauth'],
         queryFn: () => listOAuth(1, 10)
     })
@@ -237,7 +236,7 @@ function OAuths(onOpen: () => void) {
             {
                 isPending ?
                     <Spinner className="w-full h-[120px]" color="success" labelColor="success"/> :
-                    data?.data.map(() => <Fragment/>)
+                    data?.map(() => <Fragment/>)
             }
         </div>
     )

@@ -11,7 +11,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -38,43 +37,33 @@ public class NikukyuException extends RuntimeException {
 
     @ControllerAdvice
     public static class NikukyuExceptionHandler {
-        @SuppressWarnings("all")
-        @ExceptionHandler(value = {NikukyuException.class})
-        public ResponseEntity<Map> handleNikukyuException(NikukyuException e) {
-            log.warn(STR."\nTrace ID: \{e.traceId}\nReturn Code: \{e.code}\nMessage: \{e.message}\nTime: \{e.timestamp}\nStack Trace: \{Arrays.toString(e.getStackTrace())}\n");
-
-            return new ResponseEntity<>(
-                    Map.of(
-                            "traceId", e.getTraceId(),
-                            "code", e.getCode(),
-                            "message", e.getMessage(),
-                            "timestamp", e.getTimestamp()
-                    ),
-                    HttpStatusCode.valueOf(e.getCode())
-            );
-        }
-    }
-
-    @ControllerAdvice
-    public static class GlobalExceptionHandler {
-        ObjectMapper mapper = new ObjectMapper();
+        static ObjectMapper mapper = new ObjectMapper();
 
         @SuppressWarnings("all")
         @ExceptionHandler(Exception.class)
         public ResponseEntity<Map> handleMyException(HttpServletRequest request, Exception e) throws JsonProcessingException {
+            HttpStatus status = HttpStatus.valueOf(Message.ReturnCode.SERVER_ERROR);
             String traceId = RandomUtils.uuid();
-            RequestTrace requestTrace = RequestTrace.parse(traceId, request);
+            String message = Message.Messages.SERVER_ERROR;
+            long time = TimeUtils.getMilliUnixTime();
 
-            log.error(STR."\nRequest URL: \{request.getRequestURL()}\nMessage: \{e.getMessage()}\nTime: \{TimeUtils.getMilliUnixTime()}\nRequest Data: \{mapper.writeValueAsString(requestTrace)}\nStack Trace: \{Arrays.toString(e.getStackTrace())}");
+            if (e instanceof NikukyuException ne) {
+                status = HttpStatus.valueOf(ne.code);
+                traceId = ne.traceId;
+                message = ne.message;
+            }
+
+            RequestTrace requestTrace = RequestTrace.parse(traceId, request);
+            log.warn(STR."\nRequest URL: \{request.getRequestURL()}\nMessage: \{e.getMessage()}\nTime: \{time}\nRequest Data: \{mapper.writeValueAsString(requestTrace)}\nStack Trace: \{Arrays.toString(e.getStackTrace())}");
 
             return new ResponseEntity<>(
                     Map.of(
                             "traceId", traceId,
-                            "code", Message.ReturnCode.SERVER_ERROR,
-                            "message", Message.Messages.SERVER_ERROR,
-                            "timestamp", TimeUtils.getMilliUnixTime()
+                            "code", status.value(),
+                            "message", message,
+                            "timestamp", time
                     ),
-                    HttpStatus.SERVICE_UNAVAILABLE
+                    status
             );
         }
     }

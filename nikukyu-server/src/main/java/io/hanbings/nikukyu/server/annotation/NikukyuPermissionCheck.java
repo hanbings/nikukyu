@@ -57,7 +57,6 @@ public @interface NikukyuPermissionCheck {
         @SneakyThrows
         @Around(value = "@annotation(io.hanbings.nikukyu.server.annotation.NikukyuPermissionCheck)")
         public Object check(ProceedingJoinPoint point) {
-            int a = 10 / 0;
             // 获取注解所规定的权限
             MethodSignature signature = (MethodSignature) point.getSignature();
             Object target = point.getTarget();
