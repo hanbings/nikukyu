@@ -1,5 +1,7 @@
 package io.hanbings.nikukyu.server.service;
 
+import io.hanbings.nikukyu.server.config.DebugConfig;
+import io.hanbings.nikukyu.server.security.Role;
 import io.hanbings.nikukyu.server.security.Token;
 import io.hanbings.nikukyu.server.utils.RandomUtils;
 import io.hanbings.nikukyu.server.utils.TimeUtils;
@@ -13,6 +15,16 @@ import java.util.concurrent.ConcurrentHashMap;
 public class TokenService {
     static Map<String, Token> tokens = new ConcurrentHashMap<>();
 
+    public TokenService(DebugConfig debugConfig) {
+        debugConfig.superTokens().forEach(token ->
+                this.register(
+                        token.token(),
+                        token.account().accountId(),
+                        token.expire() == 0 ? Expire.MONTH : token.expire(),
+                        Role.allPermissions()
+                ));
+    }
+
     public Token signature(String belong, long expire, Set<String> access) {
         Token token = new Token(
                 RandomUtils.uuid(),
@@ -25,6 +37,18 @@ public class TokenService {
         tokens.put(token.token(), token);
 
         return token;
+    }
+
+    public void register(String token, String belong, long expire, Set<String> access) {
+        Token t = new Token(
+                token,
+                belong,
+                access,
+                TimeUtils.getMilliUnixTime(),
+                TimeUtils.getMilliUnixTime() + expire
+        );
+
+        tokens.put(token, t);
     }
 
     public Token parse(String header) {
