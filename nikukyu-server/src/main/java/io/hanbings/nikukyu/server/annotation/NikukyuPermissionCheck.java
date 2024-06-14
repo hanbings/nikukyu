@@ -2,14 +2,12 @@ package io.hanbings.nikukyu.server.annotation;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.hanbings.nikukyu.server.data.Message;
 import io.hanbings.nikukyu.server.exception.UnauthorizationException;
 import io.hanbings.nikukyu.server.security.Header;
 import io.hanbings.nikukyu.server.security.Permission;
 import io.hanbings.nikukyu.server.security.Token;
 import io.hanbings.nikukyu.server.service.TokenService;
 import io.hanbings.nikukyu.server.utils.RandomUtils;
-import io.hanbings.nikukyu.server.utils.TimeUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -28,7 +26,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Set;
 
 @Target({ElementType.METHOD})
@@ -40,8 +37,6 @@ public @interface NikukyuPermissionCheck {
     boolean requiredLogin() default true;
 
     boolean requiredAllAccess() default true;
-
-    boolean wrapperData() default true;
 
     @Slf4j
     @Aspect
@@ -103,18 +98,7 @@ public @interface NikukyuPermissionCheck {
                 request.setAttribute(Header.Custom_Header, token);
             }
 
-            // 构造消息
-            if (annotation.wrapperData()) {
-                return Map.of(
-                        "traceId", RandomUtils.uuid(),
-                        "code", Message.ReturnCode.SUCCESS,
-                        "message", Message.Messages.SUCCESS,
-                        "timestamp", TimeUtils.getMilliUnixTime(),
-                        "data", point.proceed()
-                );
-            } else {
-                return point.proceed();
-            }
+            return point.proceed();
         }
 
         private Class<?>[] getParameterTypes(ProceedingJoinPoint point) {

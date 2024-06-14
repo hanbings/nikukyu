@@ -109,7 +109,7 @@ public class OAuthService {
                         oAuthClient.oauthClientId(),
                         oAuthClient.created(),
                         oAuthClient.createdBy(),
-                        STR."\{oAuthClient.secret().substring(0, 6)}******-******-******-******-******",
+                        String.format("%s-******-******-******-******-******", oAuthClient.secret().substring(0, 6)),
                         oAuthClient.expire()
                 )).toList();
     }
@@ -134,7 +134,7 @@ public class OAuthService {
                 oAuthClient.oauthClientId(),
                 oAuthClient.created(),
                 oAuthClient.createdBy(),
-                STR."\{oAuthClient.secret().substring(0, 6)}******-******-******-******-******",
+                String.format("%s-******-******-******-******-******", oAuthClient.secret().substring(0, 6)),
                 oAuthClient.expire()
         );
     }
@@ -147,7 +147,7 @@ public class OAuthService {
                 oAuthClient.oauthClientId(),
                 oAuthClient.created(),
                 oAuthClient.createdBy(),
-                STR."\{oAuthClient.secret().substring(0, 6)}******-******-******-******-******",
+                String.format("%s-******-******-******-******-******", oAuthClient.secret().substring(0, 6)),
                 oAuthClient.expire()
         );
     }

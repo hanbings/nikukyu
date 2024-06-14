@@ -14,6 +14,13 @@ public class UnauthorizationException extends NikukyuException {
                 Message.Messages.UNAUTHORIZED
         );
 
-        log.warn(STR."Trace ID: \{traceId} Catch UnauthorizationException: \{path}");
+        log.warn(
+                """
+                        Trace ID: {traceId}
+                        Catch UnauthorizationException: {path}
+                        """,
+                traceId,
+                path
+        );
     }
 }

@@ -13,6 +13,14 @@ public class NotFoundException extends NikukyuException {
                 Message.Messages.NOT_FOUND
         );
 
-        log.warn(STR."Trace ID: \{traceId} \{resource} not found in \{path}");
+        log.warn(
+                """
+                        Trace ID: {traceId}
+                        {resource} not found in {path}
+                        """,
+                traceId,
+                resource,
+                path
+        );
     }
 }

@@ -151,7 +151,7 @@ public class LoginController {
         if (account != null && authorization == null) {
             String uuid = RandomUtils.uuid();
 
-            log.info(STR."email format exceptions\{email}");
+            log.info("email: {} already exist", email);
             throw new NikukyuException(
                     uuid,
                     Message.ReturnCode.MAIL_EXIST,
@@ -228,7 +228,7 @@ public class LoginController {
         if (!FormatUtils.checkEmail(email)) {
             String uuid = RandomUtils.uuid();
 
-            log.info(STR."email format exceptions\{email}");
+            log.info("email: {} format invalid", email);
             throw new NikukyuException(
                     uuid,
                     Message.ReturnCode.EMAIL_FORMAT_INVALID,
@@ -262,7 +262,7 @@ public class LoginController {
         if (flow == null) {
             String uuid = RandomUtils.uuid();
 
-            log.info(STR."token exceptions\{token.token()}");
+            log.info("token invalid: {}", token.token());
             throw new NikukyuException(
                     uuid,
                     Message.ReturnCode.MAIL_VERIFY_INVALID,
@@ -273,7 +273,7 @@ public class LoginController {
         if (flow.expire() < TimeUtils.getMilliUnixTime()) {
             String uuid = RandomUtils.uuid();
 
-            log.info(STR."token exceptions\{token.token()}");
+            log.info("token expired: {}", token.token());
             throw new NikukyuException(
                     uuid,
                     Message.ReturnCode.MAIL_VERIFY_INVALID,
@@ -285,7 +285,7 @@ public class LoginController {
         if (!flow.code().equals(code)) {
             String uuid = RandomUtils.uuid();
 
-            log.info(STR."token exceptions\{token.token()}");
+            log.info("token invalid: {}", token.token());
             throw new NikukyuException(
                     uuid,
                     Message.ReturnCode.MAIL_VERIFY_INVALID,

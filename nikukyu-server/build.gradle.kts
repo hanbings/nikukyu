@@ -12,10 +12,6 @@ java {
     targetCompatibility = JavaVersion.VERSION_21
 }
 
-tasks.withType<JavaCompile>().configureEach { options.compilerArgs.add("--enable-preview") }
-tasks.withType<Test>().configureEach { jvmArgs("--enable-preview") }
-tasks.withType<JavaExec>().configureEach { jvmArgs("--enable-preview") }
-
 configurations {
     compileOnly {
         extendsFrom(configurations.annotationProcessor.get())

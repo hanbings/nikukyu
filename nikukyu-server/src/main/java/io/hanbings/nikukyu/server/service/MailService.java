@@ -38,7 +38,7 @@ public class MailService {
 
         String content = MailService.VERIFY_MAIL_CONTENT
                 .replace("{{application.verify.code}}", code)
-                .replace("{{application.url}}", STR."\{config.getSite()}/login/email/verify")
+                .replace("{{application.url}}", String.format("%s/login/email/verify", config.getSite()))
                 .replace("{{application.privacy.policy}}", config.getPrivacy())
                 .replace("{{application.terms.of.use}}", config.getTos())
                 .replace("{{application.name}}", config.getName());

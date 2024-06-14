@@ -23,7 +23,8 @@ public record DebugConfig(
             @JsonProperty("token") String token,
             @JsonProperty("expire") long expire,
             @JsonProperty("account") Account account
-    ) { }
+    ) {
+    }
 
     @Configuration
     static class DebugConfigBean {

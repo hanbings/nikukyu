@@ -36,7 +36,7 @@ public class AuthorizeController {
     final AuthorizeService authorizeService;
 
     @GetMapping("/client/{client_id}")
-    @NikukyuPermissionCheck(access = {}, requiredLogin = false, wrapperData = false)
+    @NikukyuPermissionCheck(access = {}, requiredLogin = false)
     public Object getClient(@PathVariable(value = "client_id") String clientId) {
         OAuthClient client = oAuthService.getOAuthClient(clientId);
 
@@ -44,7 +44,7 @@ public class AuthorizeController {
     }
 
     @PostMapping("/authorize")
-    @NikukyuPermissionCheck(access = {Permission.ACCOUNT_OAUTH_CREATE}, wrapperData = false)
+    @NikukyuPermissionCheck(access = {Permission.ACCOUNT_OAUTH_CREATE})
     public Object authorize(
             @RequestParam("scope") String scope,
             @RequestParam("state") String state,
@@ -125,7 +125,7 @@ public class AuthorizeController {
     }
 
     @PostMapping("/token")
-    @NikukyuPermissionCheck(access = {Permission.ACCOUNT_OAUTH_CREATE}, wrapperData = false)
+    @NikukyuPermissionCheck(access = {Permission.ACCOUNT_OAUTH_CREATE})
     public Map<String, String> token(
             @RequestParam("client_id") String clientId,
             @RequestParam("client_secret") String clientSecret,

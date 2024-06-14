@@ -6,10 +6,12 @@ import io.hanbings.nikukyu.server.data.OAuthDto;
 import io.hanbings.nikukyu.server.exception.NotFoundException;
 import io.hanbings.nikukyu.server.model.OAuth;
 import io.hanbings.nikukyu.server.security.Header;
+import io.hanbings.nikukyu.server.security.Permission;
 import io.hanbings.nikukyu.server.service.OAuthService;
 import io.hanbings.nikukyu.server.utils.RandomUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
@@ -23,7 +25,7 @@ public class OAuthController {
     final OAuthService oAuthService;
 
     @GetMapping()
-    @NikukyuPermissionCheck(access = {"oauth"})
+    @NikukyuPermissionCheck(access = {"oauth:read"})
     public Object getOAuthList(
             @RequestParam("page") int page,
             @RequestParam("size") int size
@@ -35,7 +37,8 @@ public class OAuthController {
     }
 
     @PostMapping
-    public Object createOAuth(@RequestBody OAuthDto dto) {
+    @NikukyuPermissionCheck(access = {Permission.OAUTH_CREATE})
+    public Object createOAuth(@Validated @RequestBody OAuthDto dto) {
         String accountId = request.getHeader(Header.ACCOUNT);
         if (accountId == null) throw new NotFoundException(RandomUtils.uuid(), Header.ACCOUNT, request.getRequestURI());
 
@@ -55,6 +58,7 @@ public class OAuthController {
     }
 
     @GetMapping("{oauth_id}")
+    @NikukyuPermissionCheck(access = {Permission.OAUTH_READ})
     public Object getOAuth(@PathVariable("oauth_id") String oauthId) {
         @SuppressWarnings("all")
         OAuth oAuth = oAuthService.getOAuth(oauthId);
@@ -68,6 +72,7 @@ public class OAuthController {
     }
 
     @PostMapping("{oauth_id}")
+    @NikukyuPermissionCheck(access = {Permission.OAUTH_UPDATE})
     public Object updateOAuth(@PathVariable("oauth_id") String oauthId, @RequestBody OAuthDto dto) {
         @SuppressWarnings("all")
         OAuth oAuth = oAuthService.getOAuth(oauthId);
@@ -97,6 +102,7 @@ public class OAuthController {
     }
 
     @DeleteMapping("{oauth_id}")
+    @NikukyuPermissionCheck(access = {Permission.OAUTH_DELETE})
     public Object deleteOAuth(@PathVariable("oauth_id") String oauthId) {
         @SuppressWarnings("all")
         OAuth oAuth = oAuthService.getOAuth(oauthId);
@@ -110,6 +116,7 @@ public class OAuthController {
     }
 
     @GetMapping("{oauth_id}/client")
+    @NikukyuPermissionCheck(access = {Permission.OAUTH_CLIENT_READ})
     public Object getClientList(
             @PathVariable("oauth_id") String oauthId,
             @RequestParam("page") int page,
@@ -127,6 +134,7 @@ public class OAuthController {
     }
 
     @PostMapping("{oauth_id}/client")
+    @NikukyuPermissionCheck(access = {Permission.OAUTH_CLIENT_CREATE})
     public Object createClient(@PathVariable("oauth_id") String oauthId, @RequestBody OAuthClientDto dto) {
         @SuppressWarnings("all")
         OAuth oAuth = oAuthService.getOAuth(oauthId);
@@ -140,6 +148,7 @@ public class OAuthController {
     }
 
     @GetMapping("{oauth_id}/client/{client_id}")
+    @NikukyuPermissionCheck(access = {Permission.OAUTH_CLIENT_READ})
     public Object getClient(
             @PathVariable("oauth_id") String oauthId,
             @PathVariable("client_id") String clientId
@@ -157,6 +166,7 @@ public class OAuthController {
     }
 
     @DeleteMapping("{oauth_id}/client/{client_id}")
+    @NikukyuPermissionCheck(access = {Permission.OAUTH_CLIENT_DELETE})
     public Object deleteClient(
             @PathVariable("oauth_id") String oauthId,
             @PathVariable("client_id") String clientId
@@ -173,6 +183,7 @@ public class OAuthController {
     }
 
     @GetMapping("{oauth_id}/log")
+    @NikukyuPermissionCheck(access = {Permission.OAUTH_LOG_READ})
     public Object getLogList(
             @PathVariable("oauth_id") String oauthId,
             @RequestParam("page") int page,
@@ -190,6 +201,7 @@ public class OAuthController {
     }
 
     @GetMapping("{oauth_id}/log/{log_id}")
+    @NikukyuPermissionCheck(access = {Permission.OAUTH_LOG_READ})
     public Object getLog(
             @PathVariable("oauth_id") String oauthId,
             @PathVariable("log_id") String logId

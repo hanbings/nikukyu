@@ -28,7 +28,7 @@ public class NikukyuServerApplication {
         @Override
         public void onApplicationEvent(@NotNull ApplicationStartedEvent event) {
             log.info("""
-                                  
+                    \s
                      _______  .__ __          __                      \s
                      \\      \\ |__|  | ____ __|  | _____.__.__ __    \s
                      /   |   \\|  |  |/ /  |  \\  |/ <   |  |  |      \\

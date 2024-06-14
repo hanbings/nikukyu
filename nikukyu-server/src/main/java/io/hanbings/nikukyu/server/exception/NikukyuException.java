@@ -54,7 +54,20 @@ public class NikukyuException extends RuntimeException {
             }
 
             RequestTrace requestTrace = RequestTrace.parse(traceId, request);
-            log.warn(STR."\nRequest URL: \{request.getRequestURL()}\nMessage: \{e.getMessage()}\nTime: \{time}\nRequest Data: \{mapper.writeValueAsString(requestTrace)}\nStack Trace: \{Arrays.toString(e.getStackTrace())}");
+            log.warn(
+                    """
+                            Request URL: {request.getRequestURL()}
+                            Message: {e.getMessage()}
+                            Time: {time}
+                            Request Data: {mapper.writeValueAsString(requestTrace)}
+                            Stack Trace: {Arrays.toString(e.getStackTrace())}
+                            """,
+                    request.getRequestURL(),
+                    e.getMessage(),
+                    time,
+                    mapper.writeValueAsString(requestTrace),
+                    Arrays.toString(e.getStackTrace())
+            );
 
             return new ResponseEntity<>(
                     Map.of(
