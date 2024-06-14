@@ -18,9 +18,9 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document("oauth_client")
 public record OAuthClient(
-        @Id @JsonProperty("oauth_client_id") @NotNull String oauthClientId,
+        @Id @JsonProperty("oauthClientId") @NotNull String oauthClientId,
         @Field("created") @JsonProperty("created") long created,
-        @Field("created_by") @JsonProperty("created_by") @NotNull String createdBy,
+        @Field("created_by") @JsonProperty("createdBy") @NotNull String createdBy,
         @Field("secret") @JsonProperty("secret") @NotNull String secret,
         @Field("expire") @JsonProperty("expire") long expire
 ) {

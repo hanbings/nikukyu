@@ -19,9 +19,9 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document("oauth_log")
 public record OAuthLog(
-        @Id @JsonProperty("oauth_log_id") @NotNull String oauthLogId,
+        @Id @JsonProperty("oauthLogId") @NotNull String oauthLogId,
         @Field("created") @JsonProperty("created") long created,
-        @Field("created_by") @JsonProperty("created_by") @NotNull String createdBy,
+        @Field("created_by") @JsonProperty("createdBy") @NotNull String createdBy,
         @Field("ip") @JsonProperty("ip") @NotNull String ip,
         @Field("type") @JsonProperty("type") @NotNull String type
 ) {

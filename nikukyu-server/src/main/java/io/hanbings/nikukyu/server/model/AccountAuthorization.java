@@ -18,9 +18,9 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document("account_authorization")
 public record AccountAuthorization(
-        @Id @JsonProperty("account_authorization_id") @NotNull String accountAuthorizationId,
+        @Id @JsonProperty("accountAuthorizationId") @NotNull String accountAuthorizationId,
         @Field("created") @JsonProperty("created") long created,
-        @Field("created_by") @JsonProperty("created_by") @NotNull String createdBy,
+        @Field("created_by") @JsonProperty("createdBy") @NotNull String createdBy,
         @Field("provider") @JsonProperty("provider") @NotNull String provider,
         @Field("openid") @JsonProperty("openid") @NotNull String openid
 ) {
