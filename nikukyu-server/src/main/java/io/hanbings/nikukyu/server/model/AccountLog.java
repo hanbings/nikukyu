@@ -18,9 +18,9 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document("account_log")
 public record AccountLog(
-        @Id @JsonProperty("accountLogId") @NotNull String accountLogId,
+        @Id @JsonProperty("account_log_id") @NotNull String accountLogId,
         @Field("created") @JsonProperty("created") long created,
-        @Field("created_by") @JsonProperty("createdBy") @NotNull String createdBy,
+        @Field("created_by") @JsonProperty("created_by") @NotNull String createdBy,
         @Field("ip") @JsonProperty("ip") @NotNull String ip,
         @Field("type") @JsonProperty("type") @NotNull String type
 ) {

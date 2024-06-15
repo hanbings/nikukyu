@@ -5,7 +5,7 @@
       "token": "1cb06982-b5ab-1356-4d92-6ec9e94594a3",
       "expire": "0",
       "account": {
-        "accountId": "0561517e-f4e0-772b-17ea-5f9a07a15af8",
+        "account_id": "0561517e-f4e0-772b-17ea-5f9a07a15af8",
         "created": 1718130756,
         "verified": true,
         "username": "example",

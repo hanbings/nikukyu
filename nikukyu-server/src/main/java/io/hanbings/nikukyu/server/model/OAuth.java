@@ -28,9 +28,9 @@ import java.util.Set;
 
 @Document("oauth")
 public record OAuth(
-        @Id @JsonProperty("oauthId") @NotNull String oauthId,
+        @Id @JsonProperty("oauth_id") @NotNull String oauthId,
         @Field("created") @JsonProperty("created") long created,
-        @Field("created_by") @JsonProperty("createdBy") @NotNull String createdBy,
+        @Field("created_by") @JsonProperty("created_by") @NotNull String createdBy,
         @Field("redirect") @JsonProperty("redirect") @NotNull Set<String> redirect,
         @Field("access") @JsonProperty("access") @NotNull Set<String> access,
         @Field("avatar") @JsonProperty("avatar") @Nullable String avatar,

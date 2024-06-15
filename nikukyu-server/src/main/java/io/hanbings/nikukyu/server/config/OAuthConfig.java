@@ -34,8 +34,8 @@ public record OAuthConfig(Proxy proxy, Map<ProviderType, Provider> providers) {
     public record Provider(
             @JsonProperty("enable") boolean enable,
             @JsonProperty("proxy") boolean proxy,
-            @JsonProperty("clientId") String clientId,
-            @JsonProperty("clientSecret") String clientSecret
+            @JsonProperty("client_id") String clientId,
+            @JsonProperty("client_secret") String clientSecret
     ) {
     }
 

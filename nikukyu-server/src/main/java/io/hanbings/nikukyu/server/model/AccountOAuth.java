@@ -20,10 +20,10 @@ import java.util.Set;
 
 @Document("account_oauth")
 public record AccountOAuth(
-        @Id @JsonProperty("accountOAuthId") @NotNull String accountOAuthId,
+        @Id @JsonProperty("account_oauth_id") @NotNull String accountOAuthId,
         @Field("created") @JsonProperty("created") long created,
-        @Field("created_by") @JsonProperty("createdBy") @NotNull String createdBy,
-        @Field("oauth_id") @JsonProperty("oauthId") @NotNull String oAuthId,
+        @Field("created_by") @JsonProperty("created_by") @NotNull String createdBy,
+        @Field("oauth_id") @JsonProperty("oauth_id") @NotNull String oAuthId,
         @Field("access") @JsonProperty("access") @NotNull Set<String> access
 ) {
 }
