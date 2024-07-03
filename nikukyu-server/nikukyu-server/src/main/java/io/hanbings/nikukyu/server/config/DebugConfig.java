@@ -17,7 +17,7 @@ import java.util.List;
 
 public record DebugConfig(
         @JsonProperty("debug") boolean debug,
-        @JsonProperty("super_tokens") List<SuperToken> superTokens
+        @JsonProperty("superTokens") List<SuperToken> superTokens
 ) {
     public record SuperToken(
             @JsonProperty("token") String token,

@@ -9,26 +9,26 @@
     "github": {
       "enable": false,
       "proxy": false,
-      "client_id": "",
-      "client_secret": ""
+      "clientId": "",
+      "clientSecret": ""
     },
     "discord": {
       "enable": false,
       "proxy": false,
-      "client_id": "",
-      "client_secret": ""
+      "clientId": "",
+      "clientSecret": ""
     },
     "google": {
       "enable": false,
       "proxy": false,
-      "client_id": "",
-      "client_secret": ""
+      "clientId": "",
+      "clientSecret": ""
     },
     "microsoft": {
       "enable": false,
       "proxy": false,
-      "client_id": "",
-      "client_secret": ""
+      "clientId": "",
+      "clientSecret": ""
     }
   }
 }
