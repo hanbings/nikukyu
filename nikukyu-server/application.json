@@ -1,0 +1,16 @@
+{
+    "db_url": "postgres://postgres:postgres@localhost:5432/nikukyu",
+    "db_pool_size": 32,
+    "application_host": "0.0.0.0",
+    "application_port": 3000,
+    "application_url": ["http://localhost:3000"],
+    "application_name": "nikukyu",
+    "oauths": [
+        {
+            "provider": "github",
+            "client_id": "",
+            "client_secret": "",
+            "redirect_uri": ""
+        }
+    ]
+}
