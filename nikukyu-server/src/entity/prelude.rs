@@ -3,7 +3,7 @@
 pub use super::account::Entity as Account;
 pub use super::account_authorization::Entity as AccountAuthorization;
 pub use super::account_log::Entity as AccountLog;
-pub use super::account_oauth::Entity as AccountOauth;
-pub use super::oauth::Entity as Oauth;
-pub use super::oauth_client::Entity as OauthClient;
-pub use super::oauth_log::Entity as OauthLog;
+pub use super::account_oauth::Entity as AccountOAuth;
+pub use super::oauth::Entity as OAuth;
+pub use super::oauth_client::Entity as OAuthClient;
+pub use super::oauth_log::Entity as OAuthLog;
