@@ -2,9 +2,10 @@ use axum::{
     Json,
     extract::{Path, State},
 };
-use log::info;
+use log::{error, info};
 use rand::{Rng, distr::Alphanumeric};
 use reqwest::header::{AUTHORIZATION, USER_AGENT};
+use sea_orm::{ActiveModelTrait, ActiveValue::Set, sqlx::types::chrono::Utc};
 use serde::Deserialize;
 use serde_json::{Value, json};
 
@@ -195,6 +196,23 @@ pub async fn post_login_with_oauth_callback(
                     }));
                 }
             };
+
+            let account = crate::entity::account::ActiveModel {
+                created_at: Set(Utc::now().naive_local()),
+                openid: Set(openid.to_owned()),
+                email: Set(email.to_owned()),
+                username: Set(username.to_owned()),
+                ..Default::default()
+            };
+
+            match crate::entity::account::ActiveModel::insert(account, &app_state.database).await {
+                Ok(account) => {
+                    info!("account: {:#?}", account);
+                }
+                Err(e) => {
+                    error!("error: {:#?}", e);
+                }
+            }
 
             (openid, email, username)
         }

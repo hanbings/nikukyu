@@ -2,6 +2,6 @@ use std::collections::HashMap;
 
 #[derive(Clone)]
 pub struct AppState {
-    pub config: crate::config::config::Config,
+    pub database: sea_orm::DatabaseConnection,
     pub oauths: HashMap<String, crate::config::config::OAuthConfig>,
 }

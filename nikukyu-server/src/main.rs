@@ -8,6 +8,7 @@ use figment::{
     providers::{Env, Format, Json, Toml},
 };
 use log::{error, info};
+use sea_orm::Database;
 use std::{collections::HashMap, net::SocketAddr};
 use tokio::net::TcpListener;
 
@@ -44,6 +45,8 @@ async fn main() -> anyhow::Result<()> {
     info!("OAuths: {:#?}", config);
     info!("OAuths: {:#?}", oauths);
 
+    let database = Database::connect(config.db_url.clone()).await?;
+
     let addr = format!(
         "{}:{}",
         config.application_host.clone(),
@@ -76,7 +79,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/account/{id}", put(controller::account::update_account))
         .route("/account/{id}", delete(controller::account::delete_account))
         // state
-        .with_state(state::AppState { config, oauths });
+        .with_state(state::AppState { database, oauths });
 
     axum::serve(listener, router.into_make_service()).await?;
 
