@@ -21,7 +21,7 @@ pub async fn get_login_with_oauth_authorize(
         }));
     }
 
-    let oauth = app_state.oauths.get(&provider).unwrap();
+    let oauth = app_state.oauths_config.get(&provider).unwrap();
     let redirect_uri = match oauth.provider.as_str() {
         "github" => format!(
             "https://github.com/login/oauth/authorize?client_id={}&redirect_uri={}&state={}&response_type=code&scope=user:email",
@@ -64,7 +64,7 @@ pub async fn post_login_with_oauth_callback(
         }));
     }
 
-    let oauth = app_state.oauths.get(&provider).unwrap();
+    let oauth = app_state.oauths_config.get(&provider).unwrap();
     let (openid, email, username) = match oauth.provider.as_str() {
         "github" => {
             let client = reqwest::Client::new();

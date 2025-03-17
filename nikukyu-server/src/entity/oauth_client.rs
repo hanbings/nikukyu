@@ -11,6 +11,9 @@ pub struct Model {
     pub created_at: DateTime,
     pub updated_at: Option<DateTime>,
     pub created_by: i32,
+    pub name: String,
+    pub description: Option<String>,
+    pub client_id: String,
     pub secret: String,
     pub expire: DateTime,
 }

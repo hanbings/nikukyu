@@ -379,6 +379,12 @@ enum OAuthClient {
     UpdatedAt,
     #[sea_orm(iden = "created_by")]
     CreatedBy,
+    #[sea_orm(iden = "name")]
+    Name,
+    #[sea_orm(iden = "description")]
+    Description,
+    #[sea_orm(iden = "client_id")]
+    ClientId,
     #[sea_orm(iden = "secret")]
     Secret,
     #[sea_orm(iden = "expire")]
@@ -405,6 +411,9 @@ impl OAuthClient {
             )
             .col(ColumnDef::new(OAuthClient::UpdatedAt).timestamp().null())
             .col(ColumnDef::new(OAuthClient::CreatedBy).integer().not_null())
+            .col(ColumnDef::new(OAuthClient::Name).string().not_null())
+            .col(ColumnDef::new(OAuthClient::Description).string().null())
+            .col(ColumnDef::new(OAuthClient::ClientId).string().not_null())
             .col(ColumnDef::new(OAuthClient::Secret).string().not_null())
             .col(ColumnDef::new(OAuthClient::Expire).timestamp().not_null())
             .foreign_key(
