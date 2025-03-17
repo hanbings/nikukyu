@@ -9,11 +9,12 @@ use figment::{
 };
 use log::{error, info};
 use sea_orm::Database;
-use std::{collections::HashMap, net::SocketAddr};
-use tokio::net::TcpListener;
+use std::{collections::HashMap, net::SocketAddr, sync::Arc};
+use tokio::{net::TcpListener, sync::Mutex};
 
 mod config;
 mod controller;
+mod dto;
 mod entity;
 mod service;
 mod state;
@@ -41,17 +42,23 @@ async fn main() -> anyhow::Result<()> {
     let database = Database::connect(config.db_url.clone()).await?;
     let tokens: HashMap<String, crate::token::Token> = HashMap::new();
     let mut oauths_config: HashMap<String, crate::config::config::OAuthConfig> = HashMap::new();
-    let oauth_authorize_states: HashMap<
-        crate::state::OAuthAuthorizeCode,
-        crate::state::OAuthAuthorizeState,
-    > = HashMap::new();
-    let accounts: HashMap<String, crate::entity::account::Model> = HashMap::new();
-    let oauths: HashMap<String, crate::entity::oauth::Model> = HashMap::new();
-    let oauth_clients: HashMap<String, crate::entity::oauth_client::Model> = HashMap::new();
+    let oauth_authorize_states: Arc<
+        Mutex<HashMap<crate::state::OAuthAuthorizeCode, crate::state::OAuthAuthorizeState>>,
+    > = Arc::new(Mutex::new(HashMap::new()));
+    let accounts: Arc<Mutex<HashMap<String, crate::entity::account::Model>>> =
+        Arc::new(Mutex::new(HashMap::new()));
+    let oauths: Arc<Mutex<HashMap<String, crate::entity::oauth::Model>>> =
+        Arc::new(Mutex::new(HashMap::new()));
+    let oauth_clients: Arc<Mutex<HashMap<String, crate::entity::oauth_client::Model>>> =
+        Arc::new(Mutex::new(HashMap::new()));
 
     config.oauths.iter().for_each(|oauth| {
         oauths_config.insert(oauth.provider.clone(), oauth.clone());
     });
+
+    info!("Config: {:#?}", config);
+    info!("Database: {:#?}", database);
+    info!("OAuths: {:#?}", oauths_config);
 
     let addr = format!(
         "{}:{}",
@@ -69,7 +76,7 @@ async fn main() -> anyhow::Result<()> {
         // account
         .route("/api/v0/account", get(controller::account::get_account))
         .route(
-            "/api/v0/account/{id}",
+            "/api/v0/account/{username}",
             get(controller::account::get_account)
                 .put(controller::account::update_account)
                 .delete(controller::account::delete_account),

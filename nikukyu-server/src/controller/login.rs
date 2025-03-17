@@ -15,7 +15,7 @@ pub async fn get_login_with_oauth_authorize(
     State(app_state): State<AppState>,
     Path(provider): Path<String>,
 ) -> Json<Value> {
-    if !app_state.oauths.contains_key(&provider) {
+    if !app_state.oauths_config.contains_key(&provider) {
         return Json(json!({
             "error": "invalid provider"
         }));
