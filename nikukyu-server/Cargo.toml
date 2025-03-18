@@ -20,6 +20,8 @@ figment = { version = "0.10", features = ["toml", "json", "env"] }
 
 # web
 axum = "0.8.1"
+tower = "0.5.2"
+tower-http = { version = "0.6.2", features = ["cors"] }
 
 # utils
 anyhow = "1"

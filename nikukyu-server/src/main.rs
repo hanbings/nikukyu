@@ -1,5 +1,5 @@
 use axum::{
-    Router,
+    Router, middleware,
     routing::{get, post},
 };
 use config::config::Config;
@@ -8,17 +8,21 @@ use figment::{
     providers::{Env, Format, Json, Toml},
 };
 use log::{error, info};
+use reqwest::Method;
 use sea_orm::Database;
+use security::auth_middleware;
 use std::{collections::HashMap, net::SocketAddr, sync::Arc};
 use tokio::{net::TcpListener, sync::Mutex};
+use tower::ServiceBuilder;
+use tower_http::cors::{Any, CorsLayer};
 
 mod config;
 mod controller;
 mod dto;
 mod entity;
+mod security;
 mod service;
 mod state;
-mod token;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -40,7 +44,7 @@ async fn main() -> anyhow::Result<()> {
     });
 
     let database = Database::connect(config.db_url.clone()).await?;
-    let tokens: HashMap<String, crate::token::Token> = HashMap::new();
+    let tokens: HashMap<String, crate::security::token::Token> = HashMap::new();
     let mut oauths_config: HashMap<String, crate::config::config::OAuthConfig> = HashMap::new();
     let oauth_authorize_states: Arc<
         Mutex<HashMap<crate::state::OAuthAuthorizeCode, crate::state::OAuthAuthorizeState>>,
@@ -56,10 +60,6 @@ async fn main() -> anyhow::Result<()> {
         oauths_config.insert(oauth.provider.clone(), oauth.clone());
     });
 
-    info!("Config: {:#?}", config);
-    info!("Database: {:#?}", database);
-    info!("OAuths: {:#?}", oauths_config);
-
     let addr = format!(
         "{}:{}",
         config.application_host.clone(),
@@ -67,6 +67,15 @@ async fn main() -> anyhow::Result<()> {
     );
     let addr: SocketAddr = addr.parse().unwrap();
     let listener = TcpListener::bind(addr).await?;
+    let app_state = state::AppState {
+        database,
+        tokens,
+        oauths,
+        oauth_authorize_states,
+        oauths_config,
+        accounts,
+        oauth_clients,
+    };
 
     info!("Listening on {}", listener.local_addr().unwrap());
 
@@ -127,16 +136,29 @@ async fn main() -> anyhow::Result<()> {
             "/api/v0/oauth/{oauth_id}/client/{client_id}",
             get(controller::oauth::get_oauth_client).delete(controller::oauth::delete_oauth_client),
         )
+        // middleware
+        .layer(
+            ServiceBuilder::new()
+                .layer(
+                    CorsLayer::new()
+                        .allow_methods(vec![
+                            Method::GET,
+                            Method::POST,
+                            Method::PUT,
+                            Method::DELETE,
+                            Method::OPTIONS,
+                        ])
+                        .allow_headers(Any)
+                        .allow_origin(Any),
+                )
+                .layer(middleware::from_fn_with_state(
+                    app_state.clone(),
+                    auth_middleware,
+                ))
+                .into_inner(),
+        )
         // state
-        .with_state(state::AppState {
-            database,
-            tokens,
-            oauths,
-            oauth_authorize_states,
-            oauths_config,
-            accounts,
-            oauth_clients,
-        });
+        .with_state(app_state);
 
     axum::serve(listener, router.into_make_service()).await?;
 

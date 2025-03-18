@@ -33,7 +33,9 @@ impl From<&crate::entity::account::Model> for GetAccount {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct CreateAccount {}
-
-#[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct UpdateAccount {}
+pub struct UpdateAccount {
+    pub nickname: Option<String>,
+    pub avatar: Option<String>,
+    pub background: Option<String>,
+    pub color: Option<String>,
+}
