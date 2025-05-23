@@ -20,7 +20,7 @@ pub struct AppState {
     pub database: sea_orm::DatabaseConnection,
 
     // state
-    pub tokens: HashMap<String, crate::security::token::Token>,
+    pub tokens: Arc<Mutex<HashMap<String, crate::security::token::Token>>>,
     pub oauths_config: HashMap<String, crate::config::config::OAuthConfig>,
     pub oauth_authorize_states: Arc<Mutex<HashMap<OAuthAuthorizeCode, OAuthAuthorizeState>>>,
 

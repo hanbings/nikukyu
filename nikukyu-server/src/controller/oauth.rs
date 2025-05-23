@@ -2,10 +2,11 @@ use axum::{
     Json,
     extract::{Path, State},
 };
+use log::{error, info};
 use rand::{Rng, distr::Alphanumeric};
-use sea_orm::ActiveValue::Set;
+use sea_orm::{ActiveModelTrait, ActiveValue::Set, ColumnTrait, EntityTrait, QueryFilter};
 use serde::Deserialize;
-use serde_json::Value;
+use serde_json::{Value, json};
 
 use crate::state::AppState;
 
@@ -55,10 +56,19 @@ pub async fn post_oauth(
     create.policy.map(|policy| oauth.policy = Set(Some(policy)));
     create.tos.map(|tos| oauth.tos = Set(Some(tos)));
 
-    todo!()
+    match crate::entity::oauth::ActiveModel::insert(oauth, &app_state.database).await {
+        Ok(oauth) => {
+            info!("created oauth: {}", oauth.id);
+            return Json(json!({"id": oauth.id}));
+        }
+        Err(err) => {
+            error!("failed to create oauth: {}", err);
+            return Json(json!({"error": "failed to create oauth"}));
+        }
+    }
 }
 
-pub async fn get_oauth_list(Path(oauth_id): Path<String>) -> Json<Value> {
+pub async fn get_oauth_list(State(app_state): State<AppState>) -> Json<Value> {
     todo!()
 }
 

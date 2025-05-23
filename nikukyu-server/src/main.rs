@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 use axum::{
     Router, middleware,
     routing::{get, post},
@@ -44,7 +46,8 @@ async fn main() -> anyhow::Result<()> {
     });
 
     let database = Database::connect(config.db_url.clone()).await?;
-    let tokens: HashMap<String, crate::security::token::Token> = HashMap::new();
+    let tokens: Arc<Mutex<HashMap<String, crate::security::token::Token>>> =
+        Arc::new(Mutex::new(HashMap::new()));
     let mut oauths_config: HashMap<String, crate::config::config::OAuthConfig> = HashMap::new();
     let oauth_authorize_states: Arc<
         Mutex<HashMap<crate::state::OAuthAuthorizeCode, crate::state::OAuthAuthorizeState>>,
@@ -59,6 +62,8 @@ async fn main() -> anyhow::Result<()> {
     config.oauths.iter().for_each(|oauth| {
         oauths_config.insert(oauth.provider.clone(), oauth.clone());
     });
+
+    info!("Config: {:?}", config);
 
     let addr = format!(
         "{}:{}",

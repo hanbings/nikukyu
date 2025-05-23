@@ -1,9 +1,22 @@
-use axum::{Json, extract::Path, http::HeaderMap};
+use axum::{
+    Extension, Json,
+    extract::{Path, State},
+    http::HeaderMap,
+};
+use log::info;
 use serde::Deserialize;
-use serde_json::Value;
+use serde_json::{Value, json};
 
-pub async fn get_oauth_client(Path(id): Path<String>, headers: HeaderMap) -> Json<Value> {
-    todo!()
+use crate::{security::extension::ActiveToken, state::AppState};
+
+pub async fn get_oauth_client(
+    Path(id): Path<String>,
+    Extension(active_token): Extension<ActiveToken>,
+    State(app_state): State<AppState>,
+) -> Json<Value> {
+    info!("token: {:?}", active_token);
+
+    Json(json!({}))
 }
 
 #[derive(Deserialize)]
