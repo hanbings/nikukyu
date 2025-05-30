@@ -1,40 +1,40 @@
 {
-	"db_url": "postgres://nikukyu:0887cfe6-9692-ce22-7ce3-f8dfb05bbff1@192.168.22.207:5432/nikukyu",
-	"db_pool_size": 32,
-	"application_host": "0.0.0.0",
-	"application_port": 3000,
-	"application_url": ["http://localhost:3000"],
-	"application_name": "nikukyu",
-	"oauths": [
-        {
-            "provider": "github",
-            "client_id": "Ov23lidTVcgu8isNP36M",
-            "client_secret": "3dbbbe2bc27947fa9f50143753f5ba88ab60e37b",
-            "redirect_uri": "http://localhost:3000/auth/authorized"
-        }
-    ],
-	"debugs": [
-        {
-            "debug": true,
-            "account": {
-                "avatar": null,
-                "background": null,
-                "color": null,
-                "created_at": "2025-04-15T18:31:31.009426",
-                "email": "hanbings@hanbings.io",
-                "id": 3,
-                "nickname": null,
-                "openid": "bc1414e4-45e5-427f-884e-447c65567816",
-                "updated_at": null,
-                "username": "hanbings"
-            },
-            "token": {
-                "created_at": 1744771510,
-                "created_by": 3,
-                "expire_in": 1744775110,
-                "scopes": ["user"],
-                "token": "uor0TSWDTbYvAbCC9VG4aopLvzvHsqWk"
-            }
-        }
-    ]
+  "db_url": "postgres://<username>:<password>@<host>:5432/<database>",
+  "db_pool_size": 32,
+  "application_host": "0.0.0.0",
+  "application_port": 3000,
+  "application_url": ["http://localhost:3000"],
+  "application_name": "nikukyu",
+  "oauths": [
+    {
+      "provider": "github",
+      "client_id": "<github_client_id>",
+      "client_secret": "<github_client_secret>",
+      "redirect_uri": "http://localhost:3000/auth/authorized"
+    }
+  ],
+  "debugs": [
+    {
+      "debug": true,
+      "account": {
+        "avatar": null,
+        "background": null,
+        "color": null,
+        "created_at": "2025-04-15T18:31:31.009426",
+        "email": "<email@example.com>",
+        "id": 3,
+        "nickname": null,
+        "openid": "<openid_uuid>",
+        "updated_at": null,
+        "username": "<username>"
+      },
+      "token": {
+        "created_at": 1744771510,
+        "created_by": 3,
+        "expire_in": 1744775110,
+        "scopes": ["user"],
+        "token": "<access_token>"
+      }
+    }
+  ]
 }
