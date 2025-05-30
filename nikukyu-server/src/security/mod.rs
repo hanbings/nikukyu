@@ -44,7 +44,9 @@ pub async fn auth_middleware(
         let (path, method) = (req.uri().path(), req.method());
         match (path, method) {
             ("/api/v0/login/oauth/github/authorize", &http::Method::GET)
-            | ("/api/v0/login/oauth/github/callback", &http::Method::POST) => {
+            | ("/api/v0/login/oauth/github/callback", &http::Method::POST)
+            | ("/", &http::Method::GET)
+            | ("/index", &http::Method::GET) => {
                 return Ok(next.run(req).await);
             }
             _ => {}

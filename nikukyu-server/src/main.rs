@@ -23,7 +23,6 @@ mod controller;
 mod dto;
 mod entity;
 mod security;
-mod service;
 mod state;
 
 #[tokio::main]
