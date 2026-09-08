@@ -1,0 +1,32 @@
+# Copy this file to config.toml before starting the API.
+# Use NIKUKYU_CONFIG to load another file. Values can be overridden with
+# NIKUKYU__<SECTION>__<KEY>, for example NIKUKYU__SERVER__PORT=3000.
+
+# log level: error, warn, info, debug, trace
+log_level = "debug"
+
+# database configuration
+[database]
+# supported database types: postgres
+# database url
+url = "postgres://username:password@localhost:5432/database_name"
+
+# server configuration
+[server]
+# server host
+host = "127.0.0.1"
+# server port
+port = 8080
+# server workers
+workers = 4
+# server max connections
+max_connections = 1024
+
+[cors]
+# allowed origins for CORS
+allowed_origins = ["*"]
+
+[super_token]
+# super token for authentication
+# this token will be bind to the super user, and can be used to create new users and manage the system
+token = "5766eb07-4689-471d-9045-0e912d37a1c3"

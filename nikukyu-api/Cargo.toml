@@ -3,4 +3,31 @@ name = "nikukyu-api"
 version = "0.1.0"
 edition = "2024"
 
+[workspace]
+members = [".", "migration", "models"]
+
 [dependencies]
+migration = { path = "migration" }
+models = { path = "models" }
+
+actix-web = "4"
+
+config = { version = "0.15", default-features = false, features = ["toml"] }
+serde = { version = "1", features = ["derive"] }
+
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+tracing-actix-web = "0.7"
+
+[dependencies.sea-orm]
+version = "2.0.2"
+features = [
+  "sqlx-postgres",
+  "runtime-tokio-rustls",
+  "postgres-array",
+  "with-chrono",
+  "with-time",
+  "with-json",
+  "with-uuid",
+  "macros",
+]

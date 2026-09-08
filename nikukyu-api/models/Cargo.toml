@@ -1,0 +1,24 @@
+[package]
+name = "models"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "models"
+path = "src/lib.rs"
+
+[dependencies]
+chrono = { version = "0.4", features = ["serde"] }
+serde = { version = "1", features = ["derive"] }
+
+[dependencies.sea-orm]
+  version = "2.0.2"
+  default-features = false
+  features = [
+    "macros",
+    "postgres-array",
+    "with-chrono",
+    "with-json",
+    "with-time",
+    "with-uuid",
+  ]

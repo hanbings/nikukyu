@@ -1,0 +1,214 @@
+use sea_orm_migration::prelude::*;
+
+use models::{account, account_email};
+
+#[derive(DeriveMigrationName)]
+pub struct Migration;
+
+#[async_trait::async_trait]
+impl MigrationTrait for Migration {
+    async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        manager
+            .create_table(
+                Table::create()
+                    .table(account::Entity)
+                    .if_not_exists()
+                    .col(
+                        ColumnDef::new(account::Column::Id)
+                            .uuid()
+                            .not_null()
+                            .default(Expr::cust("gen_random_uuid()"))
+                            .primary_key(),
+                    )
+                    .col(
+                        ColumnDef::new(account::Column::Username)
+                            .string_len(64)
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(account::Column::Nickname)
+                            .string_len(128)
+                            .null(),
+                    )
+                    .col(ColumnDef::new(account::Column::Avatar).text().null())
+                    .col(ColumnDef::new(account::Column::Background).text().null())
+                    .col(
+                        ColumnDef::new(account::Column::ThemeColor)
+                            .string_len(32)
+                            .null(),
+                    )
+                    .col(
+                        ColumnDef::new(account::Column::Status)
+                            .string_len(32)
+                            .not_null()
+                            .default("active"),
+                    )
+                    .col(
+                        ColumnDef::new(account::Column::LastLoginAt)
+                            .timestamp_with_time_zone()
+                            .null(),
+                    )
+                    .col(
+                        ColumnDef::new(account::Column::IsDeleted)
+                            .boolean()
+                            .not_null()
+                            .default(false),
+                    )
+                    .col(
+                        ColumnDef::new(account::Column::CreatedAt)
+                            .timestamp_with_time_zone()
+                            .not_null()
+                            .default(Expr::current_timestamp()),
+                    )
+                    .col(
+                        ColumnDef::new(account::Column::UpdatedAt)
+                            .timestamp_with_time_zone()
+                            .not_null()
+                            .default(Expr::current_timestamp()),
+                    )
+                    .col(
+                        ColumnDef::new(account::Column::DeletedAt)
+                            .timestamp_with_time_zone()
+                            .null(),
+                    )
+                    .check((
+                        "ck_accounts_status",
+                        Expr::col(account::Column::Status).is_in(["active", "suspended"]),
+                    ))
+                    .check((
+                        "ck_accounts_soft_delete",
+                        Expr::col(account::Column::IsDeleted)
+                            .eq(Expr::col(account::Column::DeletedAt).is_not_null()),
+                    ))
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .name("uq_accounts_username_active")
+                    .table(account::Entity)
+                    .col(account::Column::Username)
+                    .unique()
+                    .and_where(Expr::col(account::Column::IsDeleted).eq(false))
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_table(
+                Table::create()
+                    .table(account_email::Entity)
+                    .if_not_exists()
+                    .col(
+                        ColumnDef::new(account_email::Column::Id)
+                            .uuid()
+                            .not_null()
+                            .default(Expr::cust("gen_random_uuid()"))
+                            .primary_key(),
+                    )
+                    .col(
+                        ColumnDef::new(account_email::Column::AccountId)
+                            .uuid()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(account_email::Column::Email)
+                            .string_len(320)
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(account_email::Column::IsPrimary)
+                            .boolean()
+                            .not_null()
+                            .default(false),
+                    )
+                    .col(
+                        ColumnDef::new(account_email::Column::VerifiedAt)
+                            .timestamp_with_time_zone()
+                            .null(),
+                    )
+                    .col(
+                        ColumnDef::new(account_email::Column::IsDeleted)
+                            .boolean()
+                            .not_null()
+                            .default(false),
+                    )
+                    .col(
+                        ColumnDef::new(account_email::Column::CreatedAt)
+                            .timestamp_with_time_zone()
+                            .not_null()
+                            .default(Expr::current_timestamp()),
+                    )
+                    .col(
+                        ColumnDef::new(account_email::Column::UpdatedAt)
+                            .timestamp_with_time_zone()
+                            .not_null()
+                            .default(Expr::current_timestamp()),
+                    )
+                    .col(
+                        ColumnDef::new(account_email::Column::DeletedAt)
+                            .timestamp_with_time_zone()
+                            .null(),
+                    )
+                    .check((
+                        "ck_account_emails_soft_delete",
+                        Expr::col(account_email::Column::IsDeleted)
+                            .eq(Expr::col(account_email::Column::DeletedAt).is_not_null()),
+                    ))
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .name("idx_account_emails_account_id")
+                    .table(account_email::Entity)
+                    .col(account_email::Column::AccountId)
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .name("uq_account_emails_email_active")
+                    .table(account_email::Entity)
+                    .col(Expr::expr(Func::lower(Expr::col(
+                        account_email::Column::Email,
+                    ))))
+                    .unique()
+                    .and_where(Expr::col(account_email::Column::IsDeleted).eq(false))
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .name("uq_account_emails_primary_active")
+                    .table(account_email::Entity)
+                    .col(account_email::Column::AccountId)
+                    .unique()
+                    .and_where(Expr::col(account_email::Column::IsPrimary).eq(true))
+                    .and_where(Expr::col(account_email::Column::IsDeleted).eq(false))
+                    .to_owned(),
+            )
+            .await?;
+
+        Ok(())
+    }
+
+    async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        manager
+            .drop_table(Table::drop().table(account_email::Entity).to_owned())
+            .await?;
+        manager
+            .drop_table(Table::drop().table(account::Entity).to_owned())
+            .await?;
+
+        Ok(())
+    }
+}
