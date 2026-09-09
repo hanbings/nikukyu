@@ -2,3 +2,4 @@ target/
 .env
 .config.toml
 config.toml
+oidc-private.pem

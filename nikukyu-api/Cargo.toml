@@ -11,6 +11,20 @@ migration = { path = "migration" }
 models = { path = "models" }
 
 actix-web = "4"
+actix-cors = "0.7"
+argon2 = "0.5"
+base64 = "0.22"
+chrono = { version = "0.4", features = ["serde"] }
+jsonwebtoken = { version = "10", features = ["rust_crypto"] }
+rand = "0.8"
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+rsa = "0.9"
+serde_json = "1"
+serde_urlencoded = "0.7"
+sha2 = "0.10"
+subtle = "2"
+url = "2"
+uuid = { version = "1", features = ["v4", "serde"] }
 
 config = { version = "0.15", default-features = false, features = ["toml"] }
 serde = { version = "1", features = ["derive"] }

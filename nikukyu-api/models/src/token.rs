@@ -18,6 +18,9 @@ pub struct Model {
 
     pub account_oauth_id: Option<Uuid>,
     pub token_family_id: Option<Uuid>,
+    pub authorization_code_id: Option<Uuid>,
+    pub nonce: Option<String>,
+    pub auth_time: DateTimeWithTimeZone,
 
     #[sea_orm(unique)]
     pub access_token_hash: String,

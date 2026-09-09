@@ -37,6 +37,15 @@ pub enum AccountStatus {
 #[sea_orm(rs_type = "String", db_type = "String(StringLen::None)")]
 #[serde(rename_all = "snake_case")]
 pub enum Scope {
+    #[sea_orm(string_value = "openid")]
+    Openid,
+    #[sea_orm(string_value = "profile")]
+    Profile,
+    #[sea_orm(string_value = "email")]
+    Email,
+    #[sea_orm(string_value = "offline_access")]
+    OfflineAccess,
+
     #[sea_orm(string_value = "oauth_email_verify")]
     OAuthEmailVerify,
     #[sea_orm(string_value = "email_verify")]
@@ -129,4 +138,16 @@ pub enum GrantType {
 pub enum TokenType {
     #[sea_orm(string_value = "Bearer")]
     Bearer,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, EnumIter, DeriveActiveEnum, Serialize, Deserialize)]
+#[sea_orm(rs_type = "String", db_type = "String(StringLen::None)")]
+#[serde(rename_all = "snake_case")]
+pub enum ClientAuthMethod {
+    #[sea_orm(string_value = "client_secret_basic")]
+    ClientSecretBasic,
+    #[sea_orm(string_value = "client_secret_post")]
+    ClientSecretPost,
+    #[sea_orm(string_value = "none")]
+    None,
 }

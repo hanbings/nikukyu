@@ -14,9 +14,10 @@ Migrations run in this order and roll back in reverse order:
 | `m20260908_000002_create_account_support_tables` | `account_authorizations`, `account_logs` |
 | `m20260908_000003_create_oauth_tables` | `oauths`, `oauth_clients`, `account_oauths`, `oauth_logs` |
 | `m20260908_000004_create_credentials_tables` | `authorization_codes`, `tokens` |
+| `m20260909_000005_add_authentication_and_oidc` | `account_passwords`, `account_sessions`, `github_login_states`; extend clients, codes, tokens and OIDC scopes |
 
 The original migration is unchanged, so databases with accounts and emails already
-migrated can apply the remaining three migrations using `up`.
+migrated can apply subsequent migrations using `up`.
 
 - UUID primary keys default to `gen_random_uuid()`. Creation and update timestamps
   default to the current timestamp on insertion; services must maintain `updated_at`
@@ -36,6 +37,12 @@ migrated can apply the remaining three migrations using `up`.
   account/application/client ownership, and authorization scope relationships.
 - These migrations preserve the current models, including the minimal log tables
   and the required `tokens.account_id` for every grant type.
+
+The authentication migration adds `openid`, `profile`, `email`, and `offline_access`
+to the scope constraints through a new migration. Its downgrade refuses existing
+public clients or OIDC scope values that cannot fit the earlier schema; resolve
+these records explicitly before rolling it back. See the [API guide](../README.md)
+for configuration and endpoint details.
 
 ## Commands
 

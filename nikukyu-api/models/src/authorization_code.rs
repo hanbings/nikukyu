@@ -11,6 +11,7 @@ pub struct Model {
     pub account_id: Uuid,
     pub oauth_id: Uuid,
     pub oauth_client_id: Uuid,
+    pub account_oauth_id: Option<Uuid>,
 
     #[sea_orm(unique)]
     pub code_hash: String,
@@ -19,6 +20,8 @@ pub struct Model {
     pub code_challenge: Option<String>,
     pub code_challenge_method: Option<String>,
     pub is_consumed: bool,
+    pub nonce: Option<String>,
+    pub auth_time: DateTimeWithTimeZone,
 
     pub created_at: DateTimeWithTimeZone,
     pub expires_at: DateTimeWithTimeZone,

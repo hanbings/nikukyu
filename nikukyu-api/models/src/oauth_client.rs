@@ -1,6 +1,6 @@
 use sea_orm::entity::prelude::*;
 
-use crate::enums::{GrantType, Scope};
+use crate::enums::{ClientAuthMethod, GrantType, Scope};
 
 #[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
@@ -10,7 +10,8 @@ pub struct Model {
     pub id: Uuid,
     pub oauth_id: Uuid,
 
-    pub client_secret_hash: String,
+    pub client_secret_hash: Option<String>,
+    pub token_endpoint_auth_method: ClientAuthMethod,
     pub grant_types: Vec<GrantType>,
     pub redirect_uris: Vec<String>,
     pub allowed_scopes: Vec<Scope>,

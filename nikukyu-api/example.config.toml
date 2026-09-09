@@ -24,9 +24,33 @@ max_connections = 1024
 
 [cors]
 # allowed origins for CORS
-allowed_origins = ["*"]
+allowed_origins = ["http://localhost:5173", "http://localhost:5174"]
+
+[frontend]
+# Login, account selection and consent pages belong to this trusted frontend.
+# HTTPS origin only, except on localhost; no path or trailing slash.
+origin = "http://localhost:5173"
 
 [super_token]
 # super token for authentication
 # this token will be bind to the super user, and can be used to create new users and manage the system
 token = "5766eb07-4689-471d-9045-0e912d37a1c3"
+
+[auth]
+allow_registration = true
+session_ttl_seconds = 86400
+login_attempts_per_minute = 20
+
+[oidc]
+# HTTPS is required except on localhost. No path or trailing slash.
+issuer = "http://localhost:8080"
+# Generate a persistent RSA private key; see README.md. Do not commit it.
+signing_key_file = "oidc-private.pem"
+access_token_ttl_seconds = 900
+refresh_token_ttl_seconds = 2592000
+
+# Uncomment to enable GitHub login. Register the callback URL as:
+# http://localhost:8080/api/v1/sessions/github/callback
+#[github]
+#client_id = "YOUR_GITHUB_CLIENT_ID"
+#client_secret = "YOUR_GITHUB_CLIENT_SECRET"
