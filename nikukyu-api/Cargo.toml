@@ -7,21 +7,21 @@ edition = "2024"
 members = [".", "migration", "models"]
 
 [dependencies]
-migration = { path = "migration" }
 models = { path = "models" }
 
 actix-web = "4"
 actix-cors = "0.7"
-argon2 = "0.5"
-base64 = "0.22"
+argon2 = "0.6"
+base64 = "0.23"
 chrono = { version = "0.4", features = ["serde"] }
-jsonwebtoken = { version = "10", features = ["rust_crypto"] }
-rand = "0.8"
-reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
-rsa = "0.9"
+jsonwebtoken = { version = "12", features = ["rust_crypto"] }
+rand = "0.10"
+reqwest = { version = "0.13", default-features = false, features = ["form", "json", "query", "rustls-no-provider"] }
+rsa = "0.10"
+rustls = { version = "0.23", default-features = false, features = ["ring"] }
 serde_json = "1"
 serde_urlencoded = "0.7"
-sha2 = "0.10"
+sha2 = "0.11"
 subtle = "2"
 url = "2"
 uuid = { version = "1", features = ["v4", "serde"] }
@@ -34,7 +34,7 @@ tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
 tracing-actix-web = "0.7"
 
 [dependencies.sea-orm]
-version = "2.0.2"
+version = "2.0.4"
 features = [
   "sqlx-postgres",
   "runtime-tokio-rustls",

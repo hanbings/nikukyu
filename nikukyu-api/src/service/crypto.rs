@@ -1,10 +1,12 @@
 use crate::dto::oidc::{JsonWebKey, JsonWebKeySet};
-use argon2::{Argon2, PasswordHash, PasswordHasher, PasswordVerifier, password_hash::SaltString};
+use argon2::{
+    Argon2,
+    password_hash::{PasswordHasher, PasswordVerifier, phc::PasswordHash},
+};
 use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
 use jsonwebtoken::{Algorithm, DecodingKey, EncodingKey, Header, Validation};
-use rand::{RngCore, rngs::OsRng};
 use rsa::{
-    RsaPrivateKey, pkcs1::DecodeRsaPrivateKey, pkcs8::DecodePrivateKey, traits::PublicKeyParts,
+    PrivateKey, pkcs1::DecodeRsaPrivateKey, pkcs8::DecodePrivateKey, traits::PublicKeyParts,
 };
 use serde::{Serialize, de::DeserializeOwned};
 use sha2::{Digest, Sha256};
@@ -14,7 +16,7 @@ use crate::error::{ApiError, ApiResult};
 
 pub fn secret() -> String {
     let mut bytes = [0_u8; 32];
-    OsRng.fill_bytes(&mut bytes);
+    rand::fill(&mut bytes);
     URL_SAFE_NO_PAD.encode(bytes)
 }
 pub fn hash(value: &str) -> String {
@@ -33,7 +35,7 @@ pub async fn password_hash(password: String) -> ApiResult<String> {
     }
     actix_web::web::block(move || {
         Argon2::default()
-            .hash_password(password.as_bytes(), &SaltString::generate(&mut OsRng))
+            .hash_password(password.as_bytes())
             .map(|hash| hash.to_string())
             .map_err(|_| ApiError::internal())
     })
@@ -56,6 +58,14 @@ pub async fn verify_password(password: String, encoded: String) -> ApiResult<boo
     .map_err(|_| ApiError::internal())
 }
 
+fn encode_integer(bytes: &[u8]) -> String {
+    let first = bytes
+        .iter()
+        .position(|&byte| byte != 0)
+        .unwrap_or(bytes.len().saturating_sub(1));
+    URL_SAFE_NO_PAD.encode(&bytes[first..])
+}
+
 pub struct SigningKey {
     key: EncodingKey,
     verification_key: DecodingKey,
@@ -66,13 +76,12 @@ pub struct SigningKey {
 impl SigningKey {
     pub fn load(path: &str) -> Result<Self, Box<dyn std::error::Error>> {
         let pem = std::fs::read_to_string(path)?;
-        let rsa =
-            RsaPrivateKey::from_pkcs8_pem(&pem).or_else(|_| RsaPrivateKey::from_pkcs1_pem(&pem))?;
-        if rsa.n().bits() < 2048 {
+        let rsa = PrivateKey::from_pkcs8_pem(&pem).or_else(|_| PrivateKey::from_pkcs1_pem(&pem))?;
+        if rsa.n().bit_width() < 2048 {
             return Err("OIDC signing key must have at least 2048 bits".into());
         }
-        let n = URL_SAFE_NO_PAD.encode(rsa.n().to_bytes_be());
-        let e = URL_SAFE_NO_PAD.encode(rsa.e().to_bytes_be());
+        let n = encode_integer(&rsa.n().to_be_bytes());
+        let e = encode_integer(&rsa.e().to_be_bytes());
         let kid = hash(&n);
         let verification_key = DecodingKey::from_rsa_components(&n, &e)?;
         let jwks = JsonWebKeySet {
@@ -126,5 +135,31 @@ impl SigningKey {
             return Err(invalid());
         }
         Ok(token.claims)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{encode_integer, verify_password};
+
+    #[test]
+    fn jwk_integers_use_minimal_unsigned_encoding() {
+        assert_eq!(encode_integer(&[0, 0, 1, 0, 1]), "AQAB");
+        assert_eq!(encode_integer(&[0, 128]), "gA");
+    }
+
+    #[actix_web::test]
+    async fn verifies_password_hashes_created_before_argon2_upgrade() {
+        let legacy_hash = "$argon2id$v=19$m=19456,t=2,p=1$ehaktVCaBUKMTDuECNsprw$eDqf39Mcu8OUQrR8GV+L1lB5XHEKPDh9svD15As2E08";
+        assert!(
+            verify_password("test-password-1234".into(), legacy_hash.into())
+                .await
+                .unwrap()
+        );
+        assert!(
+            !verify_password("wrong-password".into(), legacy_hash.into())
+                .await
+                .unwrap()
+        );
     }
 }

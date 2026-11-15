@@ -17,6 +17,9 @@ use crate::database::Database;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    rustls::crypto::ring::default_provider()
+        .install_default()
+        .map_err(|_| std::io::Error::other("could not initialize the TLS crypto provider"))?;
     let config = config::Config::load().map_err(std::io::Error::other)?;
     log::init_tracing(&config.log_level);
 
