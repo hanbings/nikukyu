@@ -2,11 +2,21 @@ use actix_web::{HttpRequest, HttpResponse, http::StatusCode, web};
 use uuid::Uuid;
 
 use crate::{
-    dto::account::{RegisterAccountRequest, UpdateAccountRequest},
+    dto::account::{PublicConfigResponse, RegisterAccountRequest, UpdateAccountRequest},
     error::ApiResult,
     service::account,
     state::AppState,
 };
+
+pub async fn config(state: web::Data<AppState>) -> ApiResult<HttpResponse> {
+    Ok(super::json(
+        StatusCode::OK,
+        PublicConfigResponse {
+            registration_enabled: state.config.auth.allow_registration,
+            github_enabled: state.config.github.is_some(),
+        },
+    ))
+}
 
 pub async fn create(
     state: web::Data<AppState>,

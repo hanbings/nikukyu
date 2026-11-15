@@ -1,7 +1,9 @@
+use std::collections::HashMap;
+
 use actix_web::HttpRequest;
 use chrono::Utc;
 use models::{
-    account, account_authorization, account_oauth, account_password, enums::AccountStatus,
+    account, account_authorization, account_oauth, account_password, enums::AccountStatus, oauth,
 };
 use sea_orm::{
     ActiveEnum, ActiveModelTrait, ActiveValue, ColumnTrait, ConnectionTrait, EntityTrait,
@@ -15,8 +17,8 @@ use crate::{
     dto::{
         ListResponse, Patch,
         account::{
-            AccountResponse, GrantResponse, IdentityResponse, RegisterAccountRequest,
-            UpdateAccountRequest,
+            AccountResponse, GrantApplicationResponse, GrantResponse, IdentityResponse,
+            RegisterAccountRequest, UpdateAccountRequest,
         },
     },
     error::{ApiError, ApiResult},
@@ -238,12 +240,37 @@ pub async fn grants(
         .limit(100)
         .all(&*state.database)
         .await?;
+    // Fetch display metadata in one query, including deleted applications so their
+    // existing grants remain identifiable and revocable by the account holder.
+    let applications = if grants.is_empty() {
+        HashMap::new()
+    } else {
+        oauth::Entity::find()
+            .filter(oauth::Column::Id.is_in(grants.iter().map(|grant| grant.oauth_id)))
+            .all(&*state.database)
+            .await?
+            .into_iter()
+            .map(|app| (app.id, app))
+            .collect::<HashMap<_, _>>()
+    };
     Ok(ListResponse {
         items: grants
             .into_iter()
             .map(|grant| GrantResponse {
                 id: grant.id,
                 oauth_id: grant.oauth_id,
+                application: applications.get(&grant.oauth_id).map(|app| {
+                    GrantApplicationResponse {
+                        name: app.name.clone(),
+                        description: app.description.clone(),
+                        avatar: app.avatar.clone(),
+                        background: app.background.clone(),
+                        theme_color: app.theme_color.clone(),
+                        terms_of_service: app.terms_of_service.clone(),
+                        privacy_policy: app.privacy_policy.clone(),
+                        is_deleted: app.is_deleted,
+                    }
+                }),
                 scope: grant.scope.iter().map(ActiveEnum::to_value).collect(),
                 created_at: grant.created_at,
             })

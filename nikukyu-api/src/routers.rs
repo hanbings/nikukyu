@@ -25,6 +25,7 @@ pub fn configure(config: &mut web::ServiceConfig) {
         )
         .service(
             web::scope("/api/v1")
+                .route("/config", web::get().to(account::config))
                 .route(
                     "/oauth-clients/{client_id}",
                     web::get().to(oauth::public_client),

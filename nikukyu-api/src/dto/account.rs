@@ -47,6 +47,26 @@ pub struct IdentityResponse {
 pub struct GrantResponse {
     pub id: Uuid,
     pub oauth_id: Uuid,
+    pub application: Option<GrantApplicationResponse>,
     pub scope: Vec<String>,
     pub created_at: DateTime<FixedOffset>,
+}
+
+/// Display metadata only; credentials and application ownership remain private.
+#[derive(Serialize)]
+pub struct GrantApplicationResponse {
+    pub name: String,
+    pub description: Option<String>,
+    pub avatar: Option<String>,
+    pub background: Option<String>,
+    pub theme_color: Option<String>,
+    pub terms_of_service: Option<String>,
+    pub privacy_policy: Option<String>,
+    pub is_deleted: bool,
+}
+
+#[derive(Serialize)]
+pub struct PublicConfigResponse {
+    pub registration_enabled: bool,
+    pub github_enabled: bool,
 }
