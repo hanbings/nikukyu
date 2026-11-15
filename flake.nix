@@ -22,20 +22,6 @@
         system:
         let
           pkgs = import nixpkgs { inherit system; };
-          seaOrmCli = pkgs.rustPlatform.buildRustPackage rec {
-            pname = "sea-orm-cli";
-            version = "2.0.2";
-
-            src = pkgs.fetchCrate {
-              inherit pname version;
-              hash = "sha256-tkyZSsTE1a08AIif5NNkBazASs+pvBgP69CnZhEZkhw=";
-            };
-
-            cargoHash = "sha256-4+rFHOBRyUGF6DXxT4Y54Y2s4F9MGcNF/ELWj/4fPWo=";
-
-            nativeBuildInputs = [ pkgs.pkg-config ];
-            buildInputs = [ pkgs.openssl ];
-          };
         in
         {
           default = pkgs.mkShell {
@@ -50,10 +36,10 @@
               pkgs.cargo-watch
               pkgs.pkg-config
               pkgs.openssl
-              seaOrmCli
+              pkgs.sea-orm-cli
 
               # React and TypeScript development. App dependencies stay local.
-              pkgs.nodejs_24
+              pkgs.nodejs_26
               pkgs.pnpm
 
               # Shared project tooling.
