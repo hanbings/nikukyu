@@ -1,70 +1,59 @@
 # Nikukyu
 
-Nikukyu is an OAuth and OpenID Connect server. The API and its database
-migrator can be built with Nix, and the flake provides a NixOS service module.
+Nikukyu is an OAuth and OpenID Connect server. The API requires PostgreSQL and
+a persistent RSA private key for signing OIDC tokens.
 
-## Nix packages
+Configure the API using [`example.config.toml`](nikukyu-api/example.config.toml).
+The database and its user must exist before applying the migrations described in
+the [migration guide](nikukyu-api/migration/README.md). The API reads the
+database URL from its TOML configuration; the migrator uses `DATABASE_URL`.
 
-Build the API and migrator from this checkout:
+## Docker
 
-```sh
-nix build .#nikukyu-api
-```
-
-The result contains `bin/nikukyu-api` and `bin/nikukyu-migration`. The API is
-also the default package. To build or run just the migrator entry point:
+Build the API image from the repository root with Docker BuildKit:
 
 ```sh
-nix build .#nikukyu-migration
-DATABASE_URL="$(cat /path/to/database-url)" nix run .#nikukyu-migration -- up
+docker build -t nikukyu-api .
 ```
 
-The migrator uses `DATABASE_URL`, while the API reads `database.url` from its
-TOML configuration. They must point to the same PostgreSQL database. The
-database and its user must exist before the migration runs. See the
-[migration guide](nikukyu-api/migration/README.md) for more commands.
+The build context includes only `nikukyu-api/`, excluding build artifacts and
+common configuration and key files. Keep other secrets outside that directory.
 
-## NixOS module
+The image includes both `nikukyu-api` and `nikukyu-migration`. Before starting
+the API, create a PostgreSQL database and run the migrations with `DATABASE_URL`
+set to its connection string:
 
-Add this repository as a flake input:
-
-```nix
-inputs.nikukyu.url = "github:hanbings/nikukyu";
+```sh
+docker run --rm --env DATABASE_URL nikukyu-api nikukyu-migration up
 ```
 
-Then, in the host's `nixosSystem` definition (where `nikukyu` is the flake
-input), add the module and service settings:
+If you do not already have a persistent OIDC signing key, generate one once:
 
-```nix
-modules = [
-  ./configuration.nix
-  nikukyu.nixosModules.default
-  {
-    services.nikukyu = {
-      enable = true;
-      configFile = "/run/secrets/nikukyu-config.toml";
-    };
-  }
-];
+```sh
+openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -out oidc-private.pem
 ```
 
-The module starts the API as the dedicated `nikukyu` system user and restarts
-it on failure. `services.nikukyu.package` can be overridden if a different
-package is required. The module neither creates a PostgreSQL database nor runs
-migrations automatically; manage PostgreSQL independently and apply migrations
-before starting or upgrading the service.
+Prepare a TOML configuration based on
+[`example.config.toml`](nikukyu-api/example.config.toml). Set `database.url`
+to the same database and `oidc.signing_key_file` to
+`/run/secrets/oidc-private.pem`. Set `server.port` to `8080` or adjust the port
+mapping below. Mount the configuration and persistent signing key when starting
+the API, using absolute host paths:
 
-Provide the TOML configuration as a runtime file outside the Nix store, for
-example with sops-nix or agenix. Start from
-[`example.config.toml`](nikukyu-api/example.config.toml), set the database URL
-and the frontend and OIDC origins, and use an **absolute** path for
-`oidc.signing_key_file`. Both the configuration file and the persistent RSA
-private key must be readable by the `nikukyu` user. The systemd service cannot
-read files under `/home`; `/run/secrets` is one suitable location. Do not put
-credentials or private keys in Nix expressions or other files copied into the
-world-readable Nix store.
+```sh
+docker run -d --name nikukyu-api \
+  -p 127.0.0.1:8080:8080 \
+  --mount type=bind,src=/absolute/path/config.toml,dst=/etc/nikukyu/config.toml,readonly \
+  --mount type=bind,src=/absolute/path/oidc-private.pem,dst=/run/secrets/oidc-private.pem,readonly \
+  nikukyu-api
+```
 
-The service listens on the host and port set in its configuration. Configure a
-reverse proxy, TLS, and firewall access separately if needed. The web and
-dashboard projects are currently placeholder frontends and are not included in
-these packages.
+The image runs as UID and GID `10001`; both mounted files must be readable by
+that user. If both files belong to your current Linux user, add
+`--user "$(id -u):$(id -g)"` to the API's `docker run` command instead. The
+default `NIKUKYU__SERVER__HOST=0.0.0.0` makes the API reachable through
+Docker's port mapping and can be overridden if necessary.
+PostgreSQL must be reachable from inside the container: `localhost` refers to
+the container itself. If PostgreSQL is in a Docker network, add the appropriate
+`--network` to both commands and use its network hostname in both database URLs.
+The image does not create the database or run migrations automatically.

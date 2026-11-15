@@ -1,0 +1,13 @@
+# The image only builds the API workspace.
+*
+!nikukyu-api/
+
+# Local build output and runtime secrets.
+**/target
+**/node_modules
+**/.env*
+**/config*.toml
+**/.config*.toml
+**/*.config.toml
+**/*.pem
+**/*.key

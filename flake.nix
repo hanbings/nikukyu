@@ -5,7 +5,6 @@
 
   outputs =
     {
-      self,
       nixpkgs,
       ...
     }:
@@ -19,33 +18,6 @@
       forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
     in
     {
-      packages = forAllSystems (
-        system:
-        let
-          pkgs = import nixpkgs { inherit system; };
-          api = pkgs.callPackage ./nix/package.nix { };
-          migration =
-            pkgs.runCommand "nikukyu-migration-${api.version}"
-              {
-                meta = {
-                  description = "Database migrations for Nikukyu";
-                  mainProgram = "nikukyu-migration";
-                };
-              }
-              ''
-                mkdir -p "$out/bin"
-                ln -s ${api}/bin/nikukyu-migration "$out/bin/nikukyu-migration"
-              '';
-        in
-        {
-          default = api;
-          nikukyu-api = api;
-          nikukyu-migration = migration;
-        }
-      );
-
-      nixosModules.default = import ./nix/nixos-module.nix { inherit self; };
-
       devShells = forAllSystems (
         system:
         let
