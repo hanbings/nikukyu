@@ -1,32 +1,105 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
 :root {
-  font-family: system-ui, sans-serif;
-  color: #1a1a1a;
-  background: #ffffff;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    'Noto Sans SC',
+    sans-serif;
+  color-scheme: light;
+  --radius: 0.75rem;
+  --background: #f8f7f3;
+  --foreground: #292b28;
+  --card: #ffffff;
+  --card-foreground: #292b28;
+  --popover: #ffffff;
+  --popover-foreground: #292b28;
+  --primary: #bd6042;
+  --primary-foreground: #ffffff;
+  --secondary: #f3eee8;
+  --secondary-foreground: #574b42;
+  --muted: #f3f1ed;
+  --muted-foreground: #777b73;
+  --accent: #f8ede7;
+  --accent-foreground: #9c4d35;
+  --destructive: #bd4540;
+  --border: #eae7e1;
+  --input: #e3e0d9;
+  --ring: #cf8369;
 }
 
-* {
-  box-sizing: border-box;
+.dark {
+  color-scheme: dark;
+  --background: #191b19;
+  --foreground: #f1f1eb;
+  --card: #222522;
+  --card-foreground: #f1f1eb;
+  --popover: #292c29;
+  --popover-foreground: #f1f1eb;
+  --primary: #e29373;
+  --primary-foreground: #2a1a15;
+  --secondary: #34302d;
+  --secondary-foreground: #e9ded3;
+  --muted: #2d302d;
+  --muted-foreground: #a7ada4;
+  --accent: #44312a;
+  --accent-foreground: #efb397;
+  --destructive: #df7069;
+  --border: #393d38;
+  --input: #424640;
+  --ring: #cd856a;
 }
 
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-#root {
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-}
-
-h1 {
-  margin: 0;
-  font-size: clamp(2.5rem, 8vw, 5rem);
-  font-weight: 600;
-  letter-spacing: -0.04em;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply m-0 min-h-screen bg-background text-foreground antialiased;
+  }
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+  button {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
+  a:focus-visible {
+    @apply outline-2 outline-offset-4 outline-ring;
+  }
 }

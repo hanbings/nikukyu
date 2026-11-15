@@ -57,3 +57,52 @@ PostgreSQL must be reachable from inside the container: `localhost` refers to
 the container itself. If PostgreSQL is in a Docker network, add the appropriate
 `--network` to both commands and use its network hostname in both database URLs.
 The image does not create the database or run migrations automatically.
+
+## User interface
+
+`nikukyu-web` is the account and authorization UI. Both frontend projects use
+Node.js 26, npm and Rsbuild. TypeScript is held to 6.0.x while the current
+`typescript-eslint` release supports versions below 6.1. The npm overrides keep
+its transitive `minimatch` on a fixed release. For local development, start the
+API on port 8080,
+then run:
+
+```sh
+cd nikukyu-web
+npm ci
+npm run dev
+```
+
+Open <http://localhost:5173>. The development server proxies `/api/v1/`,
+`/oidc/` and `/.well-known/` to `http://127.0.0.1:8080`; set
+`NIKUKYU_API_TARGET` to change the upstream. For same-origin development, set
+both `frontend.origin` and `oidc.issuer` to `http://localhost:5173` in the API
+configuration. Register the GitHub callback at that origin if GitHub login is
+enabled. `nikukyu-dashboard` can also be started with `npm ci && npm run dev`;
+it is a separate, currently minimal developer-facing application.
+
+Build the user UI image with its own restricted build context:
+
+```sh
+docker build -t nikukyu-web nikukyu-web
+```
+
+The web image serves the SPA and proxies the API and OIDC paths to
+`nikukyu-api:8080`. Attach both containers to the same Docker network and give
+the API container that name or network alias, for example:
+
+```sh
+docker network create nikukyu
+docker network connect nikukyu nikukyu-api
+docker run -d --name nikukyu-web --network nikukyu -p 127.0.0.1:3000:80 nikukyu-web
+```
+
+Put an HTTPS reverse proxy in front of the web container and set both the API's
+`frontend.origin` and `oidc.issuer` to the public HTTPS origin. This keeps the
+browser, session cookies and OIDC endpoints on the same origin. GitHub's
+registered callback must be `<origin>/api/v1/sessions/github/callback`.
+
+The API's login rate limiter uses the direct peer address. Behind a reverse
+proxy, requests therefore share the proxy's limit; account for this when
+setting `auth.login_attempts_per_minute`. The API does not trust forwarded IP
+headers supplied by clients.
