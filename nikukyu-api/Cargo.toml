@@ -9,7 +9,8 @@ members = [".", "migration", "models"]
 [dependencies]
 models = { path = "models" }
 
-actix-web = "4"
+# The reverse proxy handles HTTP/2; Actix still depends on the affected h2 0.3.
+actix-web = { version = "4", default-features = false, features = ["macros", "compress-brotli", "compress-gzip", "compress-zstd", "cookies", "unicode", "compat", "ws"] }
 actix-cors = "0.7"
 argon2 = "0.6"
 base64 = "0.23"

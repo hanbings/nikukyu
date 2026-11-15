@@ -16,3 +16,7 @@ the application's full list of allowed scopes.
 
 `DELETE /api/v1/accounts/me/grants/{id}` revokes a grant and requires the
 session's `X-CSRF-Token`.
+
+The API listens with HTTP/1.1. HTTP/2 should be terminated at the reverse
+proxy: Actix's HTTP/2 feature is disabled while its `h2` 0.3 dependency is
+subject to RUSTSEC-2026-0258.
